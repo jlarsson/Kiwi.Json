@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C32E21F8-0929-45BC-9643-0F1DE746A4CD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kiwi.Json</RootNamespace>
+    <AssemblyName>Kiwi.Json</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Conversion\FieldGetter.cs" />
+    <Compile Include="Conversion\FieldSetter.cs" />
+    <Compile Include="Conversion\FromJsonSimple.cs" />
+    <Compile Include="Conversion\FromJsonToArray.cs" />
+    <Compile Include="Conversion\FromJsonToClass.cs" />
+    <Compile Include="Conversion\FromJsonToList.cs" />
+    <Compile Include="Conversion\IMemberGetter.cs" />
+    <Compile Include="Conversion\IMemberSetter.cs" />
+    <Compile Include="Conversion\DefaultFromJson.cs" />
+    <Compile Include="Conversion\PropertyGetter.cs" />
+    <Compile Include="Conversion\PropertySetter.cs" />
+    <Compile Include="Conversion\ToJsonContext.cs" />
+    <Compile Include="Conversion\IJsonConverter.cs" />
+    <Compile Include="Conversion\IJsonConverterFactory.cs" />
+    <Compile Include="Conversion\IFromJson.cs" />
+    <Compile Include="Conversion\IToJson.cs" />
+    <Compile Include="Conversion\IToJsonContext.cs" />
+    <Compile Include="Conversion\JsonConverter.cs" />
+    <Compile Include="Conversion\ToJsonBool.cs" />
+    <Compile Include="Conversion\ToJsonClass.cs" />
+    <Compile Include="Conversion\ToJsonDateTime.cs" />
+    <Compile Include="Conversion\ToJsonDictionary.cs" />
+    <Compile Include="Conversion\ToJsonDouble.cs" />
+    <Compile Include="Conversion\ToJsonEnumerable.cs" />
+    <Compile Include="Conversion\ToJsonInt.cs" />
+    <Compile Include="Conversion\ToJsonNull.cs" />
+    <Compile Include="Conversion\ToJsonSingle.cs" />
+    <Compile Include="Conversion\ToJsonString.cs" />
+    <Compile Include="Conversion\DefaultToJson.cs" />
+    <Compile Include="JPath\IJsonPath.cs" />
+    <Compile Include="JPath\IJsonPathValue.cs" />
+    <Compile Include="JPath\JsonPath.cs" />
+    <Compile Include="JPath\JsonPathValue.cs" />
+    <Compile Include="JSON.cs" />
+    <Compile Include="JsonException.cs" />
+    <Compile Include="Serialization\AbstractJsonDeserializer.cs" />
+    <Compile Include="Serialization\BinaryDeserializer.cs" />
+    <Compile Include="Serialization\BinarySerializer.cs" />
+    <Compile Include="Serialization\JsonCharacters.cs" />
+    <Compile Include="Serialization\JsonFormats.cs" />
+    <Compile Include="Serialization\JsonSerializationException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\IJsonTextIndent.cs" />
+    <Compile Include="Serialization\IJsonWriter.cs" />
+    <Compile Include="Serialization\JsonNoTextIndent.cs" />
+    <Compile Include="Serialization\JsonSerializer.cs" />
+    <Compile Include="Serialization\JsonStringDeserializer.cs" />
+    <Compile Include="Serialization\JsonTextIndent.cs" />
+    <Compile Include="Serialization\JsonTextWriter.cs" />
+    <Compile Include="Untyped\IJsonArray.cs" />
+    <Compile Include="Untyped\IJsonBool.cs" />
+    <Compile Include="Untyped\IJsonDate.cs" />
+    <Compile Include="Untyped\IJsonFactory.cs" />
+    <Compile Include="Untyped\IJsonInteger.cs" />
+    <Compile Include="Untyped\IJsonNull.cs" />
+    <Compile Include="Untyped\IJsonDouble.cs" />
+    <Compile Include="Untyped\IJsonObject.cs" />
+    <Compile Include="Untyped\IJsonString.cs" />
+    <Compile Include="Untyped\IJsonValue.cs" />
+    <Compile Include="Untyped\IJsonValueVisitor.cs" />
+    <Compile Include="Untyped\JsonArray.cs" />
+    <Compile Include="Untyped\JsonBool.cs" />
+    <Compile Include="Untyped\JsonDate.cs" />
+    <Compile Include="Untyped\JsonFactory.cs" />
+    <Compile Include="Untyped\JsonInteger.cs" />
+    <Compile Include="Untyped\JsonNull.cs" />
+    <Compile Include="Untyped\JsonDouble.cs" />
+    <Compile Include="Untyped\JsonObject.cs" />
+    <Compile Include="Serialization\JsonDeserializer.cs" />
+    <Compile Include="Untyped\JsonString.cs" />
+    <Compile Include="JsonValueExtensions.cs" />
+    <Compile Include="Untyped\JsonValueKind.cs" />
+    <Compile Include="Util\IRegistry.cs" />
+    <Compile Include="Util\ThreadsafeRegistry.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

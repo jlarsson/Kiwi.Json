@@ -1,0 +1,9 @@
+Package/Binaries/
+Package/Sources/
+bin/
+obj/
+*.user
+*.suo
+*.pdb
+*.nupkg
+Thumbs.db
