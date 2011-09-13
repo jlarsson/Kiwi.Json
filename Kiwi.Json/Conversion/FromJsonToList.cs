@@ -22,6 +22,10 @@ namespace Kiwi.Json.Conversion
             {
                 return null;
             }
+            if (value is IJsonNull)
+            {
+                return null;
+            }
             var jsonArray = value as IJsonArray;
             if (jsonArray == null)
             {
