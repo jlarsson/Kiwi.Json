@@ -2,8 +2,8 @@
 
 namespace Kiwi.Json.Util
 {
-    public interface IRegistry<in TKey, TValue>
+    public interface IRegistry<TKey, TValue>
     {
-        TValue Lookup(TKey key, Func<TValue> creator);
+        TValue Lookup(TKey key, Func<TKey,TValue> creator);
     }
 }

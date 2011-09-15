@@ -10,7 +10,7 @@ namespace Kiwi.Json.Util
 
         #region IRegistry<TKey,TValue> Members
 
-        public TValue Lookup(TKey key, Func<TValue> creator)
+        public TValue Lookup(TKey key, Func<TKey,TValue> creator)
         {
             var d = _dict;
             TValue value;
@@ -18,7 +18,7 @@ namespace Kiwi.Json.Util
             {
                 return value;
             }
-            value = creator();
+            value = creator(key);
             Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) {{key, value}});
             return value;
         }

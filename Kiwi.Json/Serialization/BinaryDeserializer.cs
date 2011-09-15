@@ -42,7 +42,7 @@ namespace Kiwi.Json.Serialization
                 case JsonValueKind.Double:
                     return _factory.CreateNumber(_reader.ReadDouble());
                 case JsonValueKind.Integer:
-                    return _factory.CreateNumber(_reader.ReadInt32());
+                    return _factory.CreateNumber(_reader.ReadInt64());
                 case JsonValueKind.Null:
                     return _factory.CreateNull();
                 case JsonValueKind.Object:

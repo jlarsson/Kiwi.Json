@@ -8,14 +8,14 @@ namespace Kiwi.Json.Untyped
     [DebuggerDisplay("{ToString()}")]
     public class JsonInteger : IJsonInteger
     {
-        public JsonInteger(int value)
+        public JsonInteger(long value)
         {
             Value = value;
         }
 
         #region IJsonInteger Members
 
-        public int Value { get; private set; }
+        public long Value { get; private set; }
 
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)
         {

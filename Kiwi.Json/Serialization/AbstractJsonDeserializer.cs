@@ -90,8 +90,8 @@ namespace Kiwi.Json.Serialization
 
             if (Peek() != '.')
             {
-                int intValue;
-                if (!int.TryParse(sb.ToString(), out intValue))
+                long intValue;
+                if (!long.TryParse(sb.ToString(), out intValue))
                 {
                     throw CreateExpectedNumberException(startLine, startColumn);
                 }

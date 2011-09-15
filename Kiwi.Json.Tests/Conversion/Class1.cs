@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Kiwi.Json.Conversion;
+using Kiwi.Json.Conversion.FromJson;
 using NUnit.Framework;
 
 namespace Kiwi.Json.Tests.Conversion
@@ -14,8 +15,10 @@ namespace Kiwi.Json.Tests.Conversion
 
         private void VerifyFromJsonIs<TFromJson>(object value)
         {
-            var fromJson = new DefaultFromJson().GetFromJson(value.GetType());
-            Assert.That(fromJson, Is.TypeOf<TFromJson>());
+            //var fromJson = JSON.ToObject<value.GetType()>
+            //    new DefaultFromJson().GetFromJson(value.GetType());
+            //Assert.That(fromJson, Is.TypeOf<TFromJson>());
+            Assert.Fail("Weird test?");
         }
 
         [Test]
@@ -30,5 +33,6 @@ namespace Kiwi.Json.Tests.Conversion
         {
             VerifyFromJsonIs<FromJsonToList<List<int>, int>>(new List<int>());
         }
+ 
     }
 }

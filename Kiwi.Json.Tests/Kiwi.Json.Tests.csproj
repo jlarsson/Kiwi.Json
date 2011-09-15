@@ -48,7 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\Class1.cs" />
-    <Compile Include="JPath\JPathFixture.cs" />
+    <Compile Include="Conversion\FromSimpleType.cs" />
+    <Compile Include="Conversion\FromSimpleTypeAndBackFixture.cs" />
+    <Compile Include="Conversion\ToArrayFixture.cs" />
+    <Compile Include="Conversion\ToSimpleTypeFixture.cs" />
+    <Compile Include="Conversion\ToTypedCollectionFixture.cs" />
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\JsonBinaryFixture.cs" />

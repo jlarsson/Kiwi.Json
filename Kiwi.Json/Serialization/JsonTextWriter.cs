@@ -84,7 +84,7 @@ namespace Kiwi.Json.Serialization
             Write('"');
         }
 
-        public void WriteInteger(int value)
+        public void WriteInteger(long value)
         {
             Writer.Write(value);
         }

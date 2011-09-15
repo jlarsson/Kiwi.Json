@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="PerformanceFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScratchPad.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Json\Kiwi.Json.csproj">

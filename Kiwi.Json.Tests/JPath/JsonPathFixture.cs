@@ -1,4 +1,5 @@
-﻿using Kiwi.Json.JPath;
+﻿using System.Linq;
+using Kiwi.Json.JPath;
 using NUnit.Framework;
 
 namespace Kiwi.Json.Tests.JPath
@@ -9,11 +10,12 @@ namespace Kiwi.Json.Tests.JPath
         [Test]
         public void Test()
         {
-            var p = new JsonPath("A.B");
+            var json = JSON.FromObject(new { A = "a", B = new { X = 1, Y = 2 } });
 
-            var r = p.GetValue(JSON.FromObject(new {A = new {B = 1}}));
-
-            Assert.AreEqual(1, r.ToObject());
+            CollectionAssert.AreEqual(new[] { "A", "B.X", "B.Y" },
+                                      json.JsonPathValues().Select(v => v.Path.Path).ToArray());
+            CollectionAssert.AreEqual(new object[] { "a", 1, 2 },
+                                      json.JsonPathValues().Select(v => v.Value.ToObject()).ToArray());
         }
     }
 }

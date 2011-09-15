@@ -94,11 +94,11 @@ namespace Kiwi.Json.PerformanceTests
             var jobj = JObject.FromObject(_post);
 
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, jsonValue, v => v.PrettyPrint());
+            Run("Warming up Kiwi.Json", warmUpCount, jsonValue, v => v.ToString());
             Run("Warming up Kiwi.Json", warmUpCount, jobj, v => v.ToString());
 
             const int runCount = 100000;
-            Run("Kiwi.Json -> text", runCount, jsonValue, v => v.PrettyPrint());
+            Run("Kiwi.Json -> text", runCount, jsonValue, v => v.ToString());
             Run("Newtonsoft.Json -> text", runCount, jobj, v => v.ToString());
         }
     }

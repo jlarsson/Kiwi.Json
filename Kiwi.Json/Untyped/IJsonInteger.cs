@@ -2,6 +2,6 @@
 {
     public interface IJsonInteger : IJsonValue
     {
-        int Value { get; }
+        long Value { get; }
     }
 }
