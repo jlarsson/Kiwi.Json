@@ -43,7 +43,7 @@
     <Compile Include="Conversion\Reflection\FieldSetter.cs" />
     <Compile Include="Conversion\FromJson\FromJsonToArray.cs" />
     <Compile Include="Conversion\FromJson\FromJsonToClass.cs" />
-    <Compile Include="Conversion\Reflection\FromJsonToList.cs" />
+    <Compile Include="Conversion\FromJson\FromJsonToList.cs" />
     <Compile Include="Conversion\IPrimitiveType.cs" />
     <Compile Include="Conversion\IPrimitiveValueVisitor.cs" />
     <Compile Include="Conversion\Reflection\IMemberGetter.cs" />
