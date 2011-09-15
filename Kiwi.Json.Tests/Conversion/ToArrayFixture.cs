@@ -2,29 +2,27 @@ using System;
 using System.Collections.Generic;
 using Kiwi.Json.Untyped;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.Conversion
 {
-    [TestFixture]
+    [TestFixture, Description("Test for converting JsonArrays to CLR collections")]
     public class ToObjectCollectionFixture
     {
         [Test]
         public void ObjectArray()
         {
-            var a = JSON.ToObject<object[]>(new JsonArray(){new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json")});
-
-            CollectionAssert.AreEqual(
-                new object[]{1,Math.PI,"json"},
-                a);
+            new JsonArray {new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json")}
+                .ConvertTo<object[]>()
+                .Should().Have.SameSequenceAs((long)1, Math.PI, "json");
         }
+
         [Test]
         public void ObjectList()
         {
-            var a = JSON.ToObject<List<object>>(new JsonArray() { new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json") });
-
-            CollectionAssert.AreEqual(
-                new object[] { 1, Math.PI, "json" },
-                a);
+            new JsonArray { new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json") }
+                .ConvertTo<List<object>>()
+                .Should().Have.SameSequenceAs((long)1, Math.PI, "json");
         }
     }
 }

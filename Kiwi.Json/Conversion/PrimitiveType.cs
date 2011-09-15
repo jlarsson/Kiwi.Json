@@ -25,7 +25,7 @@ namespace Kiwi.Json.Conversion
             }
             if (value is bool)
             {
-                return visitor.VisitBool((bool)value);
+                return visitor.VisitBool((bool) value);
             }
             if ((value is double) || (value is float) || (value is decimal))
             {

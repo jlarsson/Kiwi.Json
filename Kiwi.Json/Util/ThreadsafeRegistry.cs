@@ -10,7 +10,7 @@ namespace Kiwi.Json.Util
 
         #region IRegistry<TKey,TValue> Members
 
-        public TValue Lookup(TKey key, Func<TKey,TValue> creator)
+        public TValue Lookup(TKey key, Func<TKey, TValue> creator)
         {
             var d = _dict;
             TValue value;

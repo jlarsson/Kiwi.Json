@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Kiwi.Json.Untyped;
 using Kiwi.Json.Util;
 
@@ -61,7 +60,7 @@ namespace Kiwi.Json.Conversion.FromJson
                 }
             }
 
-            if (nativeType == typeof(object))
+            if (nativeType == typeof (object))
             {
                 return value.ToObject();
             }

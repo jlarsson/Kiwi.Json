@@ -50,7 +50,7 @@ namespace Kiwi.Json.Conversion.FromJson
                                                           value, typeof (TClass)));
             }
 
-            var instance = (object)new TClass();
+            var instance = (object) new TClass();
 
             foreach (var setter in MemberSetters.Values)
             {

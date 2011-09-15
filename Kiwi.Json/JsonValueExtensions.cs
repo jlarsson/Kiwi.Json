@@ -18,5 +18,10 @@ namespace Kiwi.Json
             value.Write(new JsonTextWriter(writer, JsonTextIndent.NoIndent));
             return writer.ToString();
         }
+
+        public static T ConvertTo<T>(this IJsonValue value)
+        {
+            return JSON.ToObject<T>(value);
+        }
     }
 }

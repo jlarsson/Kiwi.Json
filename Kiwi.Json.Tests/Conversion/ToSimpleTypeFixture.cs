@@ -1,6 +1,7 @@
 using System;
 using Kiwi.Json.Untyped;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.Conversion
 {
@@ -10,53 +11,65 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Bool()
         {
-            Test<bool>(new JsonBool(true), true);
-            Test<bool>(new JsonBool(false), false);
-        }
+            new JsonBool(true)
+                .ConvertTo<bool>()
+                .Should().Be.EqualTo(true);
 
-        [Test]
-        public void Integers()
-        {
-            Test<byte>(new JsonInteger(1), 1);
-            Test<sbyte>(new JsonInteger(-1), -1);
-
-            Test<Int16>(new JsonInteger(-1234), -1234);
-            Test<UInt16>(new JsonInteger(1234), 1234);
-
-            Test<Int32>(new JsonInteger(-123456), -123456);
-            Test<UInt32>(new JsonInteger(123456), 123456);
-
-            Test<Int64>(new JsonInteger(-123456789), -123456789);
-            Test<UInt64>(new JsonInteger(123456789), 123456789);
-        }
-
-        [Test]
-        public void Floats()
-        {
-            Test<double>(new JsonDouble(Math.PI), Math.PI);
-            Test<float>(new JsonDouble(3.14159), 3.14159f);
-            Test<decimal>(new JsonDouble(5.99), 5.99m);
+            new JsonBool(false)
+                .ConvertTo<bool>()
+                .Should().Be.EqualTo(false);
         }
 
         [Test]
         public void Dates()
         {
             var d = new DateTime(2011, 09, 15, 17, 08, 46, 233);
-            Test<DateTime>(new JsonDate(d), d);
+            new JsonDate(d)
+                .ConvertTo<DateTime>()
+                .Should().Be.EqualTo(d);
+        }
+
+        [Test]
+        public void Floats()
+        {
+            new JsonDouble(Math.PI)
+                .ConvertTo<double>().Should().Be.EqualTo(Math.PI);
+            new JsonDouble(3.14159)
+                .ConvertTo<float>().Should().Be.EqualTo(3.14159f);
+            new JsonDouble(5.99)
+                .ConvertTo<decimal>().Should().Be.EqualTo(5.99m);
+        }
+
+        [Test]
+        public void Integers()
+        {
+            new JsonInteger(1)
+                .ConvertTo<byte>().Should().Be.EqualTo((byte) 1);
+            new JsonInteger(-1)
+                .ConvertTo<sbyte>().Should().Be.EqualTo((sbyte) -1);
+
+            new JsonInteger(-1234)
+                .ConvertTo<Int16>().Should().Be.EqualTo(-1234);
+            new JsonInteger(1234)
+                .ConvertTo<UInt16>().Should().Be.EqualTo(1234);
+
+            new JsonInteger(-123456)
+                .ConvertTo<Int32>().Should().Be.EqualTo(-123456);
+            new JsonInteger(123456)
+                .ConvertTo<UInt32>().Should().Be.EqualTo(123456);
+
+            new JsonInteger(-123456789)
+                .ConvertTo<Int64>().Should().Be.EqualTo(-123456789);
+            new JsonInteger(123456789)
+                .ConvertTo<UInt64>().Should().Be.EqualTo(123456789);
         }
 
         [Test]
         public void Strings()
         {
-            var s = "hello json";
-            Test<string>(new JsonString(s),s );
+            const string s = "hello json";
+            new JsonString(s)
+                .ConvertTo<string>().Should().Be.EqualTo(s);
         }
-
-        private void Test<TClrType>(IJsonValue json, TClrType value)
-        {
-            var convertedValue = JSON.ToObject<TClrType>(json);
-            Assert.That(value, Is.EqualTo(convertedValue));
-        }
-        
     }
 }

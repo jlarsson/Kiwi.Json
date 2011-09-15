@@ -1,17 +1,19 @@
 using System;
+using Kiwi.Json.Untyped;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.Conversion
 {
-    [TestFixture]
+
     public class FromSimpleTypeAndBackFixture
     {
         private void TestSimpleTypeToJsonAndBack<T>(T value)
         {
-            var json = JSON.FromObject(value);
-            var newValue = JSON.ToObject<T>(json);
-
-            Assert.AreEqual(value, newValue);
+            JSON.FromObject(value)
+                .ConvertTo<T>()
+                .Should().Be.InstanceOf<T>()
+                .And.Value.Should().Be.EqualTo(value);
         }
 
         [Test]
@@ -92,5 +94,6 @@ namespace Kiwi.Json.Tests.Conversion
         {
             TestSimpleTypeToJsonAndBack<UInt32>(123456789);
         }
-    }
+ }
+ 
 }

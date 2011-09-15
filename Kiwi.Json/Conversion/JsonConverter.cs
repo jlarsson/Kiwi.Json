@@ -12,14 +12,14 @@ namespace Kiwi.Json.Conversion
 {
     public class JsonConverter : IJsonConverter, IToJsonContext, IPrimitiveValueVisitor<IJsonValue>
     {
-        public IRegistry<Type, IToJson> ToJsonCache { get; private set; }
-
         public JsonConverter()
         {
             ToJsonCache = new ThreadsafeRegistry<Type, IToJson>();
             JsonFactory = new JsonFactory();
             FromJsonConverter = new DefaultFromJson();
         }
+
+        public IRegistry<Type, IToJson> ToJsonCache { get; private set; }
 
         public IJsonFactory JsonFactory { get; set; }
         public IFromJson FromJsonConverter { get; set; }
@@ -37,6 +37,53 @@ namespace Kiwi.Json.Conversion
         }
 
         #endregion
+
+        #region IPrimitiveValueVisitor<IJsonValue> Members
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitNull()
+        {
+            return JsonFactory.CreateNull();
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitBool(bool value)
+        {
+            return JsonFactory.CreateBool(value);
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitInteger(long value)
+        {
+            return JsonFactory.CreateNumber(value);
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitString(string value)
+        {
+            return JsonFactory.CreateString(value);
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitDate(DateTime value)
+        {
+            return JsonFactory.CreateDate(value);
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitDouble(double value)
+        {
+            return JsonFactory.CreateNumber(value);
+        }
+
+        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitObject(object value)
+        {
+            var type = value.GetType();
+            var toJson = ToJsonCache.Lookup(value.GetType(), _ => GetToComplexJson(type));
+            if (toJson == null)
+            {
+                throw new ArgumentException(string.Format("Type {0} is not convertibel to json", type), "value");
+            }
+            return toJson.ToJson(value, this);
+        }
+
+        #endregion
+
+        #region IToJsonContext Members
 
         IJsonValue IToJsonContext.Convert(object value)
         {
@@ -83,46 +130,7 @@ namespace Kiwi.Json.Conversion
             return JsonFactory.CreateNull();
         }
 
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitNull()
-        {
-            return JsonFactory.CreateNull();
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitBool(bool value)
-        {
-            return JsonFactory.CreateBool(value);
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitInteger(long value)
-        {
-            return JsonFactory.CreateNumber(value);
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitString(string value)
-        {
-            return JsonFactory.CreateString(value);
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitDate(DateTime value)
-        {
-            return JsonFactory.CreateDate(value);
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitDouble(double value)
-        {
-            return JsonFactory.CreateNumber(value);
-        }
-
-        IJsonValue IPrimitiveValueVisitor<IJsonValue>.VisitObject(object value)
-        {
-            var type = value.GetType();
-            var toJson = ToJsonCache.Lookup(value.GetType(), _ => GetToComplexJson(type));
-            if (toJson == null)
-            {
-                throw new ArgumentException(string.Format("Type {0} is not convertibel to json", type), "value");
-            }
-            return toJson.ToJson(value, this);
-        }
+        #endregion
 
         private IToJson GetToComplexJson(Type type)
         {
@@ -143,8 +151,8 @@ namespace Kiwi.Json.Conversion
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
-                          && @interface.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-                    select typeof(ToJsonDictionary<,>)
+                          && @interface.GetGenericTypeDefinition() == typeof (IDictionary<,>)
+                    select typeof (ToJsonDictionary<,>)
                                .MakeGenericType(@interface.GetGenericArguments()[0], @interface.GetGenericArguments()[1])
                                .GetConstructor(Type.EmptyTypes)
                                .Invoke(new object[0]) as IToJson
@@ -156,8 +164,8 @@ namespace Kiwi.Json.Conversion
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
-                          && @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-                    select typeof(ToJsonEnumerable<>)
+                          && @interface.GetGenericTypeDefinition() == typeof (IEnumerable<>)
+                    select typeof (ToJsonEnumerable<>)
                                .MakeGenericType(@interface.GetGenericArguments()[0])
                                .GetConstructor(Type.EmptyTypes)
                                .Invoke(new object[0]) as IToJson
@@ -180,10 +188,9 @@ namespace Kiwi.Json.Conversion
 
 
             return new ToJsonClass
-            {
-                Getters = propertyGetters.Concat(fieldGetters).ToArray()
-            };
+                       {
+                           Getters = propertyGetters.Concat(fieldGetters).ToArray()
+                       };
         }
-
     }
 }
