@@ -14,7 +14,7 @@ namespace Kiwi.Json.Conversion
 
         public object FromJson(Type nativeType, IJsonValue value)
         {
-            if (value == null)
+            if ((value == null) || (value is IJsonNull))
             {
                 if (nativeType.IsClass)
                 {

@@ -42,6 +42,10 @@ namespace Kiwi.Json.Conversion
             {
                 return null;
             }
+            if (value is IJsonNull)
+            {
+                return null;
+            }
             var jsonObj = value as IJsonObject;
             if (jsonObj == null)
             {
