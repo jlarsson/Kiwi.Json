@@ -10,7 +10,8 @@ namespace Kiwi.Json.Serialization
         {
             return (('\x23' <= c) && (c <= '\x5b'))
                    || (('\x20' <= c) && (c <= '\x21'))
-                   || (('\x5d' <= c) && (c <= 0x10FFFF));
+                   || (('\x5d' <= c));
+                   //|| (('\x5d' <= c) && (c <= 0x10FFFF));
             //|| (('\x5d' <= c) && (c <= '\x10FFFF'));
         }
 

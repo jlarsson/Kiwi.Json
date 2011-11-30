@@ -385,6 +385,7 @@ namespace Kiwi.Json.Conversion.FromJson
 
         #region Nested type: ToSByte
 
+        [CLSCompliant(false)]
         protected class ToSByte : ToBase<sbyte>
         {
             public override object VisitInteger(IJsonInteger value)
@@ -421,6 +422,11 @@ namespace Kiwi.Json.Conversion.FromJson
 
         protected new class ToString : ToBase<string>
         {
+            public override object VisitNull(IJsonNull value)
+            {
+                return null;
+            }
+
             public override object VisitString(IJsonString value)
             {
                 return value.Value;
@@ -431,6 +437,7 @@ namespace Kiwi.Json.Conversion.FromJson
 
         #region Nested type: ToUInt16
 
+        [CLSCompliant(false)]
         protected class ToUInt16 : ToBase<UInt16>
         {
             public override object VisitInteger(IJsonInteger value)
@@ -448,6 +455,7 @@ namespace Kiwi.Json.Conversion.FromJson
 
         #region Nested type: ToUInt32
 
+        [CLSCompliant(false)]
         protected class ToUInt32 : ToBase<UInt32>
         {
             public override object VisitInteger(IJsonInteger value)
@@ -465,6 +473,7 @@ namespace Kiwi.Json.Conversion.FromJson
 
         #region Nested type: ToUInt64
 
+        [CLSCompliant(false)]
         protected class ToUInt64 : ToBase<UInt64>
         {
             public override object VisitInteger(IJsonInteger value)

@@ -191,7 +191,7 @@ namespace Kiwi.Json.Serialization
             while (true)
             {
                 var c = Next();
-                if (c == -1)
+                if (c == char.MinValue)
                 {
                     throw CreateBadStringException(startLine, startColumn);
                 }
@@ -237,9 +237,9 @@ namespace Kiwi.Json.Serialization
                            ParseHexCharValue());
         }
 
-        protected uint ParseHexCharValue()
+        protected int ParseHexCharValue()
         {
-            var c = (uint) Next();
+            var c = Next();
             if (('0' <= c) && (c <= '9'))
             {
                 return c - '0';
