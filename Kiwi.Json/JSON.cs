@@ -1,6 +1,7 @@
-﻿using System.IO;
-using Kiwi.Json.Conversion;
+﻿using Kiwi.Json.Conversion;
 using Kiwi.Json.Serialization;
+using Kiwi.Json.Serialization.Serializers;
+using Kiwi.Json.Serialization.TypeBuilders;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json
@@ -9,68 +10,33 @@ namespace Kiwi.Json
     {
         static JSON()
         {
-            DefaultJsonConverter = new JsonConverter();
+            JsonConverter = new JsonConverter();
+            TypeSerializerRegistry = new TypeSerializerRegistry();
+            TypeBuilderRegistry = new TypeBuilderRegistry();
         }
 
-        public static IJsonConverter DefaultJsonConverter { get; private set; }
+        public static IJsonConverter JsonConverter { get; private set; }
+        public static ITypeSerializerRegistry TypeSerializerRegistry { get; set; }
+        public static ITypeBuilderRegistry TypeBuilderRegistry { get; set; }
 
         public static IJsonValue Parse(string json)
         {
-            return new JsonStringDeserializer(json).Parse();
+            return (IJsonValue)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<IJsonValue>());
         }
 
         public static IJsonValue FromObject(object obj)
         {
-            return DefaultJsonConverter.ToJson(obj);
+            return JsonConverter.ToJson(obj);
         }
 
         public static T ToObject<T>(IJsonValue value)
         {
-            return (T) DefaultJsonConverter.FromJson(typeof (T), value);
+            return (T) JsonConverter.FromJson(typeof (T), value);
         }
 
         public static T ToObject<T>(string json)
         {
-            return ToObject<T>(new JsonStringDeserializer(json).Parse());
-        }
-
-        public static byte[] ToBinary(IJsonValue value)
-        {
-            using (var stream = new MemoryStream())
-            {
-                WriteBinary(value, stream);
-                return stream.ToArray();
-            }
-        }
-
-        public static void WriteBinary(IJsonValue value, Stream stream)
-        {
-            var writer = new BinaryWriter(stream);
-            WriteBinary(value, writer);
-            writer.Flush();
-        }
-
-        public static void WriteBinary(IJsonValue value, BinaryWriter writer)
-        {
-            value.Visit(new BinarySerializer(writer));
-        }
-
-        public static IJsonValue FromBinary(byte[] bytes)
-        {
-            using (var stream = new MemoryStream(bytes, false))
-            {
-                return ReadBinary(stream);
-            }
-        }
-
-        public static IJsonValue ReadBinary(Stream stream)
-        {
-            return ReadBinary(new BinaryReader(stream));
-        }
-
-        public static IJsonValue ReadBinary(BinaryReader reader)
-        {
-            return new BinaryDeserializer(reader).Read();
+            return (T)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>());
         }
     }
 }

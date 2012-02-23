@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -11,13 +11,14 @@ namespace Kiwi.Json.Serialization
             return (('\x23' <= c) && (c <= '\x5b'))
                    || (('\x20' <= c) && (c <= '\x21'))
                    || (('\x5d' <= c));
-                   //|| (('\x5d' <= c) && (c <= 0x10FFFF));
+            //|| (('\x5d' <= c) && (c <= 0x10FFFF));
             //|| (('\x5d' <= c) && (c <= '\x10FFFF'));
         }
 
         public static bool IsEscapeStringChar(char c)
         {
-            return "\x22\x5c\x2f\x62\x66\x6e\x72\x74".Contains(c);
+            //return "\x22\x5c\x2f\x62\x66\x6e\x72\x74".Contains(c);
+            return "\x22\x5c\x2f\x62\x66\x6e\x72\x74".IndexOf(c) >= 0;
         }
 
         public static bool IsHexChar(char c)
@@ -54,10 +55,18 @@ namespace Kiwi.Json.Serialization
 
         public static string EscapeString(string s)
         {
-            if (s.All(IsUnescapedStringChar))
+            var i = 0;
+            var isUnescaped = true;
+            while( (i< s.Length) && isUnescaped)
+            {
+                isUnescaped = IsUnescapedStringChar(s[i]);
+                ++i;
+            }
+            if (isUnescaped)
             {
                 return s;
             }
+
 
             var sb = new StringBuilder();
             foreach (var c in s)
@@ -95,7 +104,7 @@ namespace Kiwi.Json.Serialization
                             sb.Append("\\t");
                             break;
                         default:
-                            sb.AppendFormat("\\u{0:x4}", c);
+                            sb.AppendFormat("\\u{0:x4}", c);    
                             break;
                     }
                 }

@@ -22,7 +22,18 @@ namespace Kiwi.Json.Untyped
 
         public void Write(IJsonWriter writer)
         {
-            writer.WriteObject(this);
+            writer.WriteObjectStart();
+            var index = 0;
+            foreach (var kv in this)
+            {
+                if (index++ > 0)
+                {
+                    writer.WriteObjectMemberDelimiter();
+                }
+                writer.WriteMember(kv.Key);
+                kv.Value.Write(writer);
+            }
+            writer.WriteObjectEnd();
         }
 
         public object ToObject()

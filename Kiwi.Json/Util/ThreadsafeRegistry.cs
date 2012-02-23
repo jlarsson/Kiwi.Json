@@ -6,7 +6,17 @@ namespace Kiwi.Json.Util
 {
     public class ThreadsafeRegistry<TKey, TValue> : IRegistry<TKey, TValue> where TKey : class
     {
-        private Dictionary<TKey, TValue> _dict = new Dictionary<TKey, TValue>();
+        private Dictionary<TKey, TValue> _dict;
+
+        public ThreadsafeRegistry()
+        {
+            _dict = new Dictionary<TKey, TValue>();
+        }
+
+        public ThreadsafeRegistry(IDictionary<TKey, TValue> initial)
+        {
+            _dict = new Dictionary<TKey, TValue>(initial);
+        }
 
         #region IRegistry<TKey,TValue> Members
 

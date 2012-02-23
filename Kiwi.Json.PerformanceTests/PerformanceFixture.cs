@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Kiwi.Json.Serialization;
+using Kiwi.Json.Untyped;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -49,12 +50,12 @@ namespace Kiwi.Json.PerformanceTests
 
             const int warmUpCount = 1000;
             Run("Warming up Kiwi.Json", warmUpCount, json,
-                s => JSON.ToObject<Post>(new JsonStringDeserializer(json).Parse()));
+                JSON.ToObject<Post>);
             Run("Warming up Kiwi.Json", warmUpCount, json, JsonConvert.DeserializeObject<Post>);
 
             const int runCount = 100000;
             Run("Kiwi.Json -> Native", runCount, json,
-                s => JSON.ToObject<Post>(new JsonStringDeserializer(json).Parse()));
+                JSON.ToObject<Post>);
             Run("Newtonsoft.Json -> Native", runCount, json, JsonConvert.DeserializeObject<Post>);
         }
 
@@ -66,11 +67,11 @@ namespace Kiwi.Json.PerformanceTests
 
 
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, json, s => new JsonStringDeserializer(json).Parse());
-            Run("Warming up Kiwi.Json", warmUpCount, json, JObject.Parse);
+            Run("Warming up Kiwi.Json", warmUpCount, json, JSON.Parse);
+            Run("Warming up NewtonSoft.Json", warmUpCount, json, JObject.Parse);
 
             const int runCount = 100000;
-            Run("Kiwi.Json -> IJsonValue", runCount, json, s => new JsonStringDeserializer(json).Parse());
+            Run("Kiwi.Json -> IJsonValue", runCount, json, JSON.Parse);
             Run("Newtonsoft.Json -> JObject", runCount, json, JObject.Parse);
         }
 

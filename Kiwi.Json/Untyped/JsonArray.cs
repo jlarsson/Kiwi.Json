@@ -18,12 +18,23 @@ namespace Kiwi.Json.Untyped
 
         public void Write(IJsonWriter writer)
         {
-            writer.WriteArray(this);
+            writer.WriteArrayStart();
+
+            var index = 0;
+            foreach (var item in this)
+            {
+                if (index++ > 0)
+                {
+                    writer.WriteArrayElementDelimiter();
+                }
+                item.Write(writer);
+            }
+            writer.WriteArrayEnd();
         }
 
         public object ToObject()
         {
-            return this.Select(elem => elem.ToObject()).ToArray();
+            return this.Select(elem => elem.ToObject()).ToList();
         }
 
         public T Visit<T>(IJsonValueVisitor<T> visitor)

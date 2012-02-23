@@ -2,7 +2,7 @@
 
 namespace Kiwi.Json.Untyped
 {
-    public interface IJsonObject : IDictionary<string, IJsonValue>, IJsonValue
+    public interface IJsonObject : IDictionary<string,IJsonValue>, IJsonValue
     {
     }
 }

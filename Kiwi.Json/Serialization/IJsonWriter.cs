@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using Kiwi.Json.Untyped;
+using System;
 
 namespace Kiwi.Json.Serialization
 {
     public interface IJsonWriter
     {
-        void WriteObject(IDictionary<string, IJsonValue> obj);
-        void WriteArray(IList<IJsonValue> array);
         void WriteString(string value);
         void WriteInteger(long value);
         void WriteDouble(double value);
         void WriteDate(DateTime value);
         void WriteBool(bool value);
         void WriteNull();
+        void WriteArrayStart();
+        void WriteArrayElementDelimiter();
+        void WriteArrayEnd();
+        void WriteObjectStart();
+        void WriteMember(string memberName);
+        void WriteObjectMemberDelimiter();
+        void WriteObjectEnd();
     }
 }

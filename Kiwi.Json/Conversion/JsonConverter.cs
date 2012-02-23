@@ -152,9 +152,11 @@ namespace Kiwi.Json.Conversion
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IDictionary<,>)
-                    select typeof (ToJsonDictionary<,>)
-                               .MakeGenericType(@interface.GetGenericArguments()[0], @interface.GetGenericArguments()[1])
-                               .GetConstructor(Type.EmptyTypes)
+                    let constructorInfo = typeof (ToJsonDictionary<,>)
+                        .MakeGenericType(@interface.GetGenericArguments()[0], @interface.GetGenericArguments()[1])
+                        .GetConstructor(Type.EmptyTypes)
+                    where constructorInfo != null
+                    select constructorInfo
                                .Invoke(new object[0]) as IToJson
                    )
                 .FirstOrDefault();
@@ -165,9 +167,11 @@ namespace Kiwi.Json.Conversion
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IEnumerable<>)
-                    select typeof (ToJsonEnumerable<>)
-                               .MakeGenericType(@interface.GetGenericArguments()[0])
-                               .GetConstructor(Type.EmptyTypes)
+                    let constructorInfo = typeof (ToJsonEnumerable<>)
+                        .MakeGenericType(@interface.GetGenericArguments()[0])
+                        .GetConstructor(Type.EmptyTypes)
+                    where constructorInfo != null
+                    select constructorInfo
                                .Invoke(new object[0]) as IToJson
                    )
                 .FirstOrDefault();

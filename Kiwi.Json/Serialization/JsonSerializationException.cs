@@ -1,8 +1,9 @@
-﻿namespace Kiwi.Json.Serialization
+namespace Kiwi.Json.Serialization
 {
     public class JsonSerializationException : JsonException
     {
-        public JsonSerializationException(string message) : base(message)
+        public JsonSerializationException(string message)
+            : base(message)
         {
         }
     }
