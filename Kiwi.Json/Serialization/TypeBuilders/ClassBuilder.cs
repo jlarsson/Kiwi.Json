@@ -1,9 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Kiwi.Json.Conversion.Reflection;
+using Kiwi.Json.Untyped;
+
 namespace Kiwi.Json.Serialization.TypeBuilders
 {
-    public class ClassBuilder<TClass>: InstanceBuilderBase<TClass> where TClass : new()
+    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : new()
     {
-        public ClassBuilder(ITypeBuilderRegistry registry) : base(registry)
+        private readonly Dictionary<string, IMemberSetter> _memberSetters;
+        private readonly ITypeBuilderRegistry _registry;
+        private object _instance;
+
+        protected ClassBuilder(ITypeBuilderRegistry registry, Dictionary<string, IMemberSetter> memberSetters)
         {
+            _registry = registry;
+            _memberSetters = memberSetters;
+        }
+
+        #region IObjectBuilder Members
+
+        public ITypeBuilder GetMemberBuilder(string memberName)
+        {
+            IMemberSetter setter = default(IMemberSetter);
+            if (_memberSetters.TryGetValue(memberName, out setter))
+            {
+                return _registry.GetTypeBuilder(setter.MemberType);
+            }
+            return _registry.GetTypeBuilder<IJsonObject>();
+        }
+
+        public void SetMember(string memberName, object value)
+        {
+            IMemberSetter setter = default(IMemberSetter);
+            if (_memberSetters.TryGetValue(memberName, out setter))
+            {
+                setter.SetValue(_instance, value);
+            }
+        }
+
+        public object GetObject()
+        {
+            return _instance;
+        }
+
+        #endregion
+
+        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            Dictionary<string, IMemberSetter> memberSetters = (from property in
+                                                                   typeof (TClass).GetProperties(
+                                                                       BindingFlags.SetProperty | BindingFlags.Public |
+                                                                       BindingFlags.Instance)
+                                                               where
+                                                                   (property.GetGetMethod().GetParameters().Length == 0)
+                                                               select new PropertySetter(property) as IMemberSetter).
+                Union(
+                    from field in
+                        typeof (TClass).GetFields(BindingFlags.SetField | BindingFlags.Public |
+                                                  BindingFlags.Instance)
+                    select new FieldSetter(field) as IMemberSetter).ToDictionary(v => v.MemberName,
+                                                                                 v => v);
+
+
+            return r => new ClassBuilder<TClass>(r, memberSetters);
         }
 
         public override object CreateNull()
@@ -11,9 +72,10 @@ namespace Kiwi.Json.Serialization.TypeBuilders
             return null;
         }
 
-        protected override object CreateNewInstance()
+        public override IObjectBuilder CreateObject()
         {
-            return new TClass();
+            _instance = new TClass();
+            return this;
         }
     }
 }

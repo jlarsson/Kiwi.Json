@@ -2,8 +2,10 @@ using System;
 
 namespace Kiwi.Json.Serialization.TypeBuilders
 {
-    public abstract class AbstractTypeBuilder: ITypeBuilder
+    public abstract class AbstractTypeBuilder : ITypeBuilder
     {
+        #region ITypeBuilder Members
+
         public virtual IObjectBuilder CreateObject()
         {
             throw CreateInvalidTypeException("object");
@@ -43,6 +45,8 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         {
             throw CreateInvalidTypeException("null");
         }
+
+        #endregion
 
         private Exception CreateInvalidTypeException(string type)
         {

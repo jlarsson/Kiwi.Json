@@ -2,8 +2,13 @@ using System;
 
 namespace Kiwi.Json.Serialization.TypeBuilders
 {
-    public class EnumBuilder<TEnum> : AbstractTypeBuilder where TEnum: struct 
+    public class EnumBuilder<TEnum> : AbstractTypeBuilder where TEnum : struct
     {
+        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return _ => new EnumBuilder<TEnum>();
+        }
+
         public override object CreateString(string value)
         {
             TEnum @enum;
@@ -16,8 +21,8 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         public override object CreateNumber(long value)
         {
-            var @enum = Enum.ToObject(typeof (TEnum), value);
-            return (TEnum)@enum;
+            object @enum = Enum.ToObject(typeof (TEnum), value);
+            return (TEnum) @enum;
         }
     }
 }

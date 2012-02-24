@@ -9,16 +9,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 {
     public class StructBuilder<TStruct> : AbstractTypeBuilder, IObjectBuilder
     {
-        private readonly ITypeBuilderRegistry _registry;
         private readonly Dictionary<string, StructMember> _members;
+        private readonly ITypeBuilderRegistry _registry;
         private Dictionary<string, object> _instanceMemberValues;
-
-        private class StructMember
-        {
-            public string Name { get; set; }
-            public Type Type { get; set; }
-            public MemberInfo Member { get; set; }
-        }
 
         public StructBuilder(ITypeBuilderRegistry registry)
         {
@@ -43,7 +36,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                         from field in
                             typeof (TStruct).GetFields(BindingFlags.SetField | BindingFlags.Public |
                                                        BindingFlags.Instance)
-                        select new StructMember()
+                        select new StructMember
                                    {
                                        Name = field.Name,
                                        Type = field.FieldType,
@@ -53,11 +46,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                     .ToDictionary(m => m.Name, m => m);
         }
 
-        public override IObjectBuilder CreateObject()
-        {
-            _instanceMemberValues = new Dictionary<string, object>();
-            return this;
-        }
+        #region IObjectBuilder Members
 
         public ITypeBuilder GetMemberBuilder(string memberName)
         {
@@ -80,16 +69,42 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         public object GetObject()
         {
             var membersToSet = (from kv in _instanceMemberValues
-                        select new
-                                   {
-                                       _members[kv.Key].Member, 
-                                       kv.Value
-                                   }).ToArray();
+                                select new
+                                           {
+                                               _members[kv.Key].Member,
+                                               kv.Value
+                                           }).ToArray();
 
-            var members = (from v in membersToSet select v.Member).ToArray();
-            var values = (from v in membersToSet select v.Value).ToArray();
+            MemberInfo[] members = (from v in membersToSet select v.Member).ToArray();
+            object[] values = (from v in membersToSet select v.Value).ToArray();
 
-            return FormatterServices.PopulateObjectMembers(FormatterServices.GetSafeUninitializedObject(typeof(TStruct)), members, values);
+            return
+                FormatterServices.PopulateObjectMembers(FormatterServices.GetSafeUninitializedObject(typeof (TStruct)),
+                                                        members, values);
         }
+
+        #endregion
+
+        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return r => new StructBuilder<TStruct>(r);
+        }
+
+        public override IObjectBuilder CreateObject()
+        {
+            _instanceMemberValues = new Dictionary<string, object>();
+            return this;
+        }
+
+        #region Nested type: StructMember
+
+        private class StructMember
+        {
+            public string Name { get; set; }
+            public Type Type { get; set; }
+            public MemberInfo Member { get; set; }
+        }
+
+        #endregion
     }
 }

@@ -16,7 +16,7 @@ namespace Kiwi.Json.Serialization.Serializers
             else
             {
                 writer.WriteObjectStart();
-                var index = 0;
+                int index = 0;
                 foreach (var kv in dictionary)
                 {
                     if (index++ > 0)
@@ -25,7 +25,7 @@ namespace Kiwi.Json.Serialization.Serializers
                     }
                     writer.WriteMember(kv.Key);
 
-                    var memberSerializer = registry.GetTypeSerializerForValue(kv.Value);
+                    ITypeSerializer memberSerializer = registry.GetTypeSerializerForValue(kv.Value);
                     memberSerializer.Serialize(registry, writer, kv.Value);
                 }
                 writer.WriteObjectEnd();

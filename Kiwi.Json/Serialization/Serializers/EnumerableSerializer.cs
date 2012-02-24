@@ -18,14 +18,14 @@ namespace Kiwi.Json.Serialization.Serializers
             {
                 writer.WriteArrayStart();
 
-                var index = 0;
-                foreach (var item in enumerable)
+                int index = 0;
+                foreach (object item in enumerable)
                 {
                     if (index++ > 0)
                     {
                         writer.WriteArrayElementDelimiter();
                     }
-                    var itemSerializer = registry.GetTypeSerializerForValue(item);
+                    ITypeSerializer itemSerializer = registry.GetTypeSerializerForValue(item);
                     itemSerializer.Serialize(registry, writer, item);
                 }
                 writer.WriteArrayEnd();
@@ -48,11 +48,11 @@ namespace Kiwi.Json.Serialization.Serializers
             }
             else
             {
-                var itemSerializer = registry.GetTypeSerializerForType(typeof (T));
+                ITypeSerializer itemSerializer = registry.GetTypeSerializerForType(typeof (T));
                 writer.WriteArrayStart();
 
-                var index = 0;
-                foreach (var item in enumerable)
+                int index = 0;
+                foreach (T item in enumerable)
                 {
                     if (index++ > 0)
                     {

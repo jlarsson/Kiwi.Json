@@ -1,3 +1,4 @@
+using System;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.Serialization.TypeBuilders
@@ -6,7 +7,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
     {
         private readonly JsonArray _array = new JsonArray();
 
-        #region IArrayBuilder<IJsonValue> Members
+        #region IArrayBuilder Members
 
         public ITypeBuilder GetElementBuilder()
         {
@@ -15,7 +16,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         public void AddElement(object element)
         {
-            _array.Add((IJsonValue)element);
+            _array.Add((IJsonValue) element);
         }
 
         public object GetObject()
@@ -24,5 +25,10 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         }
 
         #endregion
+
+        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return _ => new JsonValueBuilder();
+        }
     }
 }

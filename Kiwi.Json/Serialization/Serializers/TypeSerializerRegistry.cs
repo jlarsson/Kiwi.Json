@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Kiwi.Json.Untyped;
 using Kiwi.Json.Util;
 
@@ -77,7 +78,8 @@ namespace Kiwi.Json.Serialization.Serializers
 
         private ITypeSerializer TryCreateSerializerForClass(Type type)
         {
-            var constructorInfo = typeof (ClassSerializer<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes);
+            ConstructorInfo constructorInfo =
+                typeof (ClassSerializer<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes);
             if (constructorInfo != null)
             {
                 return constructorInfo.Invoke(new object[0]) as ITypeSerializer;

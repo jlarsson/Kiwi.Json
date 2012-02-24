@@ -1,3 +1,4 @@
+using System;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.Serialization.TypeBuilders
@@ -6,7 +7,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
     {
         private readonly JsonObject _object = new JsonObject();
 
-        #region IObjectBuilder<IJsonValue> Members
+        #region IObjectBuilder Members
 
         public ITypeBuilder GetMemberBuilder(string memberName)
         {
@@ -25,5 +26,10 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         }
 
         #endregion
+
+        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return _ => new JsonObjectBuilder();
+        }
     }
 }

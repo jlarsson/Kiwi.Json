@@ -5,7 +5,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 {
     public class JsonValueBuilder : ITypeBuilder
     {
-        public static readonly JsonValueBuilder Instance = new JsonValueBuilder();
+        private static readonly JsonValueBuilder Instance = new JsonValueBuilder();
 
         #region ITypeBuilder Members
 
@@ -50,5 +50,10 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         }
 
         #endregion
+
+        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return _ => Instance;
+        }
     }
 }

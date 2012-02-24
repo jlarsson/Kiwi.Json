@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text;
 
 namespace Kiwi.Json.Serialization
@@ -55,9 +54,9 @@ namespace Kiwi.Json.Serialization
 
         public static string EscapeString(string s)
         {
-            var i = 0;
-            var isUnescaped = true;
-            while( (i< s.Length) && isUnescaped)
+            int i = 0;
+            bool isUnescaped = true;
+            while ((i < s.Length) && isUnescaped)
             {
                 isUnescaped = IsUnescapedStringChar(s[i]);
                 ++i;
@@ -69,7 +68,7 @@ namespace Kiwi.Json.Serialization
 
 
             var sb = new StringBuilder();
-            foreach (var c in s)
+            foreach (char c in s)
             {
                 if (IsUnescapedStringChar(c))
                 {
@@ -104,7 +103,7 @@ namespace Kiwi.Json.Serialization
                             sb.Append("\\t");
                             break;
                         default:
-                            sb.AppendFormat("\\u{0:x4}", c);    
+                            sb.AppendFormat("\\u{0:x4}", c);
                             break;
                     }
                 }

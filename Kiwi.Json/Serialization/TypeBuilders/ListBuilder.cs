@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Kiwi.Json.Serialization.TypeBuilders
 {
-    public class ListBuilder<TList,TElem>: AbstractTypeBuilder, IArrayBuilder where TList: class, IList<TElem>, new()
+    public class ListBuilder<TList, TElem> : AbstractTypeBuilder, IArrayBuilder where TList : class, IList<TElem>, new()
     {
         private readonly ITypeBuilderRegistry _registry;
         private TList _list;
@@ -10,6 +11,30 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         public ListBuilder(ITypeBuilderRegistry registry)
         {
             _registry = registry;
+        }
+
+        #region IArrayBuilder Members
+
+        public ITypeBuilder GetElementBuilder()
+        {
+            return _registry.GetTypeBuilder<TElem>();
+        }
+
+        public void AddElement(object element)
+        {
+            _list.Add((TElem) element);
+        }
+
+        public virtual object GetObject()
+        {
+            return _list;
+        }
+
+        #endregion
+
+        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return r => new ListBuilder<TList, TElem>(r);
         }
 
         public override object CreateNull()
@@ -21,21 +46,6 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         {
             _list = new TList();
             return this;
-        }
-
-        public ITypeBuilder GetElementBuilder()
-        {
-            return _registry.GetTypeBuilder<TElem>();
-        }
-
-        public void AddElement(object element)
-        {
-            _list.Add((TElem)element);
-        }
-
-        public virtual object GetObject()
-        {
-            return _list;
         }
     }
 }

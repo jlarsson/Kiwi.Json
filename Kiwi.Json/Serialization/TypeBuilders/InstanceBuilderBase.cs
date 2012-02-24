@@ -8,31 +8,30 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 {
     public abstract class InstanceBuilderBase<TClass> : AbstractTypeBuilder, IObjectBuilder
     {
+        private readonly Dictionary<string, IMemberSetter> _memberSetters;
         private readonly ITypeBuilderRegistry _registry;
         private object _instance;
-        private readonly Dictionary<string, IMemberSetter> _memberSetters;
 
         protected InstanceBuilderBase(ITypeBuilderRegistry registry)
         {
             _registry = registry;
 
-            _memberSetters = (from property in typeof (TClass).GetProperties(BindingFlags.SetProperty | BindingFlags.Public | BindingFlags.Instance)
+            _memberSetters = (from property in
+                                  typeof (TClass).GetProperties(BindingFlags.SetProperty | BindingFlags.Public |
+                                                                BindingFlags.Instance)
                               where (property.GetGetMethod().GetParameters().Length == 0)
-                              select new PropertySetter(property) as IMemberSetter).Union(from field in typeof (TClass).GetFields(BindingFlags.SetField | BindingFlags.Public | BindingFlags.Instance)
-                                                                                          select new FieldSetter(field) as IMemberSetter).ToDictionary(v => v.MemberName, v => v);
+                              select new PropertySetter(property) as IMemberSetter).Union(
+                                  from field in
+                                      typeof (TClass).GetFields(BindingFlags.SetField | BindingFlags.Public |
+                                                                BindingFlags.Instance)
+                                  select new FieldSetter(field) as IMemberSetter).ToDictionary(v => v.MemberName, v => v);
         }
 
-        public override IObjectBuilder CreateObject()
-        {
-            _instance = CreateNewInstance();
-            return this;
-        }
-
-        protected abstract object CreateNewInstance();
+        #region IObjectBuilder Members
 
         public ITypeBuilder GetMemberBuilder(string memberName)
         {
-            var setter = default(IMemberSetter);
+            IMemberSetter setter = default(IMemberSetter);
             if (_memberSetters.TryGetValue(memberName, out setter))
             {
                 return _registry.GetTypeBuilder(setter.MemberType);
@@ -42,7 +41,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         public void SetMember(string memberName, object value)
         {
-            var setter = default(IMemberSetter);
+            IMemberSetter setter = default(IMemberSetter);
             if (_memberSetters.TryGetValue(memberName, out setter))
             {
                 setter.SetValue(_instance, value);
@@ -53,5 +52,15 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         {
             return _instance;
         }
+
+        #endregion
+
+        public override IObjectBuilder CreateObject()
+        {
+            _instance = CreateNewInstance();
+            return this;
+        }
+
+        protected abstract object CreateNewInstance();
     }
 }

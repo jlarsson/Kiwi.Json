@@ -25,32 +25,30 @@ namespace Kiwi.Json.Serialization
 
             while (true)
             {
-                var c = Peek();
+                int c = Peek();
                 switch (c)
                 {
-                    case char.MinValue: 
+                    case char.MinValue:
                         yield break;
-                        break;
                     case '\"':
                         yield return ParseString();
                         break;
                     default:
-                        if (char.IsDigit((char)c) || (c == '-'))
+                        if (char.IsDigit((char) c) || (c == '-'))
                         {
                             bool isInteger;
                             yield return ParseNumber(out isInteger);
                             break;
                         }
-                        if (char.IsLetter((char)c))
+                        if (char.IsLetter((char) c))
                         {
                             yield return ParseIdent();
                             break;
                         }
 
                         char token = Next();
-                        yield return new string(token,1);
+                        yield return new string(token, 1);
                         break;
-
                 }
             }
         }
@@ -59,7 +57,7 @@ namespace Kiwi.Json.Serialization
         {
             SkipWhitespace();
 
-            var c = Peek();
+            int c = Peek();
             switch (c)
             {
                 case '{':
@@ -99,14 +97,14 @@ namespace Kiwi.Json.Serialization
 
         private object ParseNumber(ITypeBuilder builder)
         {
-            var startLine = Line;
-            var startColumn = Column;
+            int startLine = Line;
+            int startColumn = Column;
             var sb = new StringBuilder();
             if (Peek() == '-')
             {
                 sb.Append(Next());
             }
-            var hasInteger = false;
+            bool hasInteger = false;
             while (char.IsDigit((char) Peek()))
             {
                 sb.Append(Next());
@@ -128,7 +126,7 @@ namespace Kiwi.Json.Serialization
             }
 
             sb.Append(Next());
-            var hasFrac = false;
+            bool hasFrac = false;
             while (char.IsDigit((char) Peek()))
             {
                 sb.Append(Next());
@@ -147,7 +145,7 @@ namespace Kiwi.Json.Serialization
                 {
                     sb.Append(Next());
                 }
-                var hasExp = false;
+                bool hasExp = false;
                 while (char.IsDigit((char) Peek()))
                 {
                     sb.Append(Next());
@@ -209,17 +207,17 @@ namespace Kiwi.Json.Serialization
              * unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
              */
 
-            var startLine = Line;
-            var startColumn = Column;
+            int startLine = Line;
+            int startColumn = Column;
 
             Match('"');
 
             var sb = new StringBuilder();
 
-            var escaped = false;
+            bool escaped = false;
             while (true)
             {
-                var c = Next();
+                char c = Next();
                 if (c == char.MinValue)
                 {
                     throw CreateBadStringException(startLine, startColumn);
@@ -262,15 +260,15 @@ namespace Kiwi.Json.Serialization
 
         private string ParseNumber(out bool isInteger)
         {
-            var startLine = Line;
-            var startColumn = Column;
+            int startLine = Line;
+            int startColumn = Column;
             var sb = new StringBuilder();
             if (Peek() == '-')
             {
                 sb.Append(Next());
             }
-            var hasInteger = false;
-            while (char.IsDigit((char)Peek()))
+            bool hasInteger = false;
+            while (char.IsDigit((char) Peek()))
             {
                 sb.Append(Next());
                 hasInteger = true;
@@ -287,8 +285,8 @@ namespace Kiwi.Json.Serialization
             }
 
             sb.Append(Next());
-            var hasFrac = false;
-            while (char.IsDigit((char)Peek()))
+            bool hasFrac = false;
+            while (char.IsDigit((char) Peek()))
             {
                 sb.Append(Next());
                 hasFrac = true;
@@ -298,16 +296,16 @@ namespace Kiwi.Json.Serialization
                 throw CreateExpectedNumberException(startLine, startColumn);
             }
 
-            if ("eE".IndexOf((char)Peek()) >= 0)
+            if ("eE".IndexOf((char) Peek()) >= 0)
             {
                 sb.Append(Next());
 
-                if ("+-".IndexOf((char)Peek()) >= 0)
+                if ("+-".IndexOf((char) Peek()) >= 0)
                 {
                     sb.Append(Next());
                 }
-                var hasExp = false;
-                while (char.IsDigit((char)Peek()))
+                bool hasExp = false;
+                while (char.IsDigit((char) Peek()))
                 {
                     sb.Append(Next());
                     hasExp = true;
@@ -330,7 +328,7 @@ namespace Kiwi.Json.Serialization
 
         protected int ParseHexCharValue()
         {
-            var c = Next();
+            char c = Next();
             if (('0' <= c) && (c <= '9'))
             {
                 return c - '0';
@@ -349,11 +347,11 @@ namespace Kiwi.Json.Serialization
         private string ParseIdent()
         {
             var sb = new StringBuilder();
-            var c = Peek();
-            while(char.IsLetterOrDigit((char)c) || (c == '_'))
+            int c = Peek();
+            while (char.IsLetterOrDigit((char) c) || (c == '_'))
             {
                 Next();
-                sb.Append((char)c);
+                sb.Append((char) c);
 
                 c = Peek();
             }
@@ -362,11 +360,11 @@ namespace Kiwi.Json.Serialization
 
         protected object ParseString(ITypeBuilder builder)
         {
-            var s = ParseString();
+            string s = ParseString();
 
             //if (s.StartsWith("/Date("))
             {
-                var m = MatchDate.Match(s);
+                Match m = MatchDate.Match(s);
                 if (m.Success)
                 {
                     return builder.CreateDateTime(new DateTime((long) ulong.Parse(m.Groups[1].Value)));
@@ -377,7 +375,7 @@ namespace Kiwi.Json.Serialization
 
         protected object ParserArray(ITypeBuilder builder)
         {
-            var array = builder.CreateArray();
+            IArrayBuilder array = builder.CreateArray();
             Match('[');
             SkipWhitespace();
 
@@ -399,13 +397,13 @@ namespace Kiwi.Json.Serialization
 
         protected object ParseObject(ITypeBuilder builder)
         {
-            var @object = builder.CreateObject();
+            IObjectBuilder @object = builder.CreateObject();
             Match('{');
             SkipWhitespace();
 
             while (Peek() != '}')
             {
-                var memberName = ParseString();
+                string memberName = ParseString();
                 SkipWhitespace();
                 Match(':');
 
@@ -435,7 +433,7 @@ namespace Kiwi.Json.Serialization
 
         protected void Match(char c)
         {
-            var curr = Next();
+            char curr = Next();
             if (curr != c)
             {
                 throw CreateException("Expected '{0}' at ({1},{2})", c, Line, Column);
@@ -444,9 +442,9 @@ namespace Kiwi.Json.Serialization
 
         protected void Match(string s)
         {
-            var startLine = Line;
-            var startColumn = Column;
-            foreach (var c in s)
+            int startLine = Line;
+            int startColumn = Column;
+            foreach (char c in s)
             {
                 if (Next() != c)
                 {
@@ -474,7 +472,7 @@ namespace Kiwi.Json.Serialization
 
         protected char Next()
         {
-            var c = Read();
+            int c = Read();
             if (c < 0)
             {
                 throw CreateException("Unexpected end of input at ({0},{1})", Line, Column);

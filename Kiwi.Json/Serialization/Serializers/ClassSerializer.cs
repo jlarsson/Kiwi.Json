@@ -39,7 +39,7 @@ namespace Kiwi.Json.Serialization.Serializers
             }
             writer.WriteObjectStart();
 
-            var index = 0;
+            int index = 0;
             foreach (var getter in _memberGetters)
             {
                 if (index++ > 0)
@@ -47,8 +47,8 @@ namespace Kiwi.Json.Serialization.Serializers
                     writer.WriteObjectMemberDelimiter();
                 }
                 writer.WriteMember(getter.Key);
-                var member = getter.Value.GetMemberValue(instance);
-                var memberSerializer = registry.GetTypeSerializerForValue(member);
+                object member = getter.Value.GetMemberValue(instance);
+                ITypeSerializer memberSerializer = registry.GetTypeSerializerForValue(member);
                 memberSerializer.Serialize(registry, writer, member);
             }
             writer.WriteObjectEnd();
