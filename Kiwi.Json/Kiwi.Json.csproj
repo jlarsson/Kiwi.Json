@@ -72,6 +72,7 @@
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />
     <Compile Include="JPath\JsonPath.cs" />
+    <Compile Include="JPath\JsonPathException.cs" />
     <Compile Include="JPath\JsonPathValue.cs" />
     <Compile Include="JSON.cs" />
     <Compile Include="JsonException.cs" />

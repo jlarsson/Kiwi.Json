@@ -24,13 +24,13 @@ namespace Kiwi.Json.Serialization
 
         protected override int Read()
         {
-            return _index < _json.Length ? _json[_index++] : -1;
+            return _index < _json.Length ? _json[_index++] : char.MinValue;
             //return _json[_index++];
         }
 
         protected override int Peek()
         {
-            return _index < _json.Length ? _json[_index] : -1;
+            return _index < _json.Length ? _json[_index] : char.MinValue;
             //return _json[_index];
         }
     }

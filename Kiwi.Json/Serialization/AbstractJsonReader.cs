@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,6 +19,42 @@ namespace Kiwi.Json.Serialization
         public int Line { get; private set; }
         public int Column { get; private set; }
 
+        public IEnumerable<string> Tokenize()
+        {
+            SkipWhitespace();
+
+            while (true)
+            {
+                var c = Peek();
+                switch (c)
+                {
+                    case char.MinValue: 
+                        yield break;
+                        break;
+                    case '\"':
+                        yield return ParseString();
+                        break;
+                    default:
+                        if (char.IsDigit((char)c) || (c == '-'))
+                        {
+                            bool isInteger;
+                            yield return ParseNumber(out isInteger);
+                            break;
+                        }
+                        if (char.IsLetter((char)c))
+                        {
+                            yield return ParseIdent();
+                            break;
+                        }
+
+                        char token = Next();
+                        yield return new string(token,1);
+                        break;
+
+                }
+            }
+        }
+
         public object Parse(ITypeBuilder builder)
         {
             SkipWhitespace();
@@ -26,21 +63,21 @@ namespace Kiwi.Json.Serialization
             switch (c)
             {
                 case '{':
-                    return MatchObject(builder);
+                    return ParseObject(builder);
                 case '[':
-                    return MatchArray(builder);
+                    return ParserArray(builder);
                 case '\"':
-                    return MatchString(builder);
+                    return ParseString(builder);
                 case 't':
-                    return MatchTrue(builder);
+                    return ParseTrue(builder);
                 case 'f':
-                    return MatchFalse(builder);
+                    return ParseFalse(builder);
                 case 'n':
-                    return MatchNull(builder);
+                    return ParseNull(builder);
                 default:
                     if (char.IsDigit((char) c) || (c == '-'))
                     {
-                        return MatchNumber(builder);
+                        return ParseNumber(builder);
                     }
                     break;
             }
@@ -60,7 +97,7 @@ namespace Kiwi.Json.Serialization
          * zero = %x30                ; 0
          */
 
-        private object MatchNumber(ITypeBuilder builder)
+        private object ParseNumber(ITypeBuilder builder)
         {
             var startLine = Line;
             var startColumn = Column;
@@ -133,19 +170,19 @@ namespace Kiwi.Json.Serialization
             return builder.CreateNumber(doubleValue);
         }
 
-        protected object MatchFalse(ITypeBuilder builder)
+        protected object ParseFalse(ITypeBuilder builder)
         {
             Match("false");
             return builder.CreateBool(false);
         }
 
-        protected object MatchTrue(ITypeBuilder builder)
+        protected object ParseTrue(ITypeBuilder builder)
         {
             Match("true");
             return builder.CreateBool(true);
         }
 
-        protected object MatchNull(ITypeBuilder builder)
+        protected object ParseNull(ITypeBuilder builder)
         {
             Match("null");
             return builder.CreateNull();
@@ -223,6 +260,68 @@ namespace Kiwi.Json.Serialization
             return sb.ToString();
         }
 
+        private string ParseNumber(out bool isInteger)
+        {
+            var startLine = Line;
+            var startColumn = Column;
+            var sb = new StringBuilder();
+            if (Peek() == '-')
+            {
+                sb.Append(Next());
+            }
+            var hasInteger = false;
+            while (char.IsDigit((char)Peek()))
+            {
+                sb.Append(Next());
+                hasInteger = true;
+            }
+            if (!hasInteger)
+            {
+                throw CreateExpectedNumberException(startLine, startColumn);
+            }
+
+            if (Peek() != '.')
+            {
+                isInteger = true;
+                return sb.ToString();
+            }
+
+            sb.Append(Next());
+            var hasFrac = false;
+            while (char.IsDigit((char)Peek()))
+            {
+                sb.Append(Next());
+                hasFrac = true;
+            }
+            if (!hasFrac)
+            {
+                throw CreateExpectedNumberException(startLine, startColumn);
+            }
+
+            if ("eE".IndexOf((char)Peek()) >= 0)
+            {
+                sb.Append(Next());
+
+                if ("+-".IndexOf((char)Peek()) >= 0)
+                {
+                    sb.Append(Next());
+                }
+                var hasExp = false;
+                while (char.IsDigit((char)Peek()))
+                {
+                    sb.Append(Next());
+                    hasExp = true;
+                }
+                if (!hasExp)
+                {
+                    throw CreateExpectedNumberException(startLine, startColumn);
+                }
+            }
+
+            isInteger = false;
+            return sb.ToString();
+        }
+
         protected char ParseUnicodeHexEncoding()
         {
             return (char) (ParseHexCharValue()*0x1000 + ParseHexCharValue()*0x100 + ParseHexCharValue()*0x10 +
@@ -247,7 +346,21 @@ namespace Kiwi.Json.Serialization
             throw CreateException("Bad Hex character at ({0},{1})", Line, Column);
         }
 
-        protected object MatchString(ITypeBuilder builder)
+        private string ParseIdent()
+        {
+            var sb = new StringBuilder();
+            var c = Peek();
+            while(char.IsLetterOrDigit((char)c) || (c == '_'))
+            {
+                Next();
+                sb.Append((char)c);
+
+                c = Peek();
+            }
+            return sb.ToString();
+        }
+
+        protected object ParseString(ITypeBuilder builder)
         {
             var s = ParseString();
 
@@ -262,7 +375,7 @@ namespace Kiwi.Json.Serialization
             return builder.CreateString(s);
         }
 
-        protected object MatchArray(ITypeBuilder builder)
+        protected object ParserArray(ITypeBuilder builder)
         {
             var array = builder.CreateArray();
             Match('[');
@@ -284,7 +397,7 @@ namespace Kiwi.Json.Serialization
             return array.GetObject();
         }
 
-        protected object MatchObject(ITypeBuilder builder)
+        protected object ParseObject(ITypeBuilder builder)
         {
             var @object = builder.CreateObject();
             Match('{');

@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Kiwi.Json.JPath;
+using Kiwi.Json.Serialization;
+using Kiwi.Json.Untyped;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -7,6 +11,38 @@ namespace Kiwi.Json.Tests.JPath
     [TestFixture]
     public class JsonPathFixture
     {
+        [Test]
+        public void ConstructorThrowsIfCannotParse()
+        {
+            //Assert.Throws<JsonPathException>(() => new JsonPath(@"."));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"["));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"A["));
+        }
+
+        [Test]
+        public void StrictModeThrowsExceptionIfCannotEvaluate()
+        {
+            var jpath = new JsonPath(@"A.X.P.Q")
+                            {
+                                Strict = true
+                            };
+
+            var j = JSON.FromObject(new { A = new { B = 1 } });
+            Assert.Throws<JsonPathException>(() => jpath.GetValue(j));
+        }
+
+        [Test]
+        public void GetValue()
+        {
+            var jpath = new JsonPath(@"A[""B""][2]");
+
+            var j = JSON.FromObject(new { A = new { B = new[] { 1, 2, 3 } } });
+
+            jpath.GetValue(j)
+                .Should().Be.InstanceOf<IJsonInteger>()
+                .And.Value.Value.Should().Be.EqualTo(3);
+        }
+
         [Test]
         public void Test()
         {
