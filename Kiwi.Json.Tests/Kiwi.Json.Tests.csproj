@@ -64,6 +64,7 @@
     <Compile Include="ParseTextToCustomModel\DecimalFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DictionaryFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DoubleFixture.cs" />
+    <Compile Include="ParseTextToCustomModel\EnumFixture.cs" />
     <Compile Include="ParseTextToCustomModel\FloatFixture.cs" />
     <Compile Include="ParseTextToCustomModel\IntegerFixture.cs" />
     <Compile Include="ParseTextToCustomModel\InvalidApplicationModelFixture.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="ParseTextToCustomModel\NullableDoubleFixture.cs" />
     <Compile Include="ParseTextToCustomModel\NullableFloatFixture.cs" />
     <Compile Include="ParseTextToCustomModel\NullableIntegerFixture.cs" />
+    <Compile Include="ParseTextToCustomModel\StructFixture.cs" />
     <Compile Include="ParseTextToJson\ArrayFixture.cs" />
     <Compile Include="ParseTextToJson\BoolFixture.cs" />
     <Compile Include="ParseTextToJson\IntegerFixture.cs" />

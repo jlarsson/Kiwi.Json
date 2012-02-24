@@ -97,12 +97,15 @@
     <Compile Include="Serialization\TypeBuilders\AbstractTypeBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\ArrayBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\ClassBuilder.cs" />
+    <Compile Include="Serialization\TypeBuilders\EnumBuilder.cs" />
+    <Compile Include="Serialization\TypeBuilders\InstanceBuilderBase.cs" />
     <Compile Include="Serialization\TypeBuilders\InvalidClassBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\ITypeBuilderRegistry.cs" />
     <Compile Include="Serialization\TypeBuilders\JsonArrayBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\JsonObjectBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\JsonValueBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\ListBuilder.cs" />
+    <Compile Include="Serialization\TypeBuilders\StructBuilder.cs" />
     <Compile Include="Serialization\TypeBuilders\TypeBuilderRegistry.cs" />
     <Compile Include="Untyped\IJsonArray.cs" />
     <Compile Include="Untyped\IJsonBool.cs" />

@@ -167,8 +167,27 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         private ITypeBuilder CreateTypeBuilder(Type type)
         {
-            return (TryGetBuiltinTypeBuilder(type) ?? TryCreateTypeBuilderForArray(type) ?? TryCreateTypeBuilderForDictionary(type) ?? TryCreateTypeBuilderForEnumerable(type)) ??
-                   TryCreateTypeBuilderForClass(type);
+            return TryGetBuiltinTypeBuilder(type)
+                   ?? TryCreateTypeBuilderForArray(type)
+                   ?? TryCreateTypeBuilderForDictionary(type)
+                   ?? TryCreateTypeBuilderForEnumerable(type)
+                   ?? TryCreateTypeBuilderForClass(type)
+                   ?? TryCreateTypeBuilderForEnum(type)
+                   ?? TryCreateTypeBuilderForStruct(type);
+                ;
+        }
+
+        private ITypeBuilder TryCreateTypeBuilderForStruct(Type type)
+        {
+            if (type.IsValueType &&  !type.IsPrimitive && !type.IsEnum)
+            {
+                var typeBuilderConstructor = typeof(StructBuilder<>).MakeGenericType(type).GetConstructor(new[] { typeof(ITypeBuilderRegistry) });
+                if (typeBuilderConstructor != null)
+                {
+                    return typeBuilderConstructor.Invoke(new object[] { this }) as ITypeBuilder;
+                }
+            }
+            return null;
         }
 
         private ITypeBuilder TryGetBuiltinTypeBuilder(Type type)
@@ -268,6 +287,19 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         private ITypeBuilder TryCreateTypeBuilderForDictionary(Type type)
         {
+            return null;
+        }
+
+        private ITypeBuilder TryCreateTypeBuilderForEnum(Type type)
+        {
+            if (type.IsEnum)
+            {
+                var constructorInfo = typeof (EnumBuilder<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes);
+                if (constructorInfo != null)
+                {
+                    return constructorInfo.Invoke(new object[0]) as ITypeBuilder;
+                }
+            }
             return null;
         }
 
