@@ -30,6 +30,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                     CreateBuilder<float>(@double: d => Convert.ToSingle(d)),
                     CreateBuilder<decimal>(@double: d => Convert.ToDecimal(d)),
                     CreateBuilder<DateTime>(@dateTime: d => d),
+                    CreateBuilder<Guid>(@string: s => new Guid(s)),
                     CreateBuilder<string>(
                         @null: () => null,
                         @string: s => s,
@@ -74,6 +75,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                     CreateBuilder<DateTime?>(
                         @null: () => null,
                         @dateTime: d => d),
+                    CreateBuilder<Guid?>(
+                        @null: () => null,
+                        @string: s => new Guid(s))
                 }
                 .ToDictionary(t => t.Item1, t => t.Item2);
 
