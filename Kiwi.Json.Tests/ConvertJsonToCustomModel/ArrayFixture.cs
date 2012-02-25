@@ -14,32 +14,36 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void AbstractEnumerable()
         {
-            IJsonValue json = JSON.FromObject(new[] {1, 2, 3});
-            var list = JSON.ToObject<IEnumerable<int>>(json);
+            var list = JSON
+                .ToJson(new[] { 1, 2, 3 })
+                .ToObject<IEnumerable<int>>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
 
         [Test]
         public void AbstractList()
         {
-            IJsonValue json = JSON.FromObject(new[] {1, 2, 3});
-            var list = JSON.ToObject<IList<int>>(json);
+            var list = JSON
+                .ToJson(new[] {1, 2, 3})
+                .ToObject<IList<int>>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
 
         [Test]
         public void Array()
         {
-            IJsonValue json = JSON.FromObject(new[] {1, 2, 3});
-            var array = JSON.ToObject<int[]>(json);
+            var array = JSON
+                .ToJson(new[] {1, 2, 3})
+                .ToObject<int[]>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(array));
         }
 
         [Test]
         public void List()
         {
-            IJsonValue json = JSON.FromObject(new[] {1, 2, 3});
-            var list = JSON.ToObject<List<int>>(json);
+            var list = JSON
+                .ToJson(new[] {1, 2, 3})
+                .ToObject<List<int>>();
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
@@ -47,16 +51,16 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void Null()
         {
-            var array = JSON.ToObject<int[]>(new JsonNull());
-
+            var array = new JsonNull().ToObject<int[]>();
             Assert.That(array, Is.Null);
         }
 
         [Test]
         public void SubclassedList()
         {
-            IJsonValue json = JSON.FromObject(new[] {1, 2, 3});
-            var list = JSON.ToObject<SublassedList<int>>(json);
+            var list = JSON
+                .ToJson(new[] {1, 2, 3})
+                .ToObject<SublassedList<int>>();
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }

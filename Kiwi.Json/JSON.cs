@@ -1,4 +1,5 @@
-﻿using Kiwi.Json.Conversion;
+﻿using System.Collections.Generic;
+using Kiwi.Json.Conversion;
 using Kiwi.Json.Serialization;
 using Kiwi.Json.Serialization.Serializers;
 using Kiwi.Json.Serialization.TypeBuilders;
@@ -11,31 +12,35 @@ namespace Kiwi.Json
         static JSON()
         {
             JsonConverter = new JsonConverter();
-            TypeSerializerRegistry = new TypeSerializerRegistry();
+            TypeWriterRegistry = new TypeWriterRegistry();
             TypeBuilderRegistry = new TypeBuilderRegistry();
         }
 
         public static IJsonConverter JsonConverter { get; private set; }
-        public static ITypeSerializerRegistry TypeSerializerRegistry { get; set; }
+        public static ITypeWriterRegistry TypeWriterRegistry { get; set; }
         public static ITypeBuilderRegistry TypeBuilderRegistry { get; set; }
 
-        public static IJsonValue Parse(string json)
+        public static IJsonValue ToJson(object obj)
         {
-            return (IJsonValue)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<IJsonValue>());
+            //return JsonConverter.ToJson(obj);
+
+            var writer = new ConstructJsonValueWriter();
+            TypeWriterRegistry.GetTypeSerializerForValue(obj).Serialize(TypeWriterRegistry, writer, obj);
+            return writer.GetValue();
         }
 
-        public static IJsonValue FromObject(object obj)
+        public static T ToObject<T>(this IJsonValue value)
         {
-            return JsonConverter.ToJson(obj);
-        }
-
-        public static T ToObject<T>(IJsonValue value)
-        {
-            //return (T) JsonConverter.FromJson(typeof (T), value);
             return (T)value.Visit(new ConvertJsonToCustomVisitor(TypeBuilderRegistry.GetTypeBuilder<T>()));
         }
 
-        public static T ToObject<T>(string json)
+        public static IJsonValue Read(string json)
+        {
+            return Read<IJsonValue>(json);
+            //return (IJsonValue)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<IJsonValue>());
+        }
+
+        public static T Read<T>(string json)
         {
             return (T)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>());
         }
@@ -98,6 +103,95 @@ namespace Kiwi.Json
         public object VisitString(IJsonString value)
         {
             return _typeBuilder.CreateString(value.Value);
+        }
+    }
+
+    public class ConstructJsonValueWriter: IJsonWriter
+    {
+        Stack<IJsonValue> _values = new Stack<IJsonValue>();
+        Stack<string> _memberNames = new Stack<string>();
+
+        public void WriteString(string value)
+        {
+            _values.Push(new JsonString(value));
+        }
+
+        public void WriteInteger(long value)
+        {
+            _values.Push(new JsonInteger(value));
+        }
+
+        public void WriteDouble(double value)
+        {
+            _values.Push(new JsonDouble(value));
+        }
+
+        public void WriteDate(System.DateTime value)
+        {
+            _values.Push(new JsonDate(value));
+        }
+
+        public void WriteBool(bool value)
+        {
+            _values.Push(new JsonBool(value));
+        }
+
+        public void WriteNull()
+        {
+            _values.Push(new JsonNull());
+        }
+
+        public void WriteArrayStart()
+        {
+            _values.Push(new JsonArray());
+        }
+
+        public void WriteArrayElementDelimiter()
+        {
+            var value = _values.Pop();
+            (_values.Peek() as IJsonArray).Add(value);
+        }
+
+        public void WriteArrayEnd(int elementCount)
+        {
+            if (elementCount > 0)
+            {
+                var value = _values.Pop();
+                (_values.Peek() as IJsonArray).Add(value);
+            }
+        }
+
+        public void WriteObjectStart()
+        {
+            _values.Push(new JsonObject());
+        }
+
+        public void WriteMember(string memberName)
+        {
+            _memberNames.Push(memberName);
+        }
+
+        public void WriteObjectMemberDelimiter()
+        {
+            var name = _memberNames.Pop();
+            var value = _values.Pop();
+
+            (_values.Peek() as IJsonObject).Add(name, value);
+        }
+
+        public void WriteObjectEnd(int memberCount)
+        {
+            if (memberCount > 0)
+            {
+                var value = _values.Pop();
+                var name = _memberNames.Pop();
+                (_values.Peek() as IJsonObject).Add(name, value);
+            }
+        }
+
+        public IJsonValue GetValue()
+        {
+            return _values.Peek();
         }
     }
 }

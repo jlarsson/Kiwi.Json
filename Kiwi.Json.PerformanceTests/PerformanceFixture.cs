@@ -45,33 +45,33 @@ namespace Kiwi.Json.PerformanceTests
         [Test]
         public void FromJson()
         {
-            //var json = Conversion.JsonConverter.FromObject(_post).ToString();
-            var json = JSON.FromObject(_post).PrettyPrint();
+            //var json = Conversion.JsonConverter.ToJson(_post).ToString();
+            var json = JSON.ToJson(_post).PrettyPrint();
 
             const int warmUpCount = 1000;
             Run("Warming up Kiwi.Json", warmUpCount, json,
-                JSON.ToObject<Post>);
+                JSON.Read<Post>);
             Run("Warming up Kiwi.Json", warmUpCount, json, JsonConvert.DeserializeObject<Post>);
 
             const int runCount = 100000;
             Run("Kiwi.Json -> Native", runCount, json,
-                JSON.ToObject<Post>);
+                JSON.Read<Post>);
             Run("Newtonsoft.Json -> Native", runCount, json, JsonConvert.DeserializeObject<Post>);
         }
 
         [Test]
         public void Parse()
         {
-            //var json = Conversion.JsonConverter.FromObject(_post).ToString();
+            //var json = Conversion.JsonConverter.ToJson(_post).ToString();
             var json = JObject.FromObject(_post).ToString(Formatting.None);
 
 
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, json, JSON.Parse);
+            Run("Warming up Kiwi.Json", warmUpCount, json, JSON.Read);
             Run("Warming up NewtonSoft.Json", warmUpCount, json, JObject.Parse);
 
             const int runCount = 100000;
-            Run("Kiwi.Json -> IJsonValue", runCount, json, JSON.Parse);
+            Run("Kiwi.Json -> IJsonValue", runCount, json, JSON.Read);
             Run("Newtonsoft.Json -> JObject", runCount, json, JObject.Parse);
         }
 
@@ -79,19 +79,19 @@ namespace Kiwi.Json.PerformanceTests
         public void ToJson()
         {
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, _post, JSON.FromObject);
+            Run("Warming up Kiwi.Json", warmUpCount, _post, JSON.ToJson);
             Run("Warming up Newtonsoft.Json", warmUpCount, _post, JObject.FromObject);
 
             const int runCount = 1000000;
-            Run("Native -> Json: Kiwi.Json", runCount, _post, JSON.FromObject);
+            Run("Native -> Json: Kiwi.Json", runCount, _post, JSON.ToJson);
             Run("Native -> Json: Newtonsoft.Json", runCount, _post, JObject.FromObject);
         }
 
         [Test]
         public void Write()
         {
-            //var json = Conversion.JsonConverter.FromObject(_post).ToString();
-            var jsonValue = JSON.FromObject(_post);
+            //var json = Conversion.JsonConverter.ToJson(_post).ToString();
+            var jsonValue = JSON.ToJson(_post);
             var jobj = JObject.FromObject(_post);
 
             const int warmUpCount = 1000;

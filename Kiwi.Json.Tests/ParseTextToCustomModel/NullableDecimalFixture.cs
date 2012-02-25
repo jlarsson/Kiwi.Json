@@ -9,7 +9,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.ToObject<decimal?>("null").HasValue,
+                JSON.Read<decimal?>("null").HasValue,
                 Is.False
                 );
         }
@@ -18,7 +18,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Decimal()
         {
             Assert.That(
-                JSON.ToObject<decimal?>("123.45e6"),
+                JSON.Read<decimal?>("123.45e6"),
                 Is.EqualTo(123.45e6M)
                 );
         }

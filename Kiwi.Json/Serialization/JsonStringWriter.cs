@@ -62,7 +62,7 @@ namespace Kiwi.Json.Serialization
             StringBuilder.Append(',');
         }
 
-        public void WriteArrayEnd()
+        public void WriteArrayEnd(int elementCount)
         {
             StringBuilder.Append(']');
         }
@@ -83,7 +83,7 @@ namespace Kiwi.Json.Serialization
             StringBuilder.Append(',');
         }
 
-        public void WriteObjectEnd()
+        public void WriteObjectEnd(int memberCount)
         {
             StringBuilder.Append('}');
         }

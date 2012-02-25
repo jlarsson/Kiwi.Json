@@ -7,7 +7,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
     [TestFixture]
     public class ApplicationModelFixture
     {
-        private readonly IJsonObject SampleJsonObject = (IJsonObject)JSON.Parse(
+        private readonly IJsonObject SampleJsonObject = (IJsonObject)JSON.Read(
             @"
                     {
                         ""Title"": ""Sample blog"",
@@ -33,9 +33,9 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         }
 
         [Test]
-        public void ParseFullObject()
+        public void ConvertFullObject()
         {
-            var blog = JSON.ToObject<Blog>(SampleJsonObject);
+            var blog = SampleJsonObject.ToObject<Blog>();
 
             blog.Should().Not.Be.Null();
 
@@ -45,9 +45,9 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         }
 
         [Test]
-        public void ParsePartialObject1()
+        public void ConvertPartialObject1()
         {
-            var blog = JSON.ToObject<BlogContentOnly>(SampleJsonObject);
+            var blog = SampleJsonObject.ToObject<BlogContentOnly>();
 
             blog.Should().Not.Be.Null();
 
@@ -56,9 +56,9 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         }
 
         [Test]
-        public void ParsePartialObject2()
+        public void ConvertPartialObject2()
         {
-            var blog = JSON.ToObject<BlogTagsOnly>(SampleJsonObject);
+            var blog = SampleJsonObject.ToObject<BlogTagsOnly>();
 
             blog.Should().Not.Be.Null();
             blog.Tags.Should().Have.SameSequenceAs(new[] { "test", "json" });

@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.ToObject<float?>(new JsonNull()).HasValue,
+                new JsonNull().ToObject<float?>().HasValue,
                 Is.False
                 );
         }
@@ -19,7 +19,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Float()
         {
             Assert.That(
-                JSON.ToObject<float?>(new JsonDouble(123.45e6)),
+                new JsonDouble(123.45e6).ToObject<float?>(),
                 Is.EqualTo(123.45e6f)
                 );
         }

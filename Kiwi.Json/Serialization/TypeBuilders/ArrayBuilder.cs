@@ -9,7 +9,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
         {
         }
 
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
         {
             return r => new ArrayBuilder<TElem>(r);
         }

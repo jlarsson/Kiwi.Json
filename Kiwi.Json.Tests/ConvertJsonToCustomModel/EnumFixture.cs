@@ -16,11 +16,11 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void ByName()
         {
             Assert.That(
-                JSON.ToObject<TestEnum>(new JsonString("First")),
+                new JsonString("First").ToObject<TestEnum>(),
                 Is.EqualTo(TestEnum.First));
 
             Assert.That(
-                JSON.ToObject<TestEnum>(new JsonString("Second")),
+                new JsonString("Second").ToObject<TestEnum>(),
                 Is.EqualTo(TestEnum.Second));
         }
 
@@ -28,11 +28,11 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void ByValue()
         {
             Assert.That(
-                JSON.ToObject<TestEnum>(new JsonInteger(11)),
+                new JsonInteger(11).ToObject<TestEnum>(),
                 Is.EqualTo(TestEnum.First));
 
             Assert.That(
-                JSON.ToObject<TestEnum>(new JsonInteger(12)),
+                new JsonInteger(12).ToObject<TestEnum>(),
                 Is.EqualTo(TestEnum.Second));
         }
 

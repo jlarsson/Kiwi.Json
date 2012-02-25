@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Integer()
         {
             Assert.That(
-                JSON.ToObject<int>(new JsonInteger(123)),
+                new JsonInteger(123).ToObject<int>(),
                 Is.EqualTo(123)
                 );
         }

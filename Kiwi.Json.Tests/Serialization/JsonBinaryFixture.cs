@@ -4,7 +4,7 @@ namespace Kiwi.Json.Tests.Serialization
     {
         public void Test()
         {
-            //var obj = JSON.FromObject(new {a = 1, b = new object[] {"x", DateTime.Now}});
+            //var obj = JSON.ToJson(new {a = 1, b = new object[] {"x", DateTime.Now}});
 
             //var bytes = JSON.ToBinary(obj);
 

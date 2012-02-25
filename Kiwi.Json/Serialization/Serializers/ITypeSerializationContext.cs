@@ -4,7 +4,7 @@ namespace Kiwi.Json.Serialization.Serializers
 {
     public interface ITypeSerializationContext
     {
-        ITypeSerializer GetTypeSerializerForValue(object value);
-        ITypeSerializer GetTypeSerializerForType(Type type);
+        ITypeWriter GetTypeSerializerForValue(object value);
+        ITypeWriter GetTypeSerializerForType(Type type);
     }
 }

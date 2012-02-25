@@ -11,11 +11,11 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Bool()
         {
-            JSON.FromObject(true)
+            JSON.ToJson(true)
                 .Should().Be.InstanceOf<IJsonBool>()
                 .And.Value.Value.Should().Be.EqualTo(true);
 
-            JSON.FromObject(false)
+            JSON.ToJson(false)
                 .Should().Be.InstanceOf<IJsonBool>()
                 .And.Value.Value.Should().Be.EqualTo(false);
         }
@@ -24,7 +24,7 @@ namespace Kiwi.Json.Tests.Conversion
         public void Dates()
         {
             var d = new DateTime(2011, 09, 15, 17, 08, 46, 233);
-            JSON.FromObject(d)
+            JSON.ToJson(d)
                 .Should().Be.InstanceOf<IJsonDate>()
                 .And.Value.Value.Should().Be.EqualTo(d);
         }
@@ -32,15 +32,15 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Floats()
         {
-            JSON.FromObject(Math.PI)
+            JSON.ToJson(Math.PI)
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(Math.PI);
 
-            JSON.FromObject(3.14159f)
+            JSON.ToJson(3.14159f)
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(3.14159f);
 
-            JSON.FromObject(5.99m)
+            JSON.ToJson(5.99m)
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(5.99m);
         }
@@ -48,31 +48,31 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Integers()
         {
-            JSON.FromObject((byte) 1)
+            JSON.ToJson((byte) 1)
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(1);
-            JSON.FromObject((sbyte)-11)
+            JSON.ToJson((sbyte)-11)
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-11);
 
-            JSON.FromObject((Int16)(-1234))
+            JSON.ToJson((Int16)(-1234))
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-1234);
-            JSON.FromObject((UInt16)1234)
+            JSON.ToJson((UInt16)1234)
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(1234);
 
-            JSON.FromObject((Int32)(-1234567))
+            JSON.ToJson((Int32)(-1234567))
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-1234567);
-            JSON.FromObject((UInt32)1234567)
+            JSON.ToJson((UInt32)1234567)
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(1234567);
 
-            JSON.FromObject((Int64)(-123456789))
+            JSON.ToJson((Int64)(-123456789))
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-123456789);
-            JSON.FromObject((UInt64)(123456789))
+            JSON.ToJson((UInt64)(123456789))
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(123456789);
         }
@@ -80,7 +80,7 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Strings()
         {
-            JSON.FromObject("hello Json")
+            JSON.ToJson("hello Json")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo("hello Json");
         }

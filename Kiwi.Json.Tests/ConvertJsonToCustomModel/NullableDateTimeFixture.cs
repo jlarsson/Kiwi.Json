@@ -11,7 +11,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.ToObject<DateTime?>(new JsonNull()).HasValue,
+                new JsonNull().ToObject<DateTime?>().HasValue,
                 Is.False
                 );
         }
@@ -21,7 +21,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         {
             var date = new DateTime(2011, 09, 01, 13, 59, 16);
             Assert.That(
-                JSON.ToObject<DateTime?>(new JsonDate(date)),
+                new JsonDate(date).ToObject<DateTime?>(),
                 Is.EqualTo(date)
                 );
         }

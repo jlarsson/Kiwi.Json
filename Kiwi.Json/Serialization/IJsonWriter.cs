@@ -12,10 +12,10 @@ namespace Kiwi.Json.Serialization
         void WriteNull();
         void WriteArrayStart();
         void WriteArrayElementDelimiter();
-        void WriteArrayEnd();
+        void WriteArrayEnd(int elementCount);
         void WriteObjectStart();
         void WriteMember(string memberName);
         void WriteObjectMemberDelimiter();
-        void WriteObjectEnd();
+        void WriteObjectEnd(int memberCount);
     }
 }

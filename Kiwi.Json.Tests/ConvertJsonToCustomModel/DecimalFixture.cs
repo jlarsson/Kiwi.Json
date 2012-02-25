@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Decimal()
         {
             Assert.That(
-                JSON.ToObject<decimal>(new JsonDouble(123.45e-1d)),
+                new JsonDouble(123.45e-1d).ToObject<decimal>(),
                 Is.EqualTo(123.45e-1M)
                 );
         }

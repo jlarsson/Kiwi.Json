@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Integer()
         {
             Assert.That(
-                JSON.ToObject<int>("123"),
+                JSON.Read<int>("123"),
                 Is.EqualTo(123)
                 );
         }

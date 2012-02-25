@@ -11,7 +11,7 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Enumerables()
         {
-            var json = JSON.FromObject(Enumerable.Range(0, 10));
+            var json = JSON.ToJson(Enumerable.Range(0, 10));
 
 
             json.Should().Be.InstanceOf<IJsonArray>();

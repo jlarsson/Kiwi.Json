@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         public void Float()
         {
             Assert.That(
-                JSON.ToObject<float>(new JsonDouble(123.45e-1)),
+                new JsonDouble(123.45e-1).ToObject<float>(),
                 Is.EqualTo(123.45e-1f)
                 );
         }

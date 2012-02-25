@@ -33,7 +33,7 @@ namespace Kiwi.Json.Untyped
                 writer.WriteMember(kv.Key);
                 kv.Value.Write(writer);
             }
-            writer.WriteObjectEnd();
+            writer.WriteObjectEnd(index);
         }
 
         public object ToObject()

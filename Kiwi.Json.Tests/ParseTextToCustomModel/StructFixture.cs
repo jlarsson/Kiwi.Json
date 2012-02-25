@@ -18,7 +18,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParseFullStruct()
         {
-            var s = JSON.ToObject<TestStruct>(@"{""F1"":""hello"",""F2"":123,""P1"":""world"",""P2"":456}");
+            var s = JSON.Read<TestStruct>(@"{""F1"":""hello"",""F2"":123,""P1"":""world"",""P2"":456}");
 
             s.F1.Should().Be.EqualTo("hello");
             s.F2.Should().Be.EqualTo(123);

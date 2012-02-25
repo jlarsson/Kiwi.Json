@@ -29,7 +29,7 @@ namespace Kiwi.Json.Untyped
                 }
                 item.Write(writer);
             }
-            writer.WriteArrayEnd();
+            writer.WriteArrayEnd(index);
         }
 
         public object ToObject()

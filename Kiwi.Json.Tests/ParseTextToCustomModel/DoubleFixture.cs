@@ -9,7 +9,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Double()
         {
             Assert.That(
-                JSON.ToObject<double>("123.45e67"),
+                JSON.Read<double>("123.45e67"),
                 Is.EqualTo(123.45e67)
                 );
         }

@@ -27,7 +27,7 @@ namespace Kiwi.Json.Tests.JPath
                                 Strict = true
                             };
 
-            var j = JSON.FromObject(new { A = new { B = 1 } });
+            var j = JSON.ToJson(new { A = new { B = 1 } });
             Assert.Throws<JsonPathException>(() => jpath.GetValue(j));
         }
 
@@ -36,7 +36,7 @@ namespace Kiwi.Json.Tests.JPath
         {
             var jpath = new JsonPath(@"A[""B""][2]");
 
-            var j = JSON.FromObject(new { A = new { B = new[] { 1, 2, 3 } } });
+            var j = JSON.ToJson(new { A = new { B = new[] { 1, 2, 3 } } });
 
             jpath.GetValue(j)
                 .Should().Be.InstanceOf<IJsonInteger>()
@@ -46,7 +46,7 @@ namespace Kiwi.Json.Tests.JPath
         [Test]
         public void Test()
         {
-            var json = JSON.FromObject(new {A = "a", B = new {X = 1, Y = 2}});
+            var json = JSON.ToJson(new {A = "a", B = new {X = 1, Y = 2}});
 
             json.JsonPathValues().Select(v => v.Path.Path).ToArray()
                 .Should().Have.SameSequenceAs("A", "B.X", "B.Y");

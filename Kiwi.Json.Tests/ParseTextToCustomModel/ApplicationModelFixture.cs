@@ -34,7 +34,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParseFullObject()
         {
-            var blog = JSON.ToObject<Blog>(SampleJsonText);
+            var blog = JSON.Read<Blog>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
 
@@ -46,7 +46,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParsePartialObject1()
         {
-            var blog = JSON.ToObject<BlogContentOnly>(SampleJsonText);
+            var blog = JSON.Read<BlogContentOnly>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
 
@@ -57,7 +57,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParsePartialObject2()
         {
-            var blog = JSON.ToObject<BlogTagsOnly>(SampleJsonText);
+            var blog = JSON.Read<BlogTagsOnly>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
             blog.Tags.Should().Have.SameSequenceAs(new[] { "test", "json" });

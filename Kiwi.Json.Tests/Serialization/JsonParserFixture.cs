@@ -11,7 +11,7 @@ namespace Kiwi.Json.Tests.Serialization
         [Test]
         public void Date()
         {
-            JSON.Parse(@"""\/Date(634504823560000000)\/""")
+            JSON.Read(@"""\/Date(634504823560000000)\/""")
                 .Should().Be.InstanceOf<IJsonDate>()
                 .And.Value.Value.Should().Be.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16));
         }
@@ -19,23 +19,23 @@ namespace Kiwi.Json.Tests.Serialization
         [Test]
         public void Double()
         {
-            JSON.Parse("0.1")
+            JSON.Read("0.1")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(0.1);
 
-            JSON.Parse("1.23")
+            JSON.Read("1.23")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(1.23);
-            JSON.Parse("-1.23")
+            JSON.Read("-1.23")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23);
-            JSON.Parse("1.23e45")
+            JSON.Read("1.23e45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(1.23e45);
-            JSON.Parse("-1.23e45")
+            JSON.Read("-1.23e45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23e45);
-            JSON.Parse("-1.23e-45")
+            JSON.Read("-1.23e-45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23e-45);
         }
@@ -43,15 +43,15 @@ namespace Kiwi.Json.Tests.Serialization
         [Test]
         public void Integer()
         {
-            JSON.Parse("0")
+            JSON.Read("0")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(0);
 
-            JSON.Parse("123")
+            JSON.Read("123")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(123);
 
-            JSON.Parse("-123")
+            JSON.Read("-123")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-123);
         }
@@ -59,11 +59,11 @@ namespace Kiwi.Json.Tests.Serialization
         [Test]
         public void String()
         {
-            JSON.Parse(@"""hello Json""")
+            JSON.Read(@"""hello Json""")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo("hello Json");
 
-            JSON.Parse(@"""\r\n\t\f\""\u1234""")
+            JSON.Read(@"""\r\n\t\f\""\u1234""")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo("\r\n\t\f\"\x1234");
         }
