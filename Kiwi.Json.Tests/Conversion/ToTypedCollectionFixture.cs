@@ -22,7 +22,7 @@ namespace Kiwi.Json.Tests.Conversion
                     new JsonObject {{"P", new JsonString("Hello")}},
                     new JsonObject {{"P", new JsonString("Json")}}
                 }
-                .ConvertTo<D[]>()
+                .ToObject<D[]>()
                 .Select(d => d.P)
                 .Should().Have.SameSequenceAs("Hello", "Json")
                 .And.Have.Count.EqualTo(2);
@@ -36,7 +36,7 @@ namespace Kiwi.Json.Tests.Conversion
                     new JsonObject {{"P", new JsonString("Hello")}},
                     new JsonObject {{"P", new JsonString("Json")}}
                 }
-                .ConvertTo<IEnumerable<D>>()
+                .ToObject<IEnumerable<D>>()
                 .Select(d => d.P)
                 .Should().Have.SameSequenceAs("Hello", "Json")
                 .And.Have.Count.EqualTo(2);
@@ -50,7 +50,7 @@ namespace Kiwi.Json.Tests.Conversion
                     new JsonObject {{"P", new JsonString("Hello")}},
                     new JsonObject {{"P", new JsonString("Json")}}
                 }
-                .ConvertTo<List<D>>()
+                .ToObject<List<D>>()
                 .Select(d => d.P)
                 .Should().Have.SameSequenceAs("Hello", "Json")
                 .And.Have.Count.EqualTo(2);

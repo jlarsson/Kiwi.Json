@@ -1,13 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Kiwi.Json.Serialization.Serializers
 {
     public class EnumerableWriter : ITypeWriter
     {
+        private readonly ITypeWriterRegistry _registry;
+
+        private EnumerableWriter(ITypeWriterRegistry registry)
+        {
+            _registry = registry;
+        }
+
         #region ITypeWriter Members
 
-        public void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value)
+        public void Serialize(IJsonWriter writer, object value)
         {
             var enumerable = value as IEnumerable;
             if (enumerable == null)
@@ -25,21 +33,33 @@ namespace Kiwi.Json.Serialization.Serializers
                     {
                         writer.WriteArrayElementDelimiter();
                     }
-                    ITypeWriter itemWriter = registry.GetTypeSerializerForValue(item);
-                    itemWriter.Serialize(registry, writer, item);
+                    ITypeWriter itemWriter = _registry.GetTypeSerializerForValue(item);
+                    itemWriter.Serialize(writer, item);
                 }
                 writer.WriteArrayEnd(index);
             }
         }
 
         #endregion
+
+        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        {
+            return r => new EnumerableWriter(r);
+        }
     }
 
     public class EnumerableWriter<T> : ITypeWriter
     {
+        private readonly ITypeWriterRegistry _registry;
+
+        private EnumerableWriter(ITypeWriterRegistry registry)
+        {
+            _registry = registry;
+        }
+
         #region ITypeWriter Members
 
-        public void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value)
+        public void Serialize(IJsonWriter writer, object value)
         {
             var enumerable = value as IEnumerable<T>;
             if (enumerable == null)
@@ -48,7 +68,7 @@ namespace Kiwi.Json.Serialization.Serializers
             }
             else
             {
-                ITypeWriter itemWriter = registry.GetTypeSerializerForType(typeof (T));
+                ITypeWriter itemWriter = _registry.GetTypeSerializerForType(typeof (T));
                 writer.WriteArrayStart();
 
                 int index = 0;
@@ -58,12 +78,17 @@ namespace Kiwi.Json.Serialization.Serializers
                     {
                         writer.WriteArrayElementDelimiter();
                     }
-                    itemWriter.Serialize(registry, writer, item);
+                    itemWriter.Serialize(writer, item);
                 }
                 writer.WriteArrayEnd(index);
             }
         }
 
         #endregion
+
+        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        {
+            return r => new EnumerableWriter<T>(r);
+        }
     }
 }

@@ -11,10 +11,5 @@ namespace Kiwi.Json
             value.Write(writer);
             return writer.ToString();
         }
-        
-        public static T ConvertTo<T>(this IJsonValue value)
-        {
-            return JSON.ToObject<T>(value);
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace Kiwi.Json.Serialization.Serializers
 {
     public class TypeWriterRegistry : ITypeWriterRegistry
     {
-        private static readonly Dictionary<Type, ITypeWriter> BuiltinSerializers =
+        private static readonly Dictionary<Type, Func<ITypeWriterRegistry,ITypeWriter>> BuiltinSerializers =
             new[]
                 {
                     CreateSerializer<bool>((w, v) => w.WriteBool(v)),
@@ -35,8 +35,8 @@ namespace Kiwi.Json.Serialization.Serializers
 
         private static readonly ITypeWriter NullWriter = new SimpleWriter<object>((w, v) => w.WriteNull());
 
-        private readonly IRegistry<Type, ITypeWriter> _serializers =
-            new ThreadsafeRegistry<Type, ITypeWriter>(BuiltinSerializers);
+        private readonly IRegistry<Type, Func<ITypeWriterRegistry,ITypeWriter>> _serializers =
+            new ThreadsafeRegistry<Type, Func<ITypeWriterRegistry, ITypeWriter>>(BuiltinSerializers);
 
         #region ITypeWriterRegistry Members
 
@@ -51,17 +51,18 @@ namespace Kiwi.Json.Serialization.Serializers
 
         public ITypeWriter GetTypeSerializerForType(Type type)
         {
-            return _serializers.Lookup(type, CreateTypeSerializerForType);
+            return _serializers.Lookup(type, CreateTypeSerializerForType)(this);
         }
 
         #endregion
 
-        private static Tuple<Type, ITypeWriter> CreateSerializer<T>(Action<IJsonWriter, T> action)
+        private static Tuple<Type, Func<ITypeWriterRegistry,ITypeWriter>> CreateSerializer<T>(Action<IJsonWriter, T> action)
         {
-            return Tuple.Create(typeof (T), new SimpleWriter<T>(action) as ITypeWriter);
+            var writer = new SimpleWriter<T>(action) as ITypeWriter;
+            return Tuple.Create(typeof (T), (Func<ITypeWriterRegistry,ITypeWriter>)(_ => writer));
         }
 
-        private ITypeWriter CreateTypeSerializerForType(Type type)
+        private Func<ITypeWriterRegistry, ITypeWriter> CreateTypeSerializerForType(Type type)
         {
             if (typeof (IJsonValue).IsAssignableFrom(type))
             {
@@ -72,47 +73,46 @@ namespace Kiwi.Json.Serialization.Serializers
                    TryCreateSerializerForClass(type);
         }
 
-        private ITypeWriter TryCreateSerializerForClass(Type type)
+        private Func<ITypeWriterRegistry, ITypeWriter> TryCreateSerializerForClass(Type type)
         {
-            ConstructorInfo constructorInfo =
-                typeof (ClassWriter<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes);
-            if (constructorInfo != null)
+            if (type.IsClass)
             {
-                return constructorInfo.Invoke(new object[0]) as ITypeWriter;
+                return (Func<ITypeWriterRegistry, ITypeWriter>)typeof(ClassWriter<>).MakeGenericType(type).GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
+                    Invoke(null, new object[0]);
             }
             return null;
         }
 
-        private ITypeWriter TryCreateSerializerForEnumerable(Type type)
+        private Func<ITypeWriterRegistry, ITypeWriter> TryCreateSerializerForEnumerable(Type type)
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IEnumerable<>)
-                    let constructorInfo = typeof (EnumerableWriter<>)
-                        .MakeGenericType(@interface.GetGenericArguments()[0])
-                        .GetConstructor(Type.EmptyTypes)
-                    where constructorInfo != null
-                    select constructorInfo.Invoke(new object[0]) as ITypeWriter
+                    let factory = typeof(EnumerableWriter<>).MakeGenericType(@interface.GetGenericArguments()[0])
+                    .GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
+                    Invoke(null, new object[0])
+                    select (Func<ITypeWriterRegistry, ITypeWriter>)factory
                    )
                 .Concat(
                     from @interface in type.GetInterfaces()
                     where @interface == typeof (IEnumerable)
-                    select new EnumerableWriter() as ITypeWriter
+                    select EnumerableWriter.CreateTypeWriterFactory()
                 )
                 .FirstOrDefault();
         }
 
-        private ITypeWriter TryCreateSerializerForDictionary(Type type)
+        private Func<ITypeWriterRegistry, ITypeWriter> TryCreateSerializerForDictionary(Type type)
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IDictionary<,>)
                           && @interface.GetGenericArguments()[0] == typeof (string)
-                    let constructorInfo = typeof (DictionaryWriter<>)
+                    let factory =
+                        typeof (DictionaryWriter<>)
                         .MakeGenericType(@interface.GetGenericArguments()[1])
-                        .GetConstructor(Type.EmptyTypes)
-                    where constructorInfo != null
-                    select constructorInfo.Invoke(new object[0]) as ITypeWriter
+                        .GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
+                        Invoke(null, new object[0])
+                    select (Func<ITypeWriterRegistry, ITypeWriter>) factory
                    )
                 .FirstOrDefault();
         }
@@ -130,7 +130,7 @@ namespace Kiwi.Json.Serialization.Serializers
 
             #region ITypeWriter Members
 
-            public void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value)
+            public void Serialize(IJsonWriter writer, object value)
             {
                 _action(writer, (T) value);
             }

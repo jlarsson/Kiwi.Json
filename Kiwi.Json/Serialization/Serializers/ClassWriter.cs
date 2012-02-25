@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,30 +8,18 @@ namespace Kiwi.Json.Serialization.Serializers
 {
     public class ClassWriter<T> : ITypeWriter where T : class
     {
+        private readonly ITypeWriterRegistry _registry;
         private readonly Dictionary<string, IMemberGetter> _memberGetters;
 
-        public ClassWriter()
+        public ClassWriter(ITypeWriterRegistry registry, Dictionary<string, IMemberGetter> memberGetters)
         {
-            _memberGetters = (
-                                 from property in
-                                     typeof (T).GetProperties(BindingFlags.GetProperty |
-                                                              BindingFlags.Public |
-                                                              BindingFlags.Instance)
-                                 where
-                                     (property.GetGetMethod().GetParameters().Length == 0)
-                                 select new PropertyGetter(property) as IMemberGetter
-                             ).Union(
-                                 from field in
-                                     typeof (T).GetFields(BindingFlags.GetField |
-                                                          BindingFlags.Public |
-                                                          BindingFlags.Instance)
-                                 select new FieldGetter(field) as IMemberGetter
-                ).ToDictionary(v => v.MemberName, v => v);
+            _registry = registry;
+            _memberGetters = memberGetters;
         }
 
         #region ITypeWriter Members
 
-        public void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value)
+        public void Serialize(IJsonWriter writer, object value)
         {
             var instance = value as T;
             if (instance == null)
@@ -48,12 +37,35 @@ namespace Kiwi.Json.Serialization.Serializers
                 }
                 writer.WriteMember(getter.Key);
                 object member = getter.Value.GetMemberValue(instance);
-                ITypeWriter memberWriter = registry.GetTypeSerializerForValue(member);
-                memberWriter.Serialize(registry, writer, member);
+                ITypeWriter memberWriter = _registry.GetTypeSerializerForValue(member);
+                memberWriter.Serialize(writer, member);
             }
             writer.WriteObjectEnd(index);
         }
 
         #endregion
+
+        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        {
+            var memberGetters = (
+                                 from property in
+                                     typeof(T).GetProperties(BindingFlags.GetProperty |
+                                                              BindingFlags.Public |
+                                                              BindingFlags.Instance)
+                                 where
+                                     (property.GetGetMethod().GetParameters().Length == 0)
+                                 select new PropertyGetter(property) as IMemberGetter
+                             ).Union(
+                                 from field in
+                                     typeof(T).GetFields(BindingFlags.GetField |
+                                                          BindingFlags.Public |
+                                                          BindingFlags.Instance)
+                                 select new FieldGetter(field) as IMemberGetter
+                ).ToDictionary(v => v.MemberName, v => v);
+
+
+            return r => new ClassWriter<T>(r, memberGetters);
+        }
+
     }
 }

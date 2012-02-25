@@ -1,12 +1,20 @@
+using System;
 using System.Collections.Generic;
 
 namespace Kiwi.Json.Serialization.Serializers
 {
     public class DictionaryWriter<TValue> : ITypeWriter
     {
+        private readonly ITypeWriterRegistry _registry;
+
+        private DictionaryWriter(ITypeWriterRegistry registry)
+        {
+            _registry = registry;
+        }
+
         #region ITypeWriter Members
 
-        public void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value)
+        public void Serialize(IJsonWriter writer, object value)
         {
             var dictionary = value as IDictionary<string, TValue>;
             if (dictionary == null)
@@ -25,13 +33,19 @@ namespace Kiwi.Json.Serialization.Serializers
                     }
                     writer.WriteMember(kv.Key);
 
-                    ITypeWriter memberWriter = registry.GetTypeSerializerForValue(kv.Value);
-                    memberWriter.Serialize(registry, writer, kv.Value);
+                    ITypeWriter memberWriter = _registry.GetTypeSerializerForValue(kv.Value);
+                    memberWriter.Serialize(writer, kv.Value);
                 }
                 writer.WriteObjectEnd(index);
             }
         }
 
         #endregion
+
+        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        {
+            return r => new DictionaryWriter<TValue>(r);
+
+        }
     }
 }

@@ -12,11 +12,11 @@ namespace Kiwi.Json.Tests.Conversion
         public void Bool()
         {
             new JsonBool(true)
-                .ConvertTo<bool>()
+                .ToObject<bool>()
                 .Should().Be.EqualTo(true);
 
             new JsonBool(false)
-                .ConvertTo<bool>()
+                .ToObject<bool>()
                 .Should().Be.EqualTo(false);
         }
 
@@ -25,7 +25,7 @@ namespace Kiwi.Json.Tests.Conversion
         {
             var d = new DateTime(2011, 09, 15, 17, 08, 46, 233);
             new JsonDate(d)
-                .ConvertTo<DateTime>()
+                .ToObject<DateTime>()
                 .Should().Be.EqualTo(d);
         }
 
@@ -33,35 +33,35 @@ namespace Kiwi.Json.Tests.Conversion
         public void Floats()
         {
             new JsonDouble(Math.PI)
-                .ConvertTo<double>().Should().Be.EqualTo(Math.PI);
+                .ToObject<double>().Should().Be.EqualTo(Math.PI);
             new JsonDouble(3.14159)
-                .ConvertTo<float>().Should().Be.EqualTo(3.14159f);
+                .ToObject<float>().Should().Be.EqualTo(3.14159f);
             new JsonDouble(5.99)
-                .ConvertTo<decimal>().Should().Be.EqualTo(5.99m);
+                .ToObject<decimal>().Should().Be.EqualTo(5.99m);
         }
 
         [Test]
         public void Integers()
         {
             new JsonInteger(1)
-                .ConvertTo<byte>().Should().Be.EqualTo((byte) 1);
+                .ToObject<byte>().Should().Be.EqualTo((byte)1);
             new JsonInteger(-1)
-                .ConvertTo<sbyte>().Should().Be.EqualTo((sbyte) -1);
+                .ToObject<sbyte>().Should().Be.EqualTo((sbyte)-1);
 
             new JsonInteger(-1234)
-                .ConvertTo<Int16>().Should().Be.EqualTo(-1234);
+                .ToObject<Int16>().Should().Be.EqualTo(-1234);
             new JsonInteger(1234)
-                .ConvertTo<UInt16>().Should().Be.EqualTo(1234);
+                .ToObject<UInt16>().Should().Be.EqualTo(1234);
 
             new JsonInteger(-123456)
-                .ConvertTo<Int32>().Should().Be.EqualTo(-123456);
+                .ToObject<Int32>().Should().Be.EqualTo(-123456);
             new JsonInteger(123456)
-                .ConvertTo<UInt32>().Should().Be.EqualTo(123456);
+                .ToObject<UInt32>().Should().Be.EqualTo(123456);
 
             new JsonInteger(-123456789)
-                .ConvertTo<Int64>().Should().Be.EqualTo(-123456789);
+                .ToObject<Int64>().Should().Be.EqualTo(-123456789);
             new JsonInteger(123456789)
-                .ConvertTo<UInt64>().Should().Be.EqualTo(123456789);
+                .ToObject<UInt64>().Should().Be.EqualTo(123456789);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace Kiwi.Json.Tests.Conversion
         {
             const string s = "hello json";
             new JsonString(s)
-                .ConvertTo<string>().Should().Be.EqualTo(s);
+                .ToObject<string>().Should().Be.EqualTo(s);
         }
     }
 }

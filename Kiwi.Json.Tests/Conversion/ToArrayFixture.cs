@@ -13,7 +13,7 @@ namespace Kiwi.Json.Tests.Conversion
         public void ObjectArray()
         {
             new JsonArray {new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json")}
-                .ConvertTo<object[]>()
+                .ToObject<object[]>()
                 .Should().Have.SameSequenceAs((long)1, Math.PI, "json");
         }
 
@@ -21,7 +21,7 @@ namespace Kiwi.Json.Tests.Conversion
         public void ObjectList()
         {
             new JsonArray { new JsonInteger(1), new JsonDouble(Math.PI), new JsonString("json") }
-                .ConvertTo<List<object>>()
+                .ToObject<List<object>>()
                 .Should().Have.SameSequenceAs((long)1, Math.PI, "json");
         }
     }

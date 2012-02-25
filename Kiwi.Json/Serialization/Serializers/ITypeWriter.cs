@@ -2,6 +2,6 @@ namespace Kiwi.Json.Serialization.Serializers
 {
     public interface ITypeWriter
     {
-        void Serialize(ITypeWriterRegistry registry, IJsonWriter writer, object value);
+        void Serialize(IJsonWriter writer, object value);
     }
 }
