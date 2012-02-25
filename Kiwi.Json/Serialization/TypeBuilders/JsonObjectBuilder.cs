@@ -16,13 +16,12 @@ namespace Kiwi.Json.Serialization.TypeBuilders
 
         public void SetMember(string memberName, object value)
         {
-            //_object[memberName] = (IJsonValue)value;
             _object.Add(memberName, (IJsonValue) value);
         }
 
         public object GetObject()
         {
-            return _object;
+            return ConvertResultObject(_object);
         }
 
         #endregion

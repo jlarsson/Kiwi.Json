@@ -25,7 +25,7 @@ namespace Kiwi.Json.Serialization.TypeBuilders
             _list.Add((TElem) element);
         }
 
-        public virtual object GetObject()
+        public virtual object GetArray()
         {
             return _list;
         }

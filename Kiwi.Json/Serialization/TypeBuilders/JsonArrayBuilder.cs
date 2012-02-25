@@ -19,9 +19,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
             _array.Add((IJsonValue) element);
         }
 
-        public object GetObject()
+        public object GetArray()
         {
-            return _array;
+            return ConvertResultObject(_array);
         }
 
         #endregion

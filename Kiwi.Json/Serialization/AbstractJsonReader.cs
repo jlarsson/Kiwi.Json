@@ -392,7 +392,7 @@ namespace Kiwi.Json.Serialization
             }
             Match(']');
 
-            return array.GetObject();
+            return array.GetArray();
         }
 
         protected object ParseObject(ITypeBuilder builder)

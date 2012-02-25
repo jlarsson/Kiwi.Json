@@ -14,9 +14,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
             return r => new ArrayBuilder<TElem>(r);
         }
 
-        public override object GetObject()
+        public override object GetArray()
         {
-            object list = base.GetObject();
+            object list = base.GetArray();
             return list == null ? null : ((List<TElem>) list).ToArray();
         }
     }

@@ -4,6 +4,6 @@ namespace Kiwi.Json.Serialization
     {
         ITypeBuilder GetElementBuilder();
         void AddElement(object element);
-        object GetObject();
+        object GetArray();
     }
 }

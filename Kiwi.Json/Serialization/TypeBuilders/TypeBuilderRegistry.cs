@@ -18,6 +18,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                     Tuple.Create(typeof (JsonArray), JsonArrayBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (IJsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (JsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
+
+                    Tuple.Create(typeof(object), JsonValueBuilder.CreateToSystemObjectTypeBuilderFactory()),
+                    CreateBuilder<bool>(@bool: b => b),
                     CreateBuilder<sbyte>(@long: l => (sbyte) l),
                     CreateBuilder<short>(@long: l => (short) l),
                     CreateBuilder<int>(@long: l => (int) l),
@@ -39,6 +42,9 @@ namespace Kiwi.Json.Serialization.TypeBuilders
                         @bool: b => b.ToString(CultureInfo.CurrentCulture),
                         @dateTime: d => d.ToString(CultureInfo.CurrentCulture)
                         ),
+                    CreateBuilder<bool?>(
+                        @null: () => null,
+                        @bool: b => b),
                     CreateBuilder<sbyte?>(
                         @null: () => null,
                         @long: l => (sbyte) l),
