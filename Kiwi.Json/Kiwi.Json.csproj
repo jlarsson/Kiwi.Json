@@ -39,15 +39,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
-    <Compile Include="Conversion\Reflection\ClassInstantiator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
     <Compile Include="Conversion\Reflection\FieldSetter.cs" />
-    <Compile Include="Conversion\Reflection\IClassInstantiator.cs" />
     <Compile Include="Conversion\Reflection\IMemberGetter.cs" />
     <Compile Include="Conversion\Reflection\IMemberSetter.cs" />
     <Compile Include="Conversion\Reflection\PropertyGetter.cs" />
     <Compile Include="Conversion\Reflection\PropertySetter.cs" />
-    <Compile Include="Conversion\Reflection\ThrowMissingDefaultConstructorClassInstantiator.cs" />
     <Compile Include="Conversion\ConvertJsonToCustom.cs" />
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />

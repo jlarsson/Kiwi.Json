@@ -6,8 +6,8 @@ namespace Kiwi.Json.Conversion
 {
     public class ConstructJsonValue: IJsonWriter
     {
-        readonly Stack<IJsonValue> _values = new Stack<IJsonValue>();
-        readonly Stack<string> _memberNames = new Stack<string>();
+        private readonly Stack<IJsonValue> _values = new Stack<IJsonValue>();
+        private readonly Stack<string> _memberNames = new Stack<string>();
 
         public void WriteString(string value)
         {
@@ -47,7 +47,7 @@ namespace Kiwi.Json.Conversion
         public void WriteArrayElementDelimiter()
         {
             var value = _values.Pop();
-            (_values.Peek() as IJsonArray).Add(value);
+            ((IJsonArray)_values.Peek()).Add(value);
         }
 
         public void WriteArrayEnd(int elementCount)
@@ -55,7 +55,7 @@ namespace Kiwi.Json.Conversion
             if (elementCount > 0)
             {
                 var value = _values.Pop();
-                (_values.Peek() as IJsonArray).Add(value);
+                ((IJsonArray)_values.Peek()).Add(value);
             }
         }
 
@@ -74,7 +74,7 @@ namespace Kiwi.Json.Conversion
             var name = _memberNames.Pop();
             var value = _values.Pop();
 
-            (_values.Peek() as IJsonObject).Add(name, value);
+            ((IJsonObject)_values.Peek()).Add(name, value);
         }
 
         public void WriteObjectEnd(int memberCount)
@@ -83,7 +83,7 @@ namespace Kiwi.Json.Conversion
             {
                 var value = _values.Pop();
                 var name = _memberNames.Pop();
-                (_values.Peek() as IJsonObject).Add(name, value);
+                ((IJsonObject)_values.Peek()).Add(name, value);
             }
         }
 
