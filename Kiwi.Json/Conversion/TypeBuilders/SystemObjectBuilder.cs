@@ -1,59 +1,64 @@
 using System;
-using Kiwi.Json.Untyped;
+using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class JsonValueBuilder : ITypeBuilder
+    public class SystemObjectBuilder : ITypeBuilder
     {
-        private static readonly JsonValueBuilder Instance = new JsonValueBuilder();
+        private readonly ITypeBuilderRegistry _registry;
+
+        public SystemObjectBuilder(ITypeBuilderRegistry registry)
+        {
+            _registry = registry;
+        }
 
         #region ITypeBuilder Members
 
         public IObjectBuilder CreateObject()
         {
-            return new JsonObjectBuilder();
+            return new DictionaryBuilder<Dictionary<string, object>, object>(_registry);
         }
 
         public IArrayBuilder CreateArray()
         {
-            return new JsonArrayBuilder();
+            return new ListBuilder<List<object>, object>(_registry);
         }
 
         public object CreateString(string value)
         {
-            return new JsonString(value);
+            return value;
         }
 
         public object CreateNumber(long value)
         {
-            return new JsonInteger(value);
+            return (int)value;
         }
 
         public object CreateNumber(double value)
         {
-            return new JsonDouble(value);
+            return value;
         }
 
         public object CreateBool(bool value)
         {
-            return new JsonBool(value);
+            return value;
         }
 
         public object CreateDateTime(DateTime value)
         {
-            return new JsonDate(value);
+            return value;
         }
 
         public object CreateNull()
         {
-            return new JsonNull();
+            return null;
         }
 
         #endregion
 
         public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
         {
-            return _ => Instance;
+            return r => new SystemObjectBuilder(r);
         }
     }
 }

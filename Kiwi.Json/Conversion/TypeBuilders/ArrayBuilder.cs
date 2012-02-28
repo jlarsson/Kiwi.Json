@@ -14,6 +14,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return r => new ArrayBuilder<TElem>(r);
         }
 
+        public override IArrayBuilder CreateArray()
+        {
+            return new ArrayBuilder<TElem>(Registry);
+        }
+
         public override object GetArray()
         {
             var list = base.GetArray();

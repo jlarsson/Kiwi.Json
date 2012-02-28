@@ -36,13 +36,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             var setter = default(IMemberSetter);
             if (_memberSetters.TryGetValue(memberName, out setter))
             {
-                setter.SetValue(_instance, value);
+                setter.SetValue((_instance ?? (_instance = new TClass())), value);
             }
         }
 
         public object GetObject()
         {
-            return _instance;
+            return _instance ?? new TClass();
         }
 
         #endregion
@@ -74,8 +74,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override IObjectBuilder CreateObject()
         {
-            _instance = new TClass();
-            return this;
+            return new ClassBuilder<TClass>(_registry, _memberSetters);
         }
     }
 }

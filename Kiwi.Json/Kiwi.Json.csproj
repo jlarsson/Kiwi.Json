@@ -46,6 +46,8 @@
     <Compile Include="Conversion\Reflection\PropertyGetter.cs" />
     <Compile Include="Conversion\Reflection\PropertySetter.cs" />
     <Compile Include="Conversion\ConvertJsonToCustom.cs" />
+    <Compile Include="Conversion\TypeBuilders\DictionaryBuilder.cs" />
+    <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />
     <Compile Include="JPath\JsonPath.cs" />
@@ -76,7 +78,6 @@
     <Compile Include="Conversion\TypeBuilders\ArrayBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ClassBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\EnumBuilder.cs" />
-    <Compile Include="Conversion\TypeBuilders\InstanceBuilderBase.cs" />
     <Compile Include="Conversion\TypeBuilders\ClassWithoutDefaultConstructorBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderRegistry.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilder.cs" />

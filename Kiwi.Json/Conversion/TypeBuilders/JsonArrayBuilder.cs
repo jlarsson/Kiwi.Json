@@ -21,14 +21,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public object GetArray()
         {
-            return ConvertResultObject(_array);
+            return _array;
         }
 
         #endregion
 
-        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
-        {
-            return _ => new JsonValueBuilder();
-        }
+        //public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        //{
+        //    return _ => new JsonValueBuilder();
+        //}
     }
 }

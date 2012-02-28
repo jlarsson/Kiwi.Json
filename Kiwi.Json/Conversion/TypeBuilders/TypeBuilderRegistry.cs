@@ -13,12 +13,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private static readonly Dictionary<Type, Func<ITypeBuilderRegistry, ITypeBuilder>> BuiltinTypeBuilders =
             new[]
                 {
+                    Tuple.Create(typeof(object), SystemObjectBuilder.CreateTypeBuilderFactory()),
+
                     Tuple.Create(typeof (IJsonValue), JsonValueBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (IJsonArray), JsonArrayBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (JsonArray), JsonArrayBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (IJsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
                     Tuple.Create(typeof (JsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
-                    Tuple.Create(typeof (object), JsonValueBuilder.CreateToSystemObjectTypeBuilderFactory()),
                     CreateBuilder<bool>(@bool: b => b),
                     CreateBuilder<sbyte>(@long: l => (sbyte) l),
                     CreateBuilder<short>(@long: l => (short) l),
@@ -226,9 +227,52 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                     "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[0]);
         }
 
+        private IEnumerable<T> Follow<T>(T first, T last, Func<T,T> successor) where T: class 
+        {
+            yield return first;
+
+            var s = successor(first);
+            while (s != last)
+            {
+                yield return s;
+                s = successor(s);
+            }
+        }
+
         private Func<ITypeBuilderRegistry, ITypeBuilder> TryCreateTypeBuilderForDictionary(Type type)
         {
-            return null;
+            // Check which IDictionary<string,T> is implemented
+            var valueType = (from @interface in new[] { type }.Concat(type.GetInterfaces())
+                                 where
+                                     @interface.IsGenericType
+                                     && @interface.GetGenericTypeDefinition() == typeof(IDictionary<,>)
+                                     && @interface.GetGenericArguments()[0] == typeof(string)
+                                 select @interface.GetGenericArguments()[1])
+                .FirstOrDefault();
+            if (valueType == null)
+            {
+                return null;
+            }
+
+            var concreteClass = type.IsClass ? type : typeof (Dictionary<,>).MakeGenericType(typeof (string), valueType);
+
+            if (!type.IsAssignableFrom(concreteClass))
+            {
+                return null;
+            }
+
+            var constructor = concreteClass.GetConstructor(Type.EmptyTypes);
+
+            if (constructor == null)
+            {
+                return _ => new ClassWithoutDefaultConstructorBuilder(type);
+            }
+
+            return
+                (Func<ITypeBuilderRegistry, ITypeBuilder>)
+                typeof(DictionaryBuilder<,>).MakeGenericType(concreteClass, valueType).GetMethod("CreateTypeBuilderFactory",
+                                                                        BindingFlags.Static | BindingFlags.Public).
+                    Invoke(null, new object[0]);
         }
 
         private Func<ITypeBuilderRegistry, ITypeBuilder> TryCreateTypeBuilderForEnum(Type type)

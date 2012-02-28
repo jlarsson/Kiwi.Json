@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.ParseTextToCustomModel
 {
@@ -8,7 +11,18 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Test()
         {
-            Assert.Fail();
+            //var t = typeof (IDictionary<string, int>);
+
+            //var x = t.GetGenericTypeDefinition();
+
+            //bool b = x == typeof (Dictionary<,>);
+
+            var d = JSON.Read<Dictionary<string, int>>(@"{""a"":1,""b"":2}");
+
+            d.Should().Have.Count.EqualTo(2);
+
+            d.OrderBy(kv => kv.Key).Select(kv => kv.Key).Should().Have.SameSequenceAs("a", "b");
+            d.OrderBy(kv => kv.Key).Select(kv => kv.Value).Should().Have.SameSequenceAs(1,2);
         }
     }
 }

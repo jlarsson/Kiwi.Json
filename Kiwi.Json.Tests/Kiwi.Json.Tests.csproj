@@ -59,7 +59,6 @@
     <Compile Include="Conversion\ToTypedCollectionFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\ApplicationModelFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\ArrayFixture.cs" />
-    <Compile Include="ConvertJsonToCustomModel\DataTableFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\DateTimeFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\DecimalFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\DictionaryFixture.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ApplicationModelFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ArrayFixture.cs" />
-    <Compile Include="ParseTextToCustomModel\DataTableFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DateTimeFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DecimalFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DictionaryFixture.cs" />
@@ -93,6 +91,7 @@
     <Compile Include="ParseTextToCustomModel\NullableFloatFixture.cs" />
     <Compile Include="ParseTextToCustomModel\NullableGuidFixture.cs" />
     <Compile Include="ParseTextToCustomModel\NullableIntegerFixture.cs" />
+    <Compile Include="ParseTextToCustomModel\ObjectFixture.cs" />
     <Compile Include="ParseTextToCustomModel\StructFixture.cs" />
     <Compile Include="ParseTextToJson\ArrayFixture.cs" />
     <Compile Include="ParseTextToJson\BoolFixture.cs" />

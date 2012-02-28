@@ -5,24 +5,24 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ListBuilder<TList, TElem> : AbstractTypeBuilder, IArrayBuilder where TList : class, IList<TElem>, new()
     {
-        private readonly ITypeBuilderRegistry _registry;
+        protected ITypeBuilderRegistry Registry { get; private set; }
         private TList _list;
 
         public ListBuilder(ITypeBuilderRegistry registry)
         {
-            _registry = registry;
+            Registry = registry;
         }
 
         #region IArrayBuilder Members
 
         public ITypeBuilder GetElementBuilder()
         {
-            return _registry.GetTypeBuilder<TElem>();
+            return Registry.GetTypeBuilder<TElem>();
         }
 
         public void AddElement(object element)
         {
-            _list.Add((TElem) element);
+            (_list ?? (_list = new TList())).Add((TElem) element);
         }
 
         public virtual object GetArray()
@@ -44,8 +44,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override IArrayBuilder CreateArray()
         {
-            _list = new TList();
-            return this;
+            return new ListBuilder<TList, TElem>(Registry);
+        }
+
+        public override IObjectBuilder CreateObject()
+        {
+            return new DictionaryBuilder<Dictionary<string, object>, object>(Registry);
         }
     }
 }
