@@ -10,7 +10,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         private readonly Dictionary<string, IMemberSetter> _memberSetters;
         private readonly ITypeBuilderRegistry _registry;
-        private object _instance;
+        private readonly object _instance = new TClass();
 
         protected ClassBuilder(ITypeBuilderRegistry registry, Dictionary<string, IMemberSetter> memberSetters)
         {
@@ -20,7 +20,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public ITypeBuilder GetMemberBuilder(string memberName)
+        public override ITypeBuilder GetMemberBuilder(string memberName)
         {
             var setter = default(IMemberSetter);
             if (_memberSetters.TryGetValue(memberName, out setter))
@@ -31,18 +31,18 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return NothingBuilder.Instance;
         }
 
-        public void SetMember(string memberName, object value)
+        public override void SetMember(string memberName, object value)
         {
             var setter = default(IMemberSetter);
             if (_memberSetters.TryGetValue(memberName, out setter))
             {
-                setter.SetValue((_instance ?? (_instance = new TClass())), value);
+                setter.SetValue(_instance, value);
             }
         }
 
-        public object GetObject()
+        public override object GetObject()
         {
-            return _instance ?? new TClass();
+            return _instance;
         }
 
         #endregion
@@ -64,17 +64,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                                                                  v => v);
 
 
-            return r => new ClassBuilder<TClass>(r, memberSetters);
-        }
-
-        public override object CreateNull()
-        {
-            return null;
-        }
-
-        public override IObjectBuilder CreateObject()
-        {
-            return new ClassBuilder<TClass>(_registry, _memberSetters);
+            return r => new TypeBuilderFactory()
+            {
+                OnCreateNull = () => null,
+                OnCreateObject = () => new ClassBuilder<TClass>(r,memberSetters)
+            };
         }
     }
 }

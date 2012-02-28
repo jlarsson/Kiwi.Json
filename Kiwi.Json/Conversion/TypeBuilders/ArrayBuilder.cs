@@ -11,12 +11,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
         {
-            return r => new ArrayBuilder<TElem>(r);
-        }
-
-        public override IArrayBuilder CreateArray()
-        {
-            return new ArrayBuilder<TElem>(Registry);
+            return r => new TypeBuilderFactory()
+            {
+                OnCreateNull = () => null,
+                OnCreateArray = () => new ArrayBuilder<TElem>(r)
+            };
         }
 
         public override object GetArray()

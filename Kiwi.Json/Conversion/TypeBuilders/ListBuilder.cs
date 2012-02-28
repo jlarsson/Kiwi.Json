@@ -6,7 +6,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     public class ListBuilder<TList, TElem> : AbstractTypeBuilder, IArrayBuilder where TList : class, IList<TElem>, new()
     {
         protected ITypeBuilderRegistry Registry { get; private set; }
-        private TList _list;
+        private readonly TList _list = new TList();
 
         public ListBuilder(ITypeBuilderRegistry registry)
         {
@@ -15,17 +15,17 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
-        public ITypeBuilder GetElementBuilder()
+        public override ITypeBuilder GetElementBuilder()
         {
             return Registry.GetTypeBuilder<TElem>();
         }
 
-        public void AddElement(object element)
+        public override void AddElement(object element)
         {
-            (_list ?? (_list = new TList())).Add((TElem) element);
+            _list.Add((TElem) element);
         }
 
-        public virtual object GetArray()
+        public override object GetArray()
         {
             return _list;
         }
@@ -34,22 +34,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
         {
-            return r => new ListBuilder<TList, TElem>(r);
-        }
-
-        public override object CreateNull()
-        {
-            return null;
-        }
-
-        public override IArrayBuilder CreateArray()
-        {
-            return new ListBuilder<TList, TElem>(Registry);
-        }
-
-        public override IObjectBuilder CreateObject()
-        {
-            return new DictionaryBuilder<Dictionary<string, object>, object>(Registry);
+            return r => new TypeBuilderFactory()
+                            {
+                                OnCreateNull = () => null,
+                                OnCreateArray = () => new ListBuilder<TList, TElem>(r)
+                            };
         }
     }
 }

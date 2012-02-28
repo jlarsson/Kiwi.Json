@@ -48,7 +48,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public ITypeBuilder GetMemberBuilder(string memberName)
+        public override ITypeBuilder GetMemberBuilder(string memberName)
         {
             StructMember member;
             if (_members.TryGetValue(memberName, out member))
@@ -58,7 +58,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return NothingBuilder.Instance;
         }
 
-        public void SetMember(string memberName, object value)
+        public override void SetMember(string memberName, object value)
         {
             if (_members.ContainsKey(memberName))
             {
@@ -66,7 +66,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             }
         }
 
-        public object GetObject()
+        public override object GetObject()
         {
             var membersToSet = (from kv in _instanceMemberValues
                                 select new

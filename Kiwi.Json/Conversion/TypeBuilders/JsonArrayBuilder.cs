@@ -26,9 +26,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        //public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
-        //{
-        //    return _ => new JsonValueBuilder();
-        //}
+        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            return r => new TypeBuilderFactory()
+            {
+                OnCreateNull = () => null,
+                OnCreateArray= () => new JsonArrayBuilder()
+            };
+        }
     }
 }
