@@ -1,13 +1,15 @@
+using System;
 using System.Collections.Generic;
-using Kiwi.Json.Serialization;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.Conversion
 {
-    public class ConstructJsonValue: IJsonWriter
+    public class ConstructJsonValue : IJsonWriter
     {
-        private readonly Stack<IJsonValue> _values = new Stack<IJsonValue>();
         private readonly Stack<string> _memberNames = new Stack<string>();
+        private readonly Stack<IJsonValue> _values = new Stack<IJsonValue>();
+
+        #region IJsonWriter Members
 
         public void WriteString(string value)
         {
@@ -24,7 +26,7 @@ namespace Kiwi.Json.Conversion
             _values.Push(new JsonDouble(value));
         }
 
-        public void WriteDate(System.DateTime value)
+        public void WriteDate(DateTime value)
         {
             _values.Push(new JsonDate(value));
         }
@@ -47,7 +49,7 @@ namespace Kiwi.Json.Conversion
         public void WriteArrayElementDelimiter()
         {
             var value = _values.Pop();
-            ((IJsonArray)_values.Peek()).Add(value);
+            ((IJsonArray) _values.Peek()).Add(value);
         }
 
         public void WriteArrayEnd(int elementCount)
@@ -55,7 +57,7 @@ namespace Kiwi.Json.Conversion
             if (elementCount > 0)
             {
                 var value = _values.Pop();
-                ((IJsonArray)_values.Peek()).Add(value);
+                ((IJsonArray) _values.Peek()).Add(value);
             }
         }
 
@@ -74,7 +76,7 @@ namespace Kiwi.Json.Conversion
             var name = _memberNames.Pop();
             var value = _values.Pop();
 
-            ((IJsonObject)_values.Peek()).Add(name, value);
+            ((IJsonObject) _values.Peek()).Add(name, value);
         }
 
         public void WriteObjectEnd(int memberCount)
@@ -83,9 +85,11 @@ namespace Kiwi.Json.Conversion
             {
                 var value = _values.Pop();
                 var name = _memberNames.Pop();
-                ((IJsonObject)_values.Peek()).Add(name, value);
+                ((IJsonObject) _values.Peek()).Add(name, value);
             }
         }
+
+        #endregion
 
         public IJsonValue GetValue()
         {

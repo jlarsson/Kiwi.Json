@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Kiwi.Json.JPath;
-using Kiwi.Json.Serialization;
+using Kiwi.Json.Conversion;
 
 namespace Kiwi.Json.Untyped
 {

@@ -36,7 +36,7 @@ namespace Kiwi.Json.Conversion.Reflection
 
         private static Action<object, object> CreateSetter(FieldInfo field)
         {
-            var setter = new DynamicMethod(field.Name, typeof(void), new[] { typeof(object), typeof(object) },
+            var setter = new DynamicMethod(field.Name, typeof (void), new[] {typeof (object), typeof (object)},
                                            field.DeclaringType, true);
             var il = setter.GetILGenerator();
 

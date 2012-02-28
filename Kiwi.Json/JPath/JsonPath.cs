@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Kiwi.Json.Serialization;
+using Kiwi.Json.Conversion;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.JPath
@@ -18,11 +18,11 @@ namespace Kiwi.Json.JPath
             _traversers = CreateTraversers().ToArray();
         }
 
+        public bool Strict { get; set; }
+
         #region IJsonPath Members
 
         public string Path { get; private set; }
-
-        public bool Strict { get; set; }
 
         public IJsonValue GetValue(IJsonValue obj)
         {
@@ -87,7 +87,6 @@ namespace Kiwi.Json.JPath
             {
                 throw new JsonPathException(string.Format("Illegal JPath expression: {0}", Path));
             }
-
         }
 
         private IJsonValue GetIndexedValue(IJsonValue obj, int index, string pathHint)
@@ -104,12 +103,13 @@ namespace Kiwi.Json.JPath
             return VerifyReturnValue(pathHint, (o != null) && o.TryGetValue(member, out value) ? value : null);
         }
 
-        private T CastTo<T>(IJsonValue jsonValue, string pathHint) where T: class, IJsonValue
+        private T CastTo<T>(IJsonValue jsonValue, string pathHint) where T : class, IJsonValue
         {
             var cast = jsonValue as T;
             if (Strict && (cast == null))
             {
-                throw new JsonPathException(string.Format("Actual types does not apply to operands in expression {0}", pathHint));
+                throw new JsonPathException(string.Format("Actual types does not apply to operands in expression {0}",
+                                                          pathHint));
             }
             return cast;
         }
@@ -128,14 +128,14 @@ namespace Kiwi.Json.JPath
         [Flags]
         private enum State
         {
-            ExpectMember        = 0x01,
-            ExpectArrayBegin    = 0x02,
-            ExpectArrayIndex    = 0x04,
-            ExpectArrayEnd      = 0x08,
+            ExpectMember = 0x01,
+            ExpectArrayBegin = 0x02,
+            ExpectArrayIndex = 0x04,
+            ExpectArrayEnd = 0x08,
 
-            ExpectDot           = 0x10,
+            ExpectDot = 0x10,
 
-            ExpectEnd           = 0x20
+            ExpectEnd = 0x20
         }
 
         #endregion

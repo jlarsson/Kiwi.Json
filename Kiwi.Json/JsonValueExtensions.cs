@@ -1,4 +1,4 @@
-﻿using Kiwi.Json.Serialization;
+﻿using Kiwi.Json.Conversion;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json

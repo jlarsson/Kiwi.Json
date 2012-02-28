@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Kiwi.Json.JPath;
-using Kiwi.Json.Serialization;
+using Kiwi.Json.Conversion;
 using Kiwi.Json.Untyped;
 using NUnit.Framework;
 using SharpTestsEx;

@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using SharpTestsEx;
 
@@ -7,23 +6,34 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
     [TestFixture]
     public class StructFixture
     {
-        public struct TestStruct
+        public struct StructWithProperties
         {
-            public string F1;
-            public int F2;
             public string P1 { get; set; }
             public int P2 { get; set; }
         }
 
-        [Test]
-        public void ParseFullStruct()
+        public struct StructWithFields
         {
-            var s = JSON.Read<TestStruct>(@"{""F1"":""hello"",""F2"":123,""P1"":""world"",""P2"":456}");
+            public string F1;
+            public int F2;
+        }
+
+        [Test]
+        public void PropertiesAreIgnored()
+        {
+            var s = JSON.Read<StructWithProperties>(@"{""P1"":""hello"",""P2"":123}");
+
+            s.P1.Should().Be.EqualTo(default(string));
+            s.P2.Should().Be.EqualTo(default(int));
+        }
+
+        [Test]
+        public void PublicFieldsAreParsed()
+        {
+            var s = JSON.Read<StructWithFields>(@"{""F1"":""hello"",""F2"":123}");
 
             s.F1.Should().Be.EqualTo("hello");
             s.F2.Should().Be.EqualTo(123);
-            s.P1.Should().Be.EqualTo("world");
-            s.P2.Should().Be.EqualTo(456);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Kiwi.Json.Conversion;
-using Kiwi.Json.Serialization;
-using Kiwi.Json.Serialization.Serializers;
-using Kiwi.Json.Serialization.TypeBuilders;
+using Kiwi.Json.Conversion.TypeBuilders;
+using Kiwi.Json.Conversion.TypeWriters;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json
@@ -26,7 +25,7 @@ namespace Kiwi.Json
 
         public static T ToObject<T>(this IJsonValue value)
         {
-            return (T)value.Visit(new ConvertJsonToCustom(TypeBuilderRegistry.GetTypeBuilder<T>()));
+            return (T) value.Visit(new ConvertJsonToCustom(TypeBuilderRegistry.GetTypeBuilder<T>()));
         }
 
         public static IJsonValue Read(string json)
@@ -36,7 +35,7 @@ namespace Kiwi.Json
 
         public static T Read<T>(string json)
         {
-            return (T)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>());
+            return (T) new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>());
         }
 
         public static string Write(object obj)

@@ -1,9 +1,9 @@
-using Kiwi.Json.Serialization;
+using Kiwi.Json.Conversion.TypeBuilders;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.Conversion
 {
-    public class ConvertJsonToCustom: IJsonValueVisitor<object>
+    public class ConvertJsonToCustom : IJsonValueVisitor<object>
     {
         private readonly ITypeBuilder _typeBuilder;
 
@@ -11,6 +11,8 @@ namespace Kiwi.Json.Conversion
         {
             _typeBuilder = typeBuilder;
         }
+
+        #region IJsonValueVisitor<object> Members
 
         public object VisitArray(IJsonArray value)
         {
@@ -61,5 +63,7 @@ namespace Kiwi.Json.Conversion
         {
             return _typeBuilder.CreateString(value.Value);
         }
+
+        #endregion
     }
 }

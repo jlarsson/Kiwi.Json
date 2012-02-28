@@ -32,7 +32,7 @@ namespace Kiwi.Json.Tests.Conversion
         [Test]
         public void Char()
         {
-            TestSimpleTypeToJsonAndBack<UInt16>('@');
+            TestSimpleTypeToJsonAndBack<char>('@');
         }
 
         [Test]
