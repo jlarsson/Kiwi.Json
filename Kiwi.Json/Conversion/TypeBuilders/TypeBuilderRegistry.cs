@@ -19,6 +19,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                                            new ArrayBuilderFactory(),
                                                            new DictionaryBuilderFactory(),
                                                            new CollectionBuilderFactory(),
+                                                           new UntypedListBuilderFactory(), 
                                                            new ClassBuilderFactory(),
                                                            new EnumBuilderFactory(),
                                                            new StructBuilderFactory()

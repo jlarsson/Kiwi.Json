@@ -60,6 +60,7 @@
     <Compile Include="Conversion\TypeBuilders\StructBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\UntypedListBuilderFactory.cs" />
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />
     <Compile Include="JPath\JsonPath.cs" />

@@ -50,7 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="ScratchFixture.cs" />
     <Compile Include="Conversion\FromCollectionFixture.cs" />
     <Compile Include="Conversion\FromSimpleTypeFixture.cs" />
     <Compile Include="Conversion\FromSimpleTypeAndBackFixture.cs" />

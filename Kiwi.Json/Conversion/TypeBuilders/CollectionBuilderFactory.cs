@@ -54,7 +54,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 (Func<ITypeBuilder>)
                 typeof(CollectionBuilder<,>).MakeGenericType(listType, interfaceType.GetGenericArguments()[0]).GetMethod(
                     "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[]{registry});
-            
         }
     }
 }
