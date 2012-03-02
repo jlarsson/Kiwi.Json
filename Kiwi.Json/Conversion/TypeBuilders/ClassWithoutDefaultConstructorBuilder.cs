@@ -11,7 +11,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             _classType = classType;
         }
 
-        public override IObjectBuilder CreateObject()
+        public override IObjectBuilder CreateObjectBuilder()
         {
             throw new MissingDefaultConstructorException(_classType);
         }

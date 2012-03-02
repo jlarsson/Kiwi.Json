@@ -6,12 +6,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region ITypeBuilder Members
 
-        public virtual IObjectBuilder CreateObject()
+        public virtual IObjectBuilder CreateObjectBuilder()
         {
             throw CreateInvalidTypeException("object");
         }
 
-        public virtual IArrayBuilder CreateArray()
+        public virtual IArrayBuilder CreateArrayBuilder()
         {
             throw CreateInvalidTypeException("array");
         }
@@ -50,17 +50,22 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
+        public virtual object CreateNewArray()
+        {
+            throw CreateInvalidCallException("new array");
+        }
+
         public virtual ITypeBuilder GetElementBuilder()
         {
             throw CreateInvalidCallException("array element");
         }
 
-        public virtual void AddElement(object element)
+        public virtual void AddElement(object array, object element)
         {
             throw CreateInvalidCallException("array element");
         }
 
-        public virtual object GetArray()
+        public virtual object GetArray(object array)
         {
             throw CreateInvalidCallException("array");
         }
@@ -69,17 +74,22 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
+        public virtual object CreateNewObject()
+        {
+            throw CreateInvalidCallException("new object");
+        }
+
         public virtual ITypeBuilder GetMemberBuilder(string memberName)
         {
             throw CreateInvalidCallException("object member");
         }
 
-        public virtual void SetMember(string memberName, object value)
+        public virtual void SetMember(string memberName, object o, object value)
         {
             throw CreateInvalidCallException("object member");
         }
 
-        public virtual object GetObject()
+        public virtual object GetObject(object @object)
         {
             throw CreateInvalidCallException("object");
         }

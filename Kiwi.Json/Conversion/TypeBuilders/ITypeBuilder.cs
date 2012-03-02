@@ -4,8 +4,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public interface ITypeBuilder
     {
-        IObjectBuilder CreateObject();
-        IArrayBuilder CreateArray();
+        IObjectBuilder CreateObjectBuilder();
+        IArrayBuilder CreateArrayBuilder();
 
         object CreateString(string value);
         object CreateNumber(long value);

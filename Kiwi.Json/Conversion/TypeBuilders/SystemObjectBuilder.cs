@@ -5,23 +5,25 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class SystemObjectBuilder : ITypeBuilder
     {
-        private readonly ITypeBuilderRegistry _registry;
+        private readonly IObjectBuilder _dictionaryBuilder;
+        private readonly IArrayBuilder _arrayBuilder;
 
-        public SystemObjectBuilder(ITypeBuilderRegistry registry)
+        public SystemObjectBuilder()
         {
-            _registry = registry;
+            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(this);
+            _arrayBuilder = new ListBuilder<List<object>, object>(this);
         }
 
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObject()
+        public IObjectBuilder CreateObjectBuilder()
         {
-            return new DictionaryBuilder<Dictionary<string, object>, object>(_registry);
+            return _dictionaryBuilder;
         }
 
-        public IArrayBuilder CreateArray()
+        public IArrayBuilder CreateArrayBuilder()
         {
-            return new ListBuilder<List<object>, object>(_registry);
+            return _arrayBuilder;
         }
 
         public object CreateString(string value)
@@ -56,9 +58,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            return r => new SystemObjectBuilder(r);
+            var builder = new SystemObjectBuilder();
+            return () => builder;
         }
     }
 }

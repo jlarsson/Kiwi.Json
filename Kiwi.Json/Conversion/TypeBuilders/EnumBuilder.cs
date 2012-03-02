@@ -4,9 +4,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class EnumBuilder<TEnum> : AbstractTypeBuilder where TEnum : struct
     {
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            return _ => new EnumBuilder<TEnum>();
+            var builder = new EnumBuilder<TEnum>();
+            return () => builder;
         }
 
         public override object CreateString(string value)

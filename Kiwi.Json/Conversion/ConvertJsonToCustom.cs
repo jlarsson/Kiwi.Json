@@ -16,12 +16,13 @@ namespace Kiwi.Json.Conversion
 
         public object VisitArray(IJsonArray value)
         {
-            var a = _typeBuilder.CreateArray();
+            var arrayBuilder = _typeBuilder.CreateArrayBuilder();
+            var array = arrayBuilder.CreateNewArray();
             foreach (var element in value)
             {
-                a.AddElement(element.Visit(new ConvertJsonToCustom(a.GetElementBuilder())));
+                arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(arrayBuilder.GetElementBuilder())));
             }
-            return a.GetArray();
+            return arrayBuilder.GetArray(array);
         }
 
         public object VisitBool(IJsonBool value)
@@ -51,12 +52,13 @@ namespace Kiwi.Json.Conversion
 
         public object VisitObject(IJsonObject value)
         {
-            var o = _typeBuilder.CreateObject();
+            var objectBuilder = _typeBuilder.CreateObjectBuilder();
+            var @object = objectBuilder.CreateNewObject();
             foreach (var kv in value)
             {
-                o.SetMember(kv.Key, kv.Value.Visit(new ConvertJsonToCustom(o.GetMemberBuilder(kv.Key))));
+                objectBuilder.SetMember(kv.Key, @object, kv.Value.Visit(new ConvertJsonToCustom(objectBuilder.GetMemberBuilder(kv.Key))));
             }
-            return o.GetObject();
+            return objectBuilder.GetObject(@object);
         }
 
         public object VisitString(IJsonString value)

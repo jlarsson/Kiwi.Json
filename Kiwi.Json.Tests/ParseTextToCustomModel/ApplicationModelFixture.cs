@@ -62,5 +62,12 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
             blog.Should().Not.Be.Null();
             blog.Tags.Should().Have.SameSequenceAs(new[] { "test", "json" });
         }
+
+        [Test]
+        public void ParseNull()
+        {
+            JSON.Read<Blog>("null")
+                .Should().Be.Null();
+        }
     }
 }

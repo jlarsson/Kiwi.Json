@@ -8,16 +8,21 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
+        public object CreateNewArray()
+        {
+            return null;
+        }
+
         public ITypeBuilder GetElementBuilder()
         {
             return this;
         }
 
-        public void AddElement(object element)
+        public void AddElement(object array, object element)
         {
         }
 
-        public object GetArray()
+        public object GetArray(object array)
         {
             return null;
         }
@@ -26,16 +31,21 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
+        public object CreateNewObject()
+        {
+            return null;
+        }
+
         public ITypeBuilder GetMemberBuilder(string memberName)
         {
             return this;
         }
 
-        public void SetMember(string memberName, object value)
+        public void SetMember(string memberName, object o, object value)
         {
         }
 
-        public object GetObject()
+        public object GetObject(object @object)
         {
             return null;
         }
@@ -44,12 +54,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObject()
+        public IObjectBuilder CreateObjectBuilder()
         {
             return this;
         }
 
-        public IArrayBuilder CreateArray()
+        public IArrayBuilder CreateArrayBuilder()
         {
             return this;
         }

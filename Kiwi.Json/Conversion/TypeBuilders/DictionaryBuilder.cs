@@ -3,39 +3,54 @@ using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class DictionaryBuilder<TDictionary, TValue>: AbstractTypeBuilder, IObjectBuilder where TDictionary: class, IDictionary<string,TValue>, new()
+    public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder, IObjectBuilder
+        where TDictionary : class, IDictionary<string, TValue>, new()
     {
-        private readonly ITypeBuilderRegistry _registry;
-        private readonly TDictionary _instance = new TDictionary();
-        private ITypeBuilder _memberBuilder;
+        private readonly ITypeBuilder _memberBuilder;
 
-        public DictionaryBuilder(ITypeBuilderRegistry registry)
+        public DictionaryBuilder(ITypeBuilder memberBuilder)
         {
-            _registry = registry;
+            _memberBuilder = memberBuilder;
         }
 
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        #region IObjectBuilder Members
+
+        public override IObjectBuilder CreateObjectBuilder()
         {
-            return r => new TypeBuilderFactory()
-                            {
-                                OnCreateNull = () => null,
-                                OnCreateObject = () => new DictionaryBuilder<TDictionary, TValue>(r)
-                            };
+            return this;
+        }
+
+        public override object CreateNewObject()
+        {
+            return new TDictionary();
         }
 
         public override ITypeBuilder GetMemberBuilder(string memberName)
         {
-            return _memberBuilder ?? (_memberBuilder = _registry.GetTypeBuilder<TValue>());
+            return _memberBuilder;
         }
 
-        public override void SetMember(string memberName, object value)
+        public override void SetMember(string memberName, object @object, object value)
         {
-            _instance.Add(memberName, (TValue)value);
+            ((TDictionary) @object).Add(memberName, (TValue) value);
         }
 
-        public override object GetObject()
+        public override object GetObject(object @object)
         {
-            return _instance;
+            return @object;
+        }
+
+        #endregion
+
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
+        {
+            var builder = new DictionaryBuilder<TDictionary, TValue>(registry.GetTypeBuilder<TValue>());
+            return () => builder;
+        }
+
+        public override object CreateNull()
+        {
+            return null;
         }
     }
 }

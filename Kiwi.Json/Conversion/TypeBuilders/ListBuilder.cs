@@ -5,40 +5,52 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ListBuilder<TList, TElem> : AbstractTypeBuilder, IArrayBuilder where TList : class, IList<TElem>, new()
     {
-        protected ITypeBuilderRegistry Registry { get; private set; }
-        private readonly TList _list = new TList();
+        private readonly ITypeBuilder _elementBuilder;
 
-        public ListBuilder(ITypeBuilderRegistry registry)
+        public ListBuilder(ITypeBuilder elementBuilder)
         {
-            Registry = registry;
+            _elementBuilder = elementBuilder;
+        }
+
+        public override IArrayBuilder CreateArrayBuilder()
+        {
+            return this;
         }
 
         #region IArrayBuilder Members
 
+        public override object CreateNull()
+        {
+            return null;
+        }
+
+        public override object CreateNewArray()
+        {
+            return new TList();
+        }
+
         public override ITypeBuilder GetElementBuilder()
         {
-            return Registry.GetTypeBuilder<TElem>();
+            return _elementBuilder;
         }
 
-        public override void AddElement(object element)
+        public override void AddElement(object array, object element)
         {
-            _list.Add((TElem) element);
+            ((TList)array).Add((TElem) element);
         }
 
-        public override object GetArray()
+        public override object GetArray(object array)
         {
-            return _list;
+            return array;
         }
 
         #endregion
 
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            return r => new TypeBuilderFactory()
-                            {
-                                OnCreateNull = () => null,
-                                OnCreateArray = () => new ListBuilder<TList, TElem>(r)
-                            };
+            var builder = new ListBuilder<TList, TElem>(registry.GetTypeBuilder<TElem>());
+
+            return () => builder;
         }
     }
 }

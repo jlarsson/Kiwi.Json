@@ -8,46 +8,57 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : new()
     {
-        private readonly Dictionary<string, IMemberSetter> _memberSetters;
-        private readonly ITypeBuilderRegistry _registry;
-        private readonly object _instance = new TClass();
+        private readonly Dictionary<string, ClassMember> _memberSetters;
 
-        protected ClassBuilder(ITypeBuilderRegistry registry, Dictionary<string, IMemberSetter> memberSetters)
+        private ClassBuilder(Dictionary<string, ClassMember> memberSetters)
         {
-            _registry = registry;
             _memberSetters = memberSetters;
         }
 
         #region IObjectBuilder Members
 
+        public override IObjectBuilder CreateObjectBuilder()
+        {
+            return this;
+        }
+
+        public override object CreateNull()
+        {
+            return null;
+        }
+
+        public override object CreateNewObject()
+        {
+            return new TClass();
+        }
+
         public override ITypeBuilder GetMemberBuilder(string memberName)
         {
-            var setter = default(IMemberSetter);
-            if (_memberSetters.TryGetValue(memberName, out setter))
+            ClassMember member;
+            if (_memberSetters.TryGetValue(memberName, out member))
             {
-                return _registry.GetTypeBuilder(setter.MemberType);
+                return member.MemberBuilder;
             }
-            //return _registry.GetTypeBuilder<IJsonObject>();
             return NothingBuilder.Instance;
         }
 
-        public override void SetMember(string memberName, object value)
+        public override void SetMember(string memberName, object @object, object value)
         {
-            var setter = default(IMemberSetter);
-            if (_memberSetters.TryGetValue(memberName, out setter))
+            ClassMember member;
+            if (_memberSetters.TryGetValue(memberName, out member))
             {
-                setter.SetValue(_instance, value);
+                member.Setter.SetValue(@object, value);
             }
         }
 
-        public override object GetObject()
+        public override object GetObject(object @object)
         {
-            return _instance;
+            return @object;
         }
 
         #endregion
 
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
             var memberSetters = (from property in
                                      typeof (TClass).GetProperties(
@@ -55,20 +66,37 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                          BindingFlags.Instance)
                                  where
                                      (property.GetGetMethod().GetParameters().Length == 0)
-                                 select new PropertySetter(property) as IMemberSetter).
-                Union(
+                                 select new ClassMember
+                                            {
+                                                Name = property.Name,
+                                                Setter = new PropertySetter(property),
+                                                MemberBuilder = registry.GetTypeBuilder(property.PropertyType)
+                                            })
+                .Union(
                     from field in
                         typeof (TClass).GetFields(BindingFlags.SetField | BindingFlags.Public |
                                                   BindingFlags.Instance)
-                    select new FieldSetter(field) as IMemberSetter).ToDictionary(v => v.MemberName,
-                                                                                 v => v);
+                    select new ClassMember
+                               {
+                                   Name = field.Name,
+                                   Setter = new FieldSetter(field),
+                                   MemberBuilder = registry.GetTypeBuilder(field.FieldType)
+                               })
+                .ToDictionary(m => m.Name, m => m);
 
-
-            return r => new TypeBuilderFactory()
-            {
-                OnCreateNull = () => null,
-                OnCreateObject = () => new ClassBuilder<TClass>(r,memberSetters)
-            };
+            var classBuilder = new ClassBuilder<TClass>(memberSetters);
+            return () => classBuilder;
         }
+
+        #region Nested type: ClassMember
+
+        private class ClassMember
+        {
+            public string Name { get; set; }
+            public IMemberSetter Setter { get; set; }
+            public ITypeBuilder MemberBuilder { get; set; }
+        }
+
+        #endregion
     }
 }

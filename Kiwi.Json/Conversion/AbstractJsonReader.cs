@@ -377,13 +377,14 @@ namespace Kiwi.Json.Conversion
 
         protected object ParserArray(ITypeBuilder builder)
         {
-            var array = builder.CreateArray();
             Match('[');
             SkipWhitespace();
+            var arrayBuilder = builder.CreateArrayBuilder();
+            var array = arrayBuilder.CreateNewArray();
 
             while (Peek() != ']')
             {
-                array.AddElement(Parse(array.GetElementBuilder()));
+                arrayBuilder.AddElement(array, Parse(arrayBuilder.GetElementBuilder()));
                 SkipWhitespace();
 
                 if (!TryMatch(','))
@@ -394,14 +395,16 @@ namespace Kiwi.Json.Conversion
             }
             Match(']');
 
-            return array.GetArray();
+            return arrayBuilder.GetArray(array);
         }
 
         protected object ParseObject(ITypeBuilder builder)
         {
-            var @object = builder.CreateObject();
             Match('{');
             SkipWhitespace();
+
+            var objectBuilder = builder.CreateObjectBuilder();
+            var @object = objectBuilder.CreateNewObject();
 
             while (Peek() != '}')
             {
@@ -409,7 +412,7 @@ namespace Kiwi.Json.Conversion
                 SkipWhitespace();
                 Match(':');
 
-                @object.SetMember(memberName, Parse(@object.GetMemberBuilder(memberName)));
+                objectBuilder.SetMember(memberName, @object, Parse(objectBuilder.GetMemberBuilder(memberName)));
 
                 SkipWhitespace();
 
@@ -420,7 +423,7 @@ namespace Kiwi.Json.Conversion
                 SkipWhitespace();
             }
             Match('}');
-            return @object.GetObject();
+            return objectBuilder.GetObject(@object);
         }
 
         protected bool TryMatch(char c)

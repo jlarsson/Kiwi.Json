@@ -5,22 +5,21 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ArrayBuilder<TElem> : ListBuilder<List<TElem>, TElem>
     {
-        public ArrayBuilder(ITypeBuilderRegistry registry) : base(registry)
+        public ArrayBuilder(ITypeBuilder elementBuilder)
+            : base(elementBuilder)
         {
         }
 
-        public new static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
+        public new static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            return r => new TypeBuilderFactory()
-            {
-                OnCreateNull = () => null,
-                OnCreateArray = () => new ArrayBuilder<TElem>(r)
-            };
+            var arrayBuilder = new ArrayBuilder<TElem>(registry.GetTypeBuilder<TElem>());
+            return () => arrayBuilder;
+
         }
 
-        public override object GetArray()
+        public override object GetArray(object array)
         {
-            var list = base.GetArray();
+            var list = base.GetArray(array);
             return list == null ? null : ((List<TElem>) list).ToArray();
         }
     }

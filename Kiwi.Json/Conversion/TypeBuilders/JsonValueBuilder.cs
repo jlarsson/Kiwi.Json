@@ -5,16 +5,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class JsonValueBuilder : ITypeBuilder
     {
-        private static readonly JsonValueBuilder Instance = new JsonValueBuilder();
-
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObject()
+        public IObjectBuilder CreateObjectBuilder()
         {
             return new JsonObjectBuilder();
         }
 
-        public IArrayBuilder CreateArray()
+        public IArrayBuilder CreateArrayBuilder()
         {
             return new JsonArrayBuilder();
         }
@@ -50,10 +48,5 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         }
 
         #endregion
-
-        public static Func<ITypeBuilderRegistry, ITypeBuilder> CreateTypeBuilderFactory()
-        {
-            return _ => Instance;
-        }
     }
 }
