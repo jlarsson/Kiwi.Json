@@ -20,9 +20,26 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return this;
         }
 
-        public override object CreateNewObject()
+        public override object CreateNewObject(object instanceState)
         {
+            if (instanceState is TDictionary)
+            {
+                return instanceState;
+            }
             return new TDictionary();
+        }
+
+        public override object GetMemberState(string memberName, object @object)
+        {
+            if (@object is TDictionary)
+            {
+                TValue state;
+                if ((@object as TDictionary).TryGetValue(memberName, out state))
+                {
+                    return state;
+                }
+            }
+            return null;
         }
 
         public override ITypeBuilder GetMemberBuilder(string memberName)

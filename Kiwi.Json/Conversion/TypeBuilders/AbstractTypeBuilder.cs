@@ -50,7 +50,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
-        public virtual object CreateNewArray()
+        public virtual object CreateNewArray(object instanceState)
         {
             throw CreateInvalidCallException("new array");
         }
@@ -74,9 +74,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public virtual object CreateNewObject()
+        public virtual object CreateNewObject(object instanceState)
         {
             throw CreateInvalidCallException("new object");
+        }
+
+        public virtual object GetMemberState(string memberName, object @object)
+        {
+            throw CreateInvalidCallException("member state");
         }
 
         public virtual ITypeBuilder GetMemberBuilder(string memberName)

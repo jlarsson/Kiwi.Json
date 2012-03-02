@@ -75,6 +75,7 @@
     <Compile Include="ConvertJsonToCustomModel\NullableIntegerFixture.cs" />
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ApplicationModelFixture.cs" />
+    <Compile Include="ParseTextToCustomModel\ApplicationModelWithCustomInitializationFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ArrayFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DateTimeFixture.cs" />
     <Compile Include="ParseTextToCustomModel\DecimalFixture.cs" />

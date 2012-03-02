@@ -8,7 +8,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
-        public object CreateNewArray()
+        public object CreateNewArray(object instanceState)
         {
             return null;
         }
@@ -31,7 +31,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public object CreateNewObject()
+        public object CreateNewObject(object instanceState)
+        {
+            return null;
+        }
+
+        public object GetMemberState(string memberName, object unknown)
         {
             return null;
         }

@@ -6,9 +6,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region IObjectBuilder Members
 
-        public object CreateNewObject()
+        public object CreateNewObject(object instanceState)
         {
             return new JsonObject();
+        }
+
+        public object GetMemberState(string memberName, object unknown)
+        {
+            return null;
         }
 
         public ITypeBuilder GetMemberBuilder(string memberName)

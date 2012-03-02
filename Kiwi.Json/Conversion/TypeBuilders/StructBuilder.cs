@@ -22,9 +22,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return this;
         }
 
-        public override object CreateNewObject()
+        public override object CreateNewObject(object instanceState)
         {
             return new Dictionary<string, object>();
+        }
+
+        public override object GetMemberState(string memberName, object @object)
+        {
+            return null;
         }
 
         public override ITypeBuilder GetMemberBuilder(string memberName)

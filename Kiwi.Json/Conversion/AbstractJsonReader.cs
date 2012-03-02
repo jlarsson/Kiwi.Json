@@ -57,15 +57,20 @@ namespace Kiwi.Json.Conversion
 
         public object Parse(ITypeBuilder builder)
         {
+            return Parse(builder, null);
+        }
+
+        protected object Parse(ITypeBuilder builder, object instanceState)
+        {
             SkipWhitespace();
 
             var c = Peek();
             switch (c)
             {
                 case '{':
-                    return ParseObject(builder);
+                    return ParseObject(builder, instanceState);
                 case '[':
-                    return ParserArray(builder);
+                    return ParserArray(builder, instanceState);
                 case '\"':
                     return ParseString(builder);
                 case 't':
@@ -375,12 +380,12 @@ namespace Kiwi.Json.Conversion
             return builder.CreateString(s);
         }
 
-        protected object ParserArray(ITypeBuilder builder)
+        protected object ParserArray(ITypeBuilder builder, object instanceState)
         {
             Match('[');
             SkipWhitespace();
             var arrayBuilder = builder.CreateArrayBuilder();
-            var array = arrayBuilder.CreateNewArray();
+            var array = arrayBuilder.CreateNewArray(instanceState);
 
             while (Peek() != ']')
             {
@@ -398,13 +403,13 @@ namespace Kiwi.Json.Conversion
             return arrayBuilder.GetArray(array);
         }
 
-        protected object ParseObject(ITypeBuilder builder)
+        protected object ParseObject(ITypeBuilder builder, object instanceState)
         {
             Match('{');
             SkipWhitespace();
 
             var objectBuilder = builder.CreateObjectBuilder();
-            var @object = objectBuilder.CreateNewObject();
+            var @object = objectBuilder.CreateNewObject(instanceState);
 
             while (Peek() != '}')
             {
@@ -412,7 +417,8 @@ namespace Kiwi.Json.Conversion
                 SkipWhitespace();
                 Match(':');
 
-                objectBuilder.SetMember(memberName, @object, Parse(objectBuilder.GetMemberBuilder(memberName)));
+                var memberState = objectBuilder.GetMemberState(memberName, @object);
+                objectBuilder.SetMember(memberName, @object, Parse(objectBuilder.GetMemberBuilder(memberName), memberState));
 
                 SkipWhitespace();
 

@@ -17,7 +17,7 @@ namespace Kiwi.Json.Conversion
         public object VisitArray(IJsonArray value)
         {
             var arrayBuilder = _typeBuilder.CreateArrayBuilder();
-            var array = arrayBuilder.CreateNewArray();
+            var array = arrayBuilder.CreateNewArray(null);
             foreach (var element in value)
             {
                 arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(arrayBuilder.GetElementBuilder())));
@@ -53,7 +53,7 @@ namespace Kiwi.Json.Conversion
         public object VisitObject(IJsonObject value)
         {
             var objectBuilder = _typeBuilder.CreateObjectBuilder();
-            var @object = objectBuilder.CreateNewObject();
+            var @object = objectBuilder.CreateNewObject(null);
             foreach (var kv in value)
             {
                 objectBuilder.SetMember(kv.Key, @object, kv.Value.Visit(new ConvertJsonToCustom(objectBuilder.GetMemberBuilder(kv.Key))));

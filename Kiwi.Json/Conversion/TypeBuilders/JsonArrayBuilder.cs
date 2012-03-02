@@ -6,7 +6,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region IArrayBuilder Members
 
-        public object CreateNewArray()
+        public object CreateNewArray(object instanceState)
         {
             return new JsonArray();
         }

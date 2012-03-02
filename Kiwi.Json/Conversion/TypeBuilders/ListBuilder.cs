@@ -24,8 +24,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public override object CreateNewArray()
+        public override object CreateNewArray(object instanceState)
         {
+            if (instanceState is TList)
+            {
+                return instanceState;
+            }
             return new TList();
         }
 

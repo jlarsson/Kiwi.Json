@@ -27,9 +27,23 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public override object CreateNewObject()
+        public override object CreateNewObject(object instanceState)
         {
+            if (instanceState is TClass)
+            {
+                return instanceState;
+            }
             return new TClass();
+        }
+
+        public override object GetMemberState(string memberName, object @object)
+        {
+            ClassMember member;
+            if (_memberSetters.TryGetValue(memberName, out member))
+            {
+                return member.Getter.GetMemberValue(@object);
+            }
+            return null;
         }
 
         public override ITypeBuilder GetMemberBuilder(string memberName)
@@ -62,23 +76,25 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             var memberSetters = (from property in
                                      typeof (TClass).GetProperties(
-                                         BindingFlags.SetProperty | BindingFlags.Public |
+                                         BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Public |
                                          BindingFlags.Instance)
                                  where
                                      (property.GetGetMethod().GetParameters().Length == 0)
                                  select new ClassMember
                                             {
                                                 Name = property.Name,
+                                                Getter = new PropertyGetter(property),
                                                 Setter = new PropertySetter(property),
                                                 MemberBuilder = registry.GetTypeBuilder(property.PropertyType)
                                             })
                 .Union(
                     from field in
-                        typeof (TClass).GetFields(BindingFlags.SetField | BindingFlags.Public |
+                        typeof(TClass).GetFields(BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Public |
                                                   BindingFlags.Instance)
                     select new ClassMember
                                {
                                    Name = field.Name,
+                                   Getter = new FieldGetter(field),
                                    Setter = new FieldSetter(field),
                                    MemberBuilder = registry.GetTypeBuilder(field.FieldType)
                                })
@@ -93,6 +109,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private class ClassMember
         {
             public string Name { get; set; }
+            public IMemberGetter Getter { get; set; }
             public IMemberSetter Setter { get; set; }
             public ITypeBuilder MemberBuilder { get; set; }
         }
