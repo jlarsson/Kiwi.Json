@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ArrayBuilder<TElem> : ListBuilder<List<TElem>, TElem>
+    public class ArrayBuilder<TElem> : CollectionBuilder<List<TElem>, TElem>
     {
         public ArrayBuilder(ITypeBuilder elementBuilder)
             : base(elementBuilder)

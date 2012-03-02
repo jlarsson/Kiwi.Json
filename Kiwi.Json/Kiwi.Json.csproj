@@ -56,7 +56,7 @@
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilderFactory.cs" />
-    <Compile Include="Conversion\TypeBuilders\ListBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\CollectionBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\StructBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilder.cs" />
-    <Compile Include="Conversion\TypeBuilders\ListBuilder.cs" />
+    <Compile Include="Conversion\TypeBuilders\CollectionBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\NothingBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\StructBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\TypeBuilderRegistry.cs" />

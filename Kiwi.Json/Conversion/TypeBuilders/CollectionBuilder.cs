@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ListBuilder<TList, TElem> : AbstractTypeBuilder, IArrayBuilder where TList : class, IList<TElem>, new()
+    public class CollectionBuilder<TCollection, TElem> : AbstractTypeBuilder, IArrayBuilder where TCollection : class, ICollection<TElem>, new()
     {
         private readonly ITypeBuilder _elementBuilder;
 
-        public ListBuilder(ITypeBuilder elementBuilder)
+        public CollectionBuilder(ITypeBuilder elementBuilder)
         {
             _elementBuilder = elementBuilder;
         }
@@ -26,11 +26,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override object CreateNewArray(object instanceState)
         {
-            if (instanceState is TList)
+            if (instanceState is TCollection)
             {
                 return instanceState;
             }
-            return new TList();
+            return new TCollection();
         }
 
         public override ITypeBuilder GetElementBuilder()
@@ -40,7 +40,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override void AddElement(object array, object element)
         {
-            ((TList)array).Add((TElem) element);
+            ((TCollection)array).Add((TElem) element);
         }
 
         public override object GetArray(object array)
@@ -52,7 +52,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            var builder = new ListBuilder<TList, TElem>(registry.GetTypeBuilder<TElem>());
+            var builder = new CollectionBuilder<TCollection, TElem>(registry.GetTypeBuilder<TElem>());
 
             return () => builder;
         }

@@ -11,7 +11,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public SystemObjectBuilder()
         {
             _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(this);
-            _arrayBuilder = new ListBuilder<List<object>, object>(this);
+            _arrayBuilder = new CollectionBuilder<List<object>, object>(this);
         }
 
         #region ITypeBuilder Members
