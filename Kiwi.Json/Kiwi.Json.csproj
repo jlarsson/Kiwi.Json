@@ -61,6 +61,17 @@
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\UntypedListBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\BuiltinTypeWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\ClassWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\DictionaryWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\EnumerableWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\EnumWriter.cs" />
+    <Compile Include="Conversion\TypeWriters\EnumWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\ITypeWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\JsonValueWriter.cs" />
+    <Compile Include="Conversion\TypeWriters\JsonValueWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\SystemObjectWriter.cs" />
+    <Compile Include="Conversion\TypeWriters\SystemObjectWriterFactory.cs" />
     <Compile Include="JPath\Visitors\AllObjectValuesVisitor.cs" />
     <Compile Include="JPath\Visitors\IndexedMemberVisitor.cs" />
     <Compile Include="JPath\JsonPathParserRunner.cs" />

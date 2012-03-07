@@ -50,7 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JPath\JsonPathArrayIndexingFixture.cs" />
+    <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ScratchFixture.cs" />
     <Compile Include="Conversion\FromCollectionFixture.cs" />
     <Compile Include="Conversion\FromSimpleTypeFixture.cs" />
@@ -74,7 +74,7 @@
     <Compile Include="ConvertJsonToCustomModel\NullableFloatFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\NullableGuidFixture.cs" />
     <Compile Include="ConvertJsonToCustomModel\NullableIntegerFixture.cs" />
-    <Compile Include="JPath\JsonPathFixture.cs" />
+    <Compile Include="JPath\JsonPathScratchFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ApplicationModelFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ApplicationModelWithCustomInitializationFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ArrayFixture.cs" />
@@ -106,6 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\JsonBinaryFixture.cs" />
     <Compile Include="Serialization\JsonParserFixture.cs" />
+    <Compile Include="WriteJson\Class1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Json\Kiwi.Json.csproj">

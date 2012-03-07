@@ -1,11 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class DictionaryWriter<TValue> : ITypeWriter
     {
-        private readonly ITypeWriterRegistry _registry;
+        private ITypeWriterRegistry _registry;
 
         private DictionaryWriter(ITypeWriterRegistry registry)
         {
@@ -14,7 +15,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #region ITypeWriter Members
 
-        public void Serialize(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, object value)
         {
             var dictionary = value as IDictionary<string, TValue>;
             if (dictionary == null)
@@ -33,8 +34,8 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     }
                     writer.WriteMember(kv.Key);
 
-                    var memberWriter = _registry.GetTypeSerializerForValue(kv.Value);
-                    memberWriter.Serialize(writer, kv.Value);
+                    var valueWriter = _registry.GetTypeWriterForValue(kv.Value);
+                    valueWriter.Write(writer, kv.Value);
                 }
                 writer.WriteObjectEnd(index);
             }
@@ -42,9 +43,56 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
         {
-            return r => new DictionaryWriter<TValue>(r);
+            return () => new DictionaryWriter<TValue>(registry);
+        }
+    }
+
+    public class DictionaryWriter : ITypeWriter
+    {
+        private ITypeWriterRegistry _registry;
+
+        private DictionaryWriter(ITypeWriterRegistry registry)
+        {
+            _registry = registry;
+        }
+
+        #region ITypeWriter Members
+
+        public void Write(IJsonWriter writer, object value)
+        {
+            var dictionary = value as IDictionary;
+            if (dictionary == null)
+            {
+                writer.WriteNull();
+            }
+            else
+            {
+                writer.WriteObjectStart();
+                var index = 0;
+
+                foreach (var key in dictionary.Keys)
+                {
+                    if (index++ > 0)
+                    {
+                        writer.WriteObjectMemberDelimiter();
+                    }
+                    writer.WriteMember(key == null ? "" : key.ToString());
+
+                    var v = dictionary[key];
+                    var valueWriter = _registry.GetTypeWriterForValue(v);
+                    valueWriter.Write(writer, v);
+                }
+                writer.WriteObjectEnd(index);
+            }
+        }
+
+        #endregion
+
+        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
+        {
+            return () => new DictionaryWriter(registry);
         }
     }
 }

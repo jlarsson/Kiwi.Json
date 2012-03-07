@@ -1,65 +1,84 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Json.JPath;
-using Kiwi.Json.Conversion;
-using Kiwi.Json.Untyped;
 using NUnit.Framework;
-using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.JPath
 {
     [TestFixture]
     public class JsonPathFixture
     {
-        [Test]
-        public void ConstructorThrowsIfCannotParse()
+        public string JPath { get; set; }
+        public object InputObject { get; set; }
+        public object ExpectedResult { get; set; }
+
+        public IEnumerable<TestCaseData> TestCaseData
         {
-            //Assert.Throws<JsonPathException>(() => new JsonPath(@"."));
-            Assert.Throws<JsonPathException>(() => new JsonPath(@"["));
-            Assert.Throws<JsonPathException>(() => new JsonPath(@"A["));
+            get { return ArrayIndexingTestData.Concat(ObjectMemberTestData).Concat(RecusiveDescentTestData); }
         }
 
-        //[Test]
-        //public void StrictModeThrowsExceptionIfCannotEvaluate()
-        //{
-        //    var jpath = new JsonPath(@"A.X.P.Q")
-        //                    {
-        //                        Strict = true
-        //                    };
-
-        //    var j = JSON.ToJson(new { A = new { B = 1 } });
-        //    Assert.Throws<JsonPathException>(() => jpath.GetValue(j));
-        //}
-
-        [Test]
-        public void GetValue()
+        public IEnumerable<TestCaseData> ArrayIndexingTestData
         {
-            var jpath = new JsonPath(@"$.A[""B""][2]");
-
-            var j = JSON.ToJson(new { A = new { B = new[] { 1, 2, 3 } } });
-
-            var a = jpath.Evaluate(j);
-
-            jpath.Evaluate(j)
-                .Should().Have.Count.EqualTo(1);
-
-            jpath.Evaluate(j)
-                .First()
-                .Should().Be.InstanceOf<IJsonInteger>()
-                .And.Value.Value.Should().Be.EqualTo(3);
+            get
+            {
+                yield return new TestCaseData("$[*]", new[] {1, 2, 3}).Returns(new[] {1, 2, 3});
+                yield return new TestCaseData("$[1]", new[] {1, 2, 3}).Returns(new[] {2});
+                yield return new TestCaseData("$[-1:]", new[] {1, 2, 3}).Returns(new[] {3});
+                yield return new TestCaseData("$[0,1,4]", new[] {1, 2, 3, 4, 5}).Returns(new[] {1, 2, 5});
+                yield return
+                    new TestCaseData("$[100]", new[] {1, 2, 3}).Returns(new int[0]).SetDescription(
+                        "Array index out of bounds silently ignored");
+            }
         }
 
-        [Test]
-        public void Test()
+        public IEnumerable<TestCaseData> ObjectMemberTestData
         {
-            var json = JSON.ToJson(new {A = "a", B = new {X = 1, Y = 2}});
+            get
+            {
+                yield return new TestCaseData("$.MissingProperty", new {Title = "Hello"}).Returns(new object[0]);
+                yield return new TestCaseData("$.Title", new {Title = "Hello"}).Returns(new[] {"Hello"});
+                yield return new TestCaseData("$[\"Title\"]", new {Title = "Hello"}).Returns(new[] {"Hello"});
+            }
+        }
 
-            json.JsonPathValues().Select(v => v.Path.Path).ToArray()
-                .Should().Have.SameSequenceAs("$.A", "$.B.X", "$.B.Y");
+        public IEnumerable<TestCaseData> RecusiveDescentTestData
+        {
+            get
+            {
+                yield return new TestCaseData("$..*", new
+                                                          {
+                                                              Foo = "D",
+                                                              Data = new[] {1, 2, 3},
+                                                              Extra = new
+                                                                          {
+                                                                              Bar = "X"
+                                                                          }
+                                                          }).Returns(new object[] {"D", 1, 2, 3, "X"});
+                yield return new TestCaseData("$..Data[0]", new
+                                                                {
+                                                                    Foo = "D",
+                                                                    Data = new[] {1, 2, 3},
+                                                                    Extra = new
+                                                                                {
+                                                                                    Bar = "X",
+                                                                                    Data = new[] {"hit", "miss", "miss"},
+                                                                                }
+                                                                }).Returns(new object[] {1, "hit"});
+            }
+        }
 
-            json.JsonPathValues().Select(v => v.Value.ToObject()).ToArray()
-                .Should().Have.SameSequenceAs("a", (long)1, (long)2);
+
+        [TestCaseSource("TestCaseData")]
+        public object[] TestJsonPath(string jpath, object inputObject)
+        {
+            Console.Out.WriteLine("jpath: " + jpath);
+            Console.Out.WriteLine("input object (as json): " + JSON.Write(inputObject));
+            var result = (from v in new JsonPath(jpath).Evaluate(JSON.ToJson(inputObject))
+                          select v.ToObject()).ToArray();
+
+            Console.Out.WriteLine("result to native (as json): " + JSON.Write(result));
+            return result;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Kiwi.Json
         public static IJsonValue ToJson(object obj)
         {
             var writer = new ConstructJsonValue();
-            TypeWriterRegistry.GetTypeSerializerForValue(obj).Serialize(writer, obj);
+            TypeWriterRegistry.GetTypeWriterForValue(obj).Write(writer, obj);
             return writer.GetValue();
         }
 
@@ -41,7 +41,7 @@ namespace Kiwi.Json
         public static string Write(object obj)
         {
             var writer = new JsonStringWriter();
-            TypeWriterRegistry.GetTypeSerializerForValue(obj).Serialize(writer, obj);
+            TypeWriterRegistry.GetTypeWriterForValue(obj).Write(writer, obj);
             return writer.ToString();
         }
     }

@@ -15,7 +15,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #region ITypeWriter Members
 
-        public void Serialize(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, object value)
         {
             var enumerable = value as IEnumerable;
             if (enumerable == null)
@@ -33,8 +33,8 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     {
                         writer.WriteArrayElementDelimiter();
                     }
-                    var itemWriter = _registry.GetTypeSerializerForValue(item);
-                    itemWriter.Serialize(writer, item);
+                    var itemWriter = _registry.GetTypeWriterForValue(item);
+                    itemWriter.Write(writer, item);
                 }
                 writer.WriteArrayEnd(index);
             }
@@ -42,9 +42,9 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
         {
-            return r => new EnumerableWriter(r);
+            return () => new EnumerableWriter(registry);
         }
     }
 
@@ -59,7 +59,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #region ITypeWriter Members
 
-        public void Serialize(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, object value)
         {
             var enumerable = value as IEnumerable<T>;
             if (enumerable == null)
@@ -68,7 +68,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
             }
             else
             {
-                var itemWriter = _registry.GetTypeSerializerForType(typeof (T));
+                var itemWriter = _registry.GetTypeWriterForType(typeof (T));
                 writer.WriteArrayStart();
 
                 var index = 0;
@@ -78,7 +78,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     {
                         writer.WriteArrayElementDelimiter();
                     }
-                    itemWriter.Serialize(writer, item);
+                    itemWriter.Write(writer, item);
                 }
                 writer.WriteArrayEnd(index);
             }
@@ -86,9 +86,9 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriterRegistry, ITypeWriter> CreateTypeWriterFactory()
+        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
         {
-            return r => new EnumerableWriter<T>(r);
+            return () => new EnumerableWriter<T>(registry);
         }
     }
 }

@@ -6,24 +6,24 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class TypeBuilderRegistry : ITypeBuilderRegistry
     {
+        private readonly ITypeBuilderFactory[] _factories = new ITypeBuilderFactory[]
+                                                                {
+                                                                    new BuiltinTypeBuilderFactory(),
+                                                                    new JsonObjectBuilderFactory(),
+                                                                    new JsonArrayBuilderFactory(),
+                                                                    new JsonValueBuilderFactory(),
+                                                                    new SystemObjectBuilderFactory(),
+                                                                    new ArrayBuilderFactory(),
+                                                                    new DictionaryBuilderFactory(),
+                                                                    new CollectionBuilderFactory(),
+                                                                    new UntypedListBuilderFactory(),
+                                                                    new ClassBuilderFactory(),
+                                                                    new EnumBuilderFactory(),
+                                                                    new StructBuilderFactory()
+                                                                };
+
         private readonly IRegistry<Type, ITypeBuilder> _typeBuilders =
             new ThreadsafeRegistry<Type, ITypeBuilder>();
-
-        private readonly ITypeBuilderFactory[] _factories = new ITypeBuilderFactory[]
-                                                       {
-                                                           new BuiltinTypeBuilderFactory(),
-                                                           new JsonObjectBuilderFactory(), 
-                                                           new JsonArrayBuilderFactory(), 
-                                                           new JsonValueBuilderFactory(),
-                                                           new SystemObjectBuilderFactory(),
-                                                           new ArrayBuilderFactory(),
-                                                           new DictionaryBuilderFactory(),
-                                                           new CollectionBuilderFactory(),
-                                                           new UntypedListBuilderFactory(), 
-                                                           new ClassBuilderFactory(),
-                                                           new EnumBuilderFactory(),
-                                                           new StructBuilderFactory()
-                                                       };
 
         #region ITypeBuilderRegistry Members
 
