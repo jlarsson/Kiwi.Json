@@ -123,6 +123,7 @@ namespace Kiwi.Json.Util
             if (isUnescaped)
             {
                 sb.Append(s);
+                return;
             }
 
 

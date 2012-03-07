@@ -61,6 +61,11 @@
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\UntypedListBuilderFactory.cs" />
+    <Compile Include="JPath\Visitors\AllObjectValuesVisitor.cs" />
+    <Compile Include="JPath\Visitors\IndexedMemberVisitor.cs" />
+    <Compile Include="JPath\JsonPathParserRunner.cs" />
+    <Compile Include="JPath\Visitors\MemberVisitor.cs" />
+    <Compile Include="JPath\Visitors\AllSimpleValuesVisitor.cs" />
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />
     <Compile Include="JPath\JsonPath.cs" />
@@ -75,6 +80,7 @@
     <Compile Include="Conversion\IJsonWriter.cs" />
     <Compile Include="Conversion\TypeBuilders\IObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilder.cs" />
+    <Compile Include="Untyped\NullJsonValueVisitor.cs" />
     <Compile Include="Util\JsonCharacters.cs" />
     <Compile Include="Conversion\JsonReader.cs" />
     <Compile Include="Util\JsonFormats.cs" />
@@ -123,6 +129,7 @@
     <Compile Include="JsonValueExtensions.cs" />
     <Compile Include="Untyped\JsonValueKind.cs" />
     <Compile Include="Util\IRegistry.cs" />
+    <Compile Include="Util\StringMatcher.cs" />
     <Compile Include="Util\ThreadsafeRegistry.cs" />
   </ItemGroup>
   <ItemGroup />

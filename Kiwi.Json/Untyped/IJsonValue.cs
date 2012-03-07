@@ -6,7 +6,7 @@ namespace Kiwi.Json.Untyped
 {
     public interface IJsonValue
     {
-        IEnumerable<IJsonPathValue> JsonPathValues(string prefix = "");
+        IEnumerable<IJsonPathValue> JsonPathValues(string prefix = "$");
         void Write(IJsonWriter writer);
         object ToObject();
         T Visit<T>(IJsonValueVisitor<T> visitor);

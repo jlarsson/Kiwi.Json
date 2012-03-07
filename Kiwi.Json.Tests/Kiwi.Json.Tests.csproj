@@ -50,6 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JPath\JsonPathArrayIndexingFixture.cs" />
     <Compile Include="ScratchFixture.cs" />
     <Compile Include="Conversion\FromCollectionFixture.cs" />
     <Compile Include="Conversion\FromSimpleTypeFixture.cs" />
