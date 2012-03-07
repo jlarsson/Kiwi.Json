@@ -12,22 +12,13 @@ namespace Kiwi.Json.Tests.JPath
         [Test]
         public void ConstructorThrowsIfCannotParse()
         {
-            //Assert.Throws<JsonPathException>(() => new JsonPath(@"."));
-            Assert.Throws<JsonPathException>(() => new JsonPath(@"["));
-            Assert.Throws<JsonPathException>(() => new JsonPath(@"A["));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"$."));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"$.["));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"$.A["));
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"$.A[]"));
+
+            Assert.Throws<JsonPathException>(() => new JsonPath(@"A"));
         }
-
-        //[Test]
-        //public void StrictModeThrowsExceptionIfCannotEvaluate()
-        //{
-        //    var jpath = new JsonPath(@"A.X.P.Q")
-        //                    {
-        //                        Strict = true
-        //                    };
-
-        //    var j = JSON.ToJson(new { A = new { B = 1 } });
-        //    Assert.Throws<JsonPathException>(() => jpath.GetValue(j));
-        //}
 
         [Test]
         public void GetValue()

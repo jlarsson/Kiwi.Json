@@ -14,7 +14,8 @@ namespace Kiwi.Json.Conversion.TypeWriters
                                                                    new DictionaryWriterFactory(),
                                                                    new EnumerableWriterFactory(),
                                                                    new ClassWriterFactory(),
-                                                                   new EnumWriterFactory()
+                                                                   new EnumWriterFactory(),
+                                                                   new StructWriterFactory()
                                                                };
 
         private readonly ITypeWriter _nullWriter = new NullWriter();

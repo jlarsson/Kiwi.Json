@@ -13,13 +13,13 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void DeserializedClassesMustHaveDefaultConstructor()
         {
-            Assert.Throws<MissingDefaultConstructorException>(() => JSON.Read<ClassWithNoDefaultConstructor>("{}"));
+            Assert.Throws<InvalidClassForDeserializationException>(() => JSON.Read<ClassWithNoDefaultConstructor>("{}"));
         }
 
         [Test]
         public void DeserializedClassesMustHavePublicDefaultConstructor()
         {
-            Assert.Throws<MissingDefaultConstructorException>(
+            Assert.Throws<InvalidClassForDeserializationException>(
                 () => JSON.Read<ClassWithProtectedDefaultConstructor>("{}"));
         }
 

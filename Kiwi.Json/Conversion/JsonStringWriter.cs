@@ -6,6 +6,8 @@ namespace Kiwi.Json.Conversion
 {
     public class JsonStringWriter : IJsonWriter
     {
+        private const int MaxNestingLevel = 64;
+        private int _nestingLevel;
         public JsonStringWriter() : this(new StringBuilder())
         {
         }
@@ -55,6 +57,7 @@ namespace Kiwi.Json.Conversion
 
         public void WriteArrayStart()
         {
+            IncNesting();
             StringBuilder.Append('[');
         }
 
@@ -66,10 +69,12 @@ namespace Kiwi.Json.Conversion
         public void WriteArrayEnd(int elementCount)
         {
             StringBuilder.Append(']');
+            DecNesting();
         }
 
         public void WriteObjectStart()
         {
+            IncNesting();
             StringBuilder.Append('{');
         }
 
@@ -87,9 +92,23 @@ namespace Kiwi.Json.Conversion
         public void WriteObjectEnd(int memberCount)
         {
             StringBuilder.Append('}');
+            DecNesting();
         }
 
         #endregion
+
+        private void IncNesting()
+        {
+            if (++_nestingLevel > MaxNestingLevel)
+            {
+                throw new JsonSerializationException("Nestinglevel too deep");
+            }
+        }
+
+        private void DecNesting()
+        {
+            --_nestingLevel;
+        }
 
         public override string ToString()
         {

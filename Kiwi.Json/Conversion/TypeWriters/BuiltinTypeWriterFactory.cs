@@ -5,29 +5,48 @@ using System.Linq;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
-    public class BuiltinTypeWriterFactory: ITypeWriterFactory
+    public class BuiltinTypeWriterFactory : ITypeWriterFactory
     {
         private static readonly Dictionary<Type, Func<ITypeWriter>> BuiltinSerializers =
             new[]
                 {
-                    CreateSerializer<bool>((w, v) => w.WriteBool(v)),
-                    CreateSerializer<sbyte>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<short>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<int>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<long>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<byte>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<ushort>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<uint>((w, v) => w.WriteInteger(v)),
-                    CreateSerializer<ulong>((w, v) => w.WriteInteger(Convert.ToInt64(v))),
-                    CreateSerializer<double>((w, v) => w.WriteDouble(v)),
-                    CreateSerializer<float>((w, v) => w.WriteDouble(v)),
-                    CreateSerializer<decimal>((w, v) => w.WriteDouble(Convert.ToDouble(v))),
-                    CreateSerializer<DateTime>((w, v) => w.WriteDate(v)),
-                    CreateSerializer<Guid>((w, v) => w.WriteString(v.ToString("n"))),
-                    CreateSerializer<string>((w, v) => w.WriteString(v)),
-                    CreateSerializer<char>((w, v) => w.WriteString(v.ToString(CultureInfo.CurrentCulture)))
+                    CreateSimpleWriter<bool>((w, v) => w.WriteBool(v)),
+                    CreateSimpleWriter<sbyte>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<short>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<int>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<long>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<byte>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<ushort>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<uint>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleWriter<ulong>((w, v) => w.WriteInteger(Convert.ToInt64(v))),
+                    CreateSimpleWriter<double>((w, v) => w.WriteDouble(v)),
+                    CreateSimpleWriter<float>((w, v) => w.WriteDouble(v)),
+                    CreateSimpleWriter<decimal>((w, v) => w.WriteDouble(Convert.ToDouble(v))),
+                    CreateSimpleWriter<DateTime>((w, v) => w.WriteDate(v)),
+                    CreateSimpleWriter<Guid>((w, v) => w.WriteString(v.ToString("n"))),
+                    CreateSimpleWriter<string>((w, v) => w.WriteString(v)),
+                    CreateSimpleWriter<char>((w, v) => w.WriteString(v.ToString(CultureInfo.CurrentCulture))),
+
+
+                    CreateSimpleNullableWriter<bool>((w, v) => w.WriteBool(v)),
+                    CreateSimpleNullableWriter<sbyte>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<short>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<int>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<long>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<byte>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<ushort>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<uint>((w, v) => w.WriteInteger(v)),
+                    CreateSimpleNullableWriter<ulong>((w, v) => w.WriteInteger(Convert.ToInt64(v))),
+                    CreateSimpleNullableWriter<double>((w, v) => w.WriteDouble(v)),
+                    CreateSimpleNullableWriter<float>((w, v) => w.WriteDouble(v)),
+                    CreateSimpleNullableWriter<decimal>((w, v) => w.WriteDouble(Convert.ToDouble(v))),
+                    CreateSimpleNullableWriter<DateTime>((w, v) => w.WriteDate(v)),
+                    CreateSimpleNullableWriter<Guid>((w, v) => w.WriteString(v.ToString("n"))),
+                    CreateSimpleNullableWriter<char>((w, v) => w.WriteString(v.ToString(CultureInfo.CurrentCulture)))
                 }
                 .ToDictionary(t => t.Item1, t => t.Item2);
+
+        #region ITypeWriterFactory Members
 
         public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
         {
@@ -35,12 +54,33 @@ namespace Kiwi.Json.Conversion.TypeWriters
             return BuiltinSerializers.TryGetValue(type, out factory) ? factory : null;
         }
 
-        private static Tuple<Type, Func<ITypeWriter>> CreateSerializer<T>(
+        #endregion
+
+        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleWriter<T>(
             Action<IJsonWriter, T> action)
         {
             var writer = new SimpleWriter<T>(action) as ITypeWriter;
-            return Tuple.Create(typeof(T), (Func<ITypeWriter>)(() => writer));
+            return Tuple.Create(typeof (T), (Func<ITypeWriter>) (() => writer));
         }
+
+        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action) where T: struct
+        {
+            var writer = new SimpleWriter<T?>(
+                (w, v) =>
+                    {
+                        if (v.HasValue)
+                        {
+                            action(w, v.Value);
+                        }
+                        else
+                        {
+                            w.WriteNull();
+                        }
+                    });
+            return Tuple.Create(typeof(T?), (Func<ITypeWriter>)(() => writer));
+        }
+
+        #region Nested type: SimpleWriter
 
         private class SimpleWriter<T> : ITypeWriter
         {
@@ -61,11 +101,13 @@ namespace Kiwi.Json.Conversion.TypeWriters
                 }
                 else
                 {
-                    _action(writer, (T)value);
+                    _action(writer, (T) value);
                 }
             }
 
             #endregion
         }
+
+        #endregion
     }
 }

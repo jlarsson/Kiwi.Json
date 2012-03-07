@@ -51,6 +51,7 @@
     <Compile Include="Conversion\TypeBuilders\ClassBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\DictionaryBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\DictionaryBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\DictionaryWithWrongKeyTypeBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\EnumBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
@@ -70,8 +71,11 @@
     <Compile Include="Conversion\TypeWriters\ITypeWriterFactory.cs" />
     <Compile Include="Conversion\TypeWriters\JsonValueWriter.cs" />
     <Compile Include="Conversion\TypeWriters\JsonValueWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\StructWriter.cs" />
+    <Compile Include="Conversion\TypeWriters\StructWriterFactory.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriter.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriterFactory.cs" />
+    <Compile Include="JPath\Visitors\AllObjectMembersOrArrayElementsVisitor.cs" />
     <Compile Include="JPath\Visitors\AllObjectValuesVisitor.cs" />
     <Compile Include="JPath\Visitors\IndexedMemberVisitor.cs" />
     <Compile Include="JPath\JsonPathParserRunner.cs" />
@@ -84,7 +88,7 @@
     <Compile Include="JPath\JsonPathValue.cs" />
     <Compile Include="JSON.cs" />
     <Compile Include="JsonException.cs" />
-    <Compile Include="MissingDefaultConstructorException.cs" />
+    <Compile Include="InvalidClassForDeserializationException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Conversion\AbstractJsonReader.cs" />
     <Compile Include="Conversion\TypeBuilders\IArrayBuilder.cs" />
@@ -92,6 +96,7 @@
     <Compile Include="Conversion\TypeBuilders\IObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilder.cs" />
     <Compile Include="Untyped\NullJsonValueVisitor.cs" />
+    <Compile Include="Util\AbstractTextMatcher.cs" />
     <Compile Include="Util\JsonCharacters.cs" />
     <Compile Include="Conversion\JsonReader.cs" />
     <Compile Include="Util\JsonFormats.cs" />

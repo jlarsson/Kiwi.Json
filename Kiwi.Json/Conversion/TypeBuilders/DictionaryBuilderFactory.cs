@@ -10,19 +10,27 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
         {
             // Check which IDictionary<string,T> is implemented
-            var valueType = (from @interface in new[] { type }.Concat(type.GetInterfaces())
-                             where
-                                 @interface.IsGenericType
-                                 && @interface.GetGenericTypeDefinition() == typeof(IDictionary<,>)
-                                 && @interface.GetGenericArguments()[0] == typeof(string)
-                             select @interface.GetGenericArguments()[1])
-                .FirstOrDefault();
-            if (valueType == null)
+            var kvTypes = (from @interface in new[] {type}.Concat(type.GetInterfaces())
+                           where
+                               @interface.IsGenericType
+                               && @interface.GetGenericTypeDefinition() == typeof (IDictionary<,>)
+                           select new
+                                      {
+                                          KeyType = @interface.GetGenericArguments()[0],
+                                          ValueType = @interface.GetGenericArguments()[1]
+                                      }).FirstOrDefault();
+            if (kvTypes == null)
             {
                 return null;
             }
 
-            var concreteClass = type.IsClass ? type : typeof(Dictionary<,>).MakeGenericType(typeof(string), valueType);
+            if (kvTypes.KeyType != typeof(string))
+            {
+                return () => new DictionaryWithWrongKeyTypeBuilder(kvTypes.KeyType);
+
+            }
+
+            var concreteClass = type.IsClass ? type : typeof(Dictionary<,>).MakeGenericType(typeof(string), kvTypes.ValueType);
 
             if (!type.IsAssignableFrom(concreteClass))
             {
@@ -38,7 +46,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
             return
                 (Func<ITypeBuilder>)
-                typeof(DictionaryBuilder<,>).MakeGenericType(concreteClass, valueType).GetMethod("CreateTypeBuilderFactory",
+                typeof(DictionaryBuilder<,>).MakeGenericType(concreteClass, kvTypes.ValueType).GetMethod("CreateTypeBuilderFactory",
                                                                                                  BindingFlags.Static | BindingFlags.Public).
                     Invoke(null, new object[]{registry});
         }

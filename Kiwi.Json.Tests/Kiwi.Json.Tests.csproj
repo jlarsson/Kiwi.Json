@@ -106,7 +106,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Serialization\JsonBinaryFixture.cs" />
     <Compile Include="Serialization\JsonParserFixture.cs" />
-    <Compile Include="WriteJson\Class1.cs" />
+    <Compile Include="WriteJson\WriteFixture.cs" />
+    <Compile Include="WriteJson\WritingCircularDependentDataThrowsFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kiwi.Json\Kiwi.Json.csproj">

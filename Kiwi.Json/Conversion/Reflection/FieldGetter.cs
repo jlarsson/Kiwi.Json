@@ -35,6 +35,11 @@ namespace Kiwi.Json.Conversion.Reflection
                                            true);
             var il = getter.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0);
+
+            if (field.DeclaringType.IsValueType)
+            {
+                il.Emit(OpCodes.Unbox, field.DeclaringType);
+            }
             il.Emit(OpCodes.Ldfld, field);
             if (field.FieldType.IsValueType)
             {

@@ -8,13 +8,10 @@ using Kiwi.Json.Util;
 
 namespace Kiwi.Json.JPath
 {
-    public class JsonPathParserRunner
+    public class JsonPathParserRunner : AbstractStringMatcher
     {
-        private readonly StringMatcher _matcher;
-
-        public JsonPathParserRunner(string path)
+        public JsonPathParserRunner(string path): base(path)
         {
-            _matcher = new StringMatcher(path);
         }
 
         private IEnumerable<IJsonValue> EvalCurrent(IEnumerable<IJsonValue> values)
@@ -56,73 +53,87 @@ namespace Kiwi.Json.JPath
             return values => from value in values select value.Visit(visitor);
         }
 
+        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> AllObjectMembersOrArrayElements()
+        {
+            var visitor = new AllObjectMembersOrArrayElementsVisitor();
+            return values => from value in values from v in value.Visit(visitor) select v;
+        }
+
+
         public Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>>[] Parse()
         {
-            _matcher.Match('$');
+            Match('$');
 
             var evaluators = new List<Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>>>
                                  {
                                      EvalCurrent
                                  };
-            while (!_matcher.EndOfInput)
+            while (!EndOfInput)
             {
-                if (_matcher.TryMatch(".."))
+                if (TryMatch('.'))
                 {
-                    if (_matcher.TryMatch('*'))
+                    if (TryMatch('.'))
                     {
-                        evaluators.Add(EvalAllMembersRecursive());
-                        continue;
-                    }
-                    var member = _matcher.Peek() == '"' ? _matcher.MatchString() : _matcher.MatchIdent();
-                    if (member != null)
-                    {
-                        evaluators.Add(EvalAllObjectsRecursive());
-                        evaluators.Add(Member(member));
-                        continue;
-                    }
+                        if (TryMatch('*'))
+                        {
+                            evaluators.Add(EvalAllMembersRecursive());
+                            continue;
+                        }
+                        var m = PeekNextChar() == '"' ? MatchString() : MatchIdent("string or identifier");
+                        if (m != null)
+                        {
+                            evaluators.Add(EvalAllObjectsRecursive());
+                            evaluators.Add(Member(m));
+                            continue;
+                        }
 
-                    throw _matcher.CreateExpectedException("member");
-                }
-
-                if (_matcher.TryMatch('.'))
-                {
-                    if (_matcher.TryMatch('*'))
+                        throw CreateExpectedException("member");
+                        
+                    }
+                    if (TryMatch('*'))
                     {
                         evaluators.Add(AllMembers());
                         continue;
                     }
-                    var member = _matcher.Peek() == '"' ? _matcher.MatchString() : _matcher.MatchIdent();
+                    var member = PeekNextChar() == '"' ? MatchString() : MatchIdent("string or identifier");
                     if (member != null)
                     {
                         evaluators.Add(Member(member));
                         continue;
                     }
-                    throw _matcher.CreateExpectedException("member");
+                    throw CreateExpectedException("member");
                 }
 
-                if (_matcher.TryMatch('['))
+                if (TryMatch('['))
                 {
-                    var c = (char) _matcher.Peek();
+                    var c = (char) PeekNextChar();
                     if (char.IsDigit(c) || (c == ':'))
                     {
-                        var expr = _matcher.MatchUntil(']');
+                        var expr = MatchUntil(']');
 
                         var indexedEvaluator = CreateEvaluatorFromIndexExpression(expr);
                         if (indexedEvaluator == null)
                         {
-                            throw _matcher.CreateExpectedException("index");
+                            throw CreateExpectedException("index");
                         }
                         evaluators.Add(indexedEvaluator);
-                        _matcher.Match(']');
+                        Match(']');
                         continue;
                     }
 
+                    if (c == '*')
+                    {
+                        MatchAnyChar();
+                        evaluators.Add(AllObjectMembersOrArrayElements());
+                        Match(']');
+                        continue;
+                    }
 
-                    var member = _matcher.Peek() == '"' ? _matcher.MatchString() : _matcher.MatchIdent();
+                    var member = PeekNextChar() == '"' ? MatchString() : MatchIdent("index");
                     if (member != null)
                     {
                         evaluators.Add(Member(member));
-                        _matcher.Match(']');
+                        Match(']');
                         continue;
                     }
                 }
@@ -138,6 +149,11 @@ namespace Kiwi.Json.JPath
                 return Member(int.Parse(m.Value));
             }
             return null;
+        }
+
+        public override Exception CreateExpectedException(object expectedWhat)
+        {
+            throw new JsonPathException(string.Format("Expected {0} at ({1},{2}) in {3}", expectedWhat, Line, Column, Source));
         }
     }
 }

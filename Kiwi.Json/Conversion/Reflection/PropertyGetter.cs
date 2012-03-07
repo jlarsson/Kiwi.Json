@@ -37,7 +37,7 @@ namespace Kiwi.Json.Conversion.Reflection
             il.Emit(OpCodes.Ldarg_0);
             il.Emit(OpCodes.Castclass, property.DeclaringType);
             il.EmitCall(OpCodes.Callvirt, property.GetGetMethod(), null);
-            if (!property.PropertyType.IsClass)
+            if (property.PropertyType.IsValueType)
             {
                 il.Emit(OpCodes.Box, property.PropertyType);
             }

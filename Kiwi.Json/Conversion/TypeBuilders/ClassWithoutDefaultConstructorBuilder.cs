@@ -13,7 +13,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override IObjectBuilder CreateObjectBuilder()
         {
-            throw new MissingDefaultConstructorException(_classType);
+            throw new InvalidClassForDeserializationException(
+                string.Format("Cannot deserialize instance of {0} since it has no public default constructor defined",
+                              _classType));
         }
 
         public override object CreateNull()
