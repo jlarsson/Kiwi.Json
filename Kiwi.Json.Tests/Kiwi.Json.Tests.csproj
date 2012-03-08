@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JPath\JsonPathFixture.cs" />
+    <Compile Include="ParseTextToCustomModel\SelfReferencingClassFixture.cs" />
     <Compile Include="ScratchFixture.cs" />
     <Compile Include="Conversion\FromCollectionFixture.cs" />
     <Compile Include="Conversion\FromSimpleTypeFixture.cs" />

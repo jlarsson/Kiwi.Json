@@ -26,7 +26,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             {
                 using (var session = CreateSession())
                 {
-                    return session.CreateSqlCommand("SELECT DocumentCollectionName FROM DocumentCollections")
+                    return session.CreateSqlCommand("SELECT CollectionName FROM DocumentCollection")
                         .Query(r => GetCollection(r.GetString(0)));
                 }
             }
@@ -48,28 +48,8 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                         "Kiwi.Json.DocumentDatabase.sqlite-schema.sql")).ReadToEnd();
 
                 session.DatabaseCommandFactory.CreateSqlCommand(sql).Execute();
-/*
-                session.DatabaseCommandFactory.CreateSqlCommand(@"
-CREATE TABLE IF NOT EXISTS DocumentCollections(
-    DocumentCollectionId INTEGER PRIMARY KEY AUTOINCREMENT, 
-    DocumentCollectionName TEXT COLLATE NOCASE UNIQUE
-)")
-                 .Execute();
-                session.DatabaseCommandFactory.CreateSqlCommand(@"
-CREATE TABLE IF NOT EXISTS Documents( 
-    DocumentKey TEXT COLLATE NOCASE, 
-    DocumentAsJson TEXT, 
-    DocumentCollectionId INTEGER REFERENCES DocumentCollections (DocumentCollectionId) ON DELETE CASCADE,
-    PRIMARY KEY (DocumentCollectionId, DocumentKey)
-)")
-                    .Execute();
-                session.DatabaseCommandFactory.CreateSqlCommand(@"
-CREATE TABLE IF NOT EXISTS CollectionIndices(
-    DocumentCollectionId INT REFERENCES DocumentCollections (DocumentCollectionId) ON DELETE CASCADE, 
-    JPath TEXT UNIQUE
-)")
-                    .Execute();
- */
+
+                session.Commit();
             }
         }
 

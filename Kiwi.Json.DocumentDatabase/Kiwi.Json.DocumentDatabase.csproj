@@ -53,8 +53,24 @@
     <Compile Include="Data\DbCommandDatabaseCommand.cs" />
     <Compile Include="Data\IDatabaseCommand.cs" />
     <Compile Include="Data\ICollectionSession.cs" />
+    <Compile Include="Data\IndexDefinition.cs" />
+    <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="IDatabase.cs" />
     <Compile Include="IDocumentCollection.cs" />
+    <Compile Include="Indexing\ExtractFilterValuesVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\AbstractComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\BoolComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\Class1.cs" />
+    <Compile Include="Indexing\FilterMatcher.cs" />
+    <Compile Include="Indexing\FilterMatching\CreateFilterComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\DateComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\DoubleComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\IntegerComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\NullComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\ObjectComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterMatching\StringComparerVisitor.cs" />
+    <Compile Include="Indexing\IJsonFilterMatcher.cs" />
+    <Compile Include="InvalidSessionStateException.cs" />
     <Compile Include="Sqlite\SqliteDocumentCollection.cs" />
     <Compile Include="Sqlite\MemoryDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -72,6 +88,7 @@
   <ItemGroup>
     <EmbeddedResource Include="sqlite-schema.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,6 +1,7 @@
 ﻿using Kiwi.Json.Conversion;
 using Kiwi.Json.Conversion.TypeBuilders;
 using Kiwi.Json.Conversion.TypeWriters;
+using Kiwi.Json.JPath;
 using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json
@@ -43,6 +44,11 @@ namespace Kiwi.Json
             var writer = new JsonStringWriter();
             TypeWriterRegistry.GetTypeWriterForValue(obj).Write(writer, obj);
             return writer.ToString();
+        }
+
+        public static IJsonPath ParseJsonPath(string jsonPath)
+        {
+            return new JsonPath(jsonPath);
         }
     }
 }

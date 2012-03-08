@@ -52,10 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionsAreCreatedWhenWrittenTo.cs" />
+    <Compile Include="FilterFixture.cs" />
     <Compile Include="Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PutOverwritesExistingObject.cs" />
     <Compile Include="SameKeyCanExistsInDifferentCollections.cs" />
+    <Compile Include="ScratchFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

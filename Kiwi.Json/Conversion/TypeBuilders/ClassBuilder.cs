@@ -8,9 +8,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : new()
     {
-        private readonly Dictionary<string, ClassMember> _memberSetters;
+        private readonly Lazy<Dictionary<string, ClassMember>> _memberSetters;
 
-        private ClassBuilder(Dictionary<string, ClassMember> memberSetters)
+        private ClassBuilder(Lazy<Dictionary<string, ClassMember>> memberSetters)
         {
             _memberSetters = memberSetters;
         }
@@ -39,7 +39,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override object GetMemberState(string memberName, object @object)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (_memberSetters.Value.TryGetValue(memberName, out member))
             {
                 return member.Getter.GetMemberValue(@object);
             }
@@ -49,7 +49,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override ITypeBuilder GetMemberBuilder(string memberName)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (_memberSetters.Value.TryGetValue(memberName, out member))
             {
                 return member.MemberBuilder;
             }
@@ -59,7 +59,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override void SetMember(string memberName, object @object, object value)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (_memberSetters.Value.TryGetValue(memberName, out member))
             {
                 member.Setter.SetValue(@object, value);
             }
@@ -74,7 +74,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            var memberSetters = (from property in
+            var memberSetters = new Lazy<Dictionary<string, ClassMember>>(() => (from property in
                                      typeof (TClass).GetProperties(
                                          BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Public |
                                          BindingFlags.Instance)
@@ -98,7 +98,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                    Setter = new FieldSetter(field),
                                    MemberBuilder = registry.GetTypeBuilder(field.FieldType)
                                })
-                .ToDictionary(m => m.Name, m => m);
+                .ToDictionary(m => m.Name, m => m));
 
             var classBuilder = new ClassBuilder<TClass>(memberSetters);
             return () => classBuilder;
