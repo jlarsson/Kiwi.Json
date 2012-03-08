@@ -38,7 +38,7 @@ namespace Kiwi.Json.DocumentDatabase.Data
             Executor.Execute(this);
         }
 
-        public IEnumerable<T> Query<T>(Func<IDataReader, T> map)
+        public IEnumerable<T> Query<T>(Func<IAccessor, T> map)
         {
             return Executor.Query(this, map);
         }

@@ -72,7 +72,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT Definition FROM CollectionIndex CI INNER JOIN DocumentCollection C ON C.CollectionId = C.CollectionId WHERE CI.JsonPath = @jsonPath AND C.CollectionName = @collection")
                 .Param("collection", _collection.Name)
                 .Param("jsonPath", definition.JsonPath)
-                .Query(r => JSON.Read<IndexDefinition>(r.GetString(0)))
+                .Query(a => JSON.Read<IndexDefinition>(a.String(0)))
                 .FirstOrDefault();
 
             if (existingIndex != null)
@@ -91,14 +91,14 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     .Param("collection", _collection.Name)
                     .Param("jsonPath", definition.JsonPath)
                     .Param("definition", JSON.Write(definition))
-                    .Query(r => r.GetInt64(0)).First();
+                    .Query(a => a.Long(0)).First();
 
 
             var documents = from document in
                 DatabaseCommandFactory.CreateSqlCommand(
                     "SELECT DocumentId, Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
                     .Param("collection", _collection.Name)
-                    .Query(r => new {DocumentId = r.GetInt64(0), Document = JSON.Read(r.GetString(1))})
+                    .Query(a => new {DocumentId = a.Long(0), Document = JSON.Read(a.String(1))})
             select document;
 
 
@@ -118,13 +118,19 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         public IEnumerable<KeyValuePair<string,T>> Find<T>(IJsonValue filter)
         {
+            var alldocs = DatabaseCommandFactory
+                .CreateSqlCommand(
+                    "SELECT D.[Key], D.Json, C.CollectionName FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId")
+                .Query(a => new { Key = a.String(0), Json = a.String(1), Collection = a.String(2) })
+                .ToArray();
+
             var indices = DatabaseCommandFactory.CreateSqlCommand(
                 "SELECT CI.CollectionIndexId, CI.JsonPath FROM CollectionIndex CI INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
                 .Param("collection", _collection.Name)
-                .Query(r => new
+                .Query(a => new
                                 {
-                                    IndexId = r.GetInt64(0),
-                                    JsonPath = JSON.ParseJsonPath(r.GetString(1)),
+                                    IndexId = a.Long(0),
+                                    JsonPath = JSON.ParseJsonPath(a.String(1)),
                                     
                                 });
 
@@ -161,9 +167,10 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             }
 
             var f = FilterStrategy.CreateFilter(filter);
-            return (from kv in command.Query(r => new KeyValuePair<string,IJsonValue>(r.GetString(0), JSON.Read(r.GetString(1))))
+            return (from kv in command.Query(a => new KeyValuePair<string,IJsonValue>(a.String(0), JSON.Read(a.String(1))))
                     where f.Matches(kv.Value)
-                    select new KeyValuePair<string, T>(kv.Key, kv.Value.ToObject<T>())).ToList();
+                    select new KeyValuePair<string, T>(kv.Key, kv.Value.ToObject<T>())
+                   ).ToList();
         }
 
         public T Get<T>(string key)
@@ -172,8 +179,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
                 .Param("collection", _collection.Name)
                 .Param("key", key)
-                .Query(r => r.GetString(0))
-                .Select(JSON.Read<T>)
+                .Query(a => JSON.Read<T>(a.String(0)))
                 .FirstOrDefault();
         }
 
@@ -186,7 +192,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 "SELECT D.DocumentId FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
                 .Param("collection", _collection.Name)
                 .Param("key", key)
-                .Query(r => (long?) r.GetInt64(0)).FirstOrDefault();
+                .Query(a => (long?) a.Long(0)).FirstOrDefault();
             if (oldDocumentId.HasValue)
             {
                 documentId = oldDocumentId.Value;
@@ -204,17 +210,17 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     .Param("collection", _collection.Name)
                     .Param("key", key)
                     .Param("json", JSON.Write(document))
-                    .Query(r => r.GetInt64(0))
+                    .Query(a => a.Long(0))
                     .First();
             }
 
             var indices = DatabaseCommandFactory.CreateSqlCommand(
                 "SELECT CollectionIndexId, JsonPath FROM CollectionIndex CI INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
                 .Param("collection", _collection.Name)
-                .Query(r => new
+                .Query(a => new
                 {
-                    IndexId = r.GetInt64(0),
-                    JsonPath = JSON.ParseJsonPath(r.GetString(1))
+                    IndexId = a.Long(0),
+                    JsonPath = JSON.ParseJsonPath(a.String(1))
                 });
 
             if (oldDocumentId.HasValue)
@@ -259,15 +265,18 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             ExecuteCommand(command, c => c.ExecuteNonQuery());
         }
 
-        public IEnumerable<T> Query<T>(IDatabaseCommand command, Func<IDataReader, T> map)
+        public IEnumerable<T> Query<T>(IDatabaseCommand command, Func<IAccessor, T> map)
         {
             return ExecuteCommand(command, c =>
                                                {
+                                                   var dt = new DataTable();
                                                    using (var reader = c.ExecuteReader())
                                                    {
-                                                       return Enumerable.Range(0, Int32.MaxValue).TakeWhile(
-                                                           i => reader.Read()).Select(i => map(reader)).ToList();
+                                                       dt.Load(reader);
                                                    }
+                                                   return from row in dt.Rows.OfType<DataRow>()
+                                                          let accessor = new DataRowAccessor(row)
+                                                          select map(accessor);
                                                });
         }
 

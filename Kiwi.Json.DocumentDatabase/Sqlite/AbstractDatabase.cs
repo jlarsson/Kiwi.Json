@@ -18,7 +18,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 using (var session = CreateSession())
                 {
                     return session.CreateSqlCommand("SELECT CollectionName FROM DocumentCollection")
-                        .Query(r => GetCollection(r.GetString(0)));
+                        .Query(a => GetCollection(a.String(0)));
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             Console.Out.WriteLine("## dump");
             var collections = CreateSession().CreateSqlCommand(
                 "SELECT CollectionName, CollectionId FROM DocumentCollection")
-                .Query(r => new {Name = r.GetString(0), Id = r.GetInt32(1)});
+                .Query(a => new {Name = a.String(0), Id = a.Long(1)});
 
             foreach (var collection in collections)
             {
@@ -68,7 +68,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
             var documents = CreateSession().CreateSqlCommand(
                 "SELECT D.DocumentId, D.[Key], D.Json, C.CollectionName FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId")
-                .Query(r => new {Id = r.GetInt64(0), Key = r.GetString(1), Json = r.GetString(2), Collection = r.GetString(3)});
+                .Query(a => new {Id = a.Long(0), Key = a.String(1), Json = a.String(2), Collection = a.String(3)});
 
             foreach (var document in documents)
             {
@@ -77,7 +77,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
             var indexValues = CreateSession().CreateSqlCommand(
                 "SELECT C.CollectionName, D.[Key], CIV.Json, CI.JsonPath FROM CollectionIndexValue CIV INNER JOIN CollectionIndex CI ON CI.CollectionIndexId = CIV.CollectionIndexId INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionID INNER JOIN Document D ON D.DocumentId = CIV.DocumentId")
-                .Query(r => new { Collection = r.GetString(0), Key= r.GetString(1), Json = r.GetString(2), JsonPath = r.GetString(3) });
+                .Query(a => new { Collection = a.String(0), Key= a.String(1), Json = a.String(2), JsonPath = a.String(3) });
 
             foreach (var iv in indexValues)
             {

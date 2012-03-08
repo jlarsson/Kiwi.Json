@@ -10,6 +10,6 @@ namespace Kiwi.Json.DocumentDatabase.Data
         IEnumerable<KeyValuePair<string, object>> Parameters { get; }
         IDatabaseCommand Param(string name, object value);
         void Execute();
-        IEnumerable<T> Query<T>(Func<IDataReader, T> map);
+        IEnumerable<T> Query<T>(Func<IAccessor, T> map);
     }
 }

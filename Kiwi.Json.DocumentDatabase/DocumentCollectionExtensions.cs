@@ -19,7 +19,9 @@ namespace Kiwi.Json.DocumentDatabase
         {
             using (var session = collection.CreateSession())
             {
-                return session.Find<IJsonValue>(JSON.ToJson(filter));
+                var result = session.Find<IJsonValue>(JSON.ToJson(filter));
+                session.Commit();
+                return result;
             }
         }
 

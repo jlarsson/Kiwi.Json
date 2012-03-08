@@ -36,10 +36,12 @@ namespace Kiwi.Json.DocumentDatabase.Tests
             coll.Put("B", new { K = 2, B = "two" });
             db.Dump();
 
+            var x = coll.Find(new { K = 2 });
+
             var a = coll.Find(new {B = "two"});
 
 
-            //a = coll.Find(new { K = 2 });
+            
         }
     }
 }

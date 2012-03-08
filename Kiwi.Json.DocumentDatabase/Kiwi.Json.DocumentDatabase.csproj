@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\IAccessor.cs" />
     <Compile Include="Data\IDatabaseCommandExecutor.cs" />
     <Compile Include="Data\IDatabaseCommandFactory.cs" />
     <Compile Include="Data\DbCommandDatabaseCommand.cs" />
