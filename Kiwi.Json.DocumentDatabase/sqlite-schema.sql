@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS CollectionIndexValue(
 	DocumentId INTEGER REFERENCES Document (DocumentId) ON DELETE CASCADE,
 	Json TEXT COLLATE NOCASE
 );
-CREATE INDEX IX_CollectionIndexValue_Json ON CollectionIndexValue(Json);
-CREATE INDEX IX_CollectionIndexValue_DocumentId ON CollectionIndexValue(DocumentId);
-CREATE INDEX IX_CollectionIndexValue_CollectionIndexId ON CollectionIndex(CollectionIndexId);
+CREATE INDEX IF NOT EXISTS IX_CollectionIndexValue_Json ON CollectionIndexValue(Json);
+CREATE INDEX IF NOT EXISTS IX_CollectionIndexValue_DocumentId ON CollectionIndexValue(DocumentId);
+CREATE INDEX IF NOT EXISTS IX_CollectionIndexValue_CollectionIndexId ON CollectionIndex(CollectionIndexId);
 
