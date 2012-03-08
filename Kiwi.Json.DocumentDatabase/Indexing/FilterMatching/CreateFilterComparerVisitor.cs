@@ -4,16 +4,9 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
 {
     internal class CreateFilterComparerVisitor: IJsonValueVisitor<IJsonValueVisitor<bool>>
     {
-        private readonly IJsonFilterMatcher _matcher;
-
-        public CreateFilterComparerVisitor(IJsonFilterMatcher matcher)
-        {
-            _matcher = matcher;
-        }
-
         public IJsonValueVisitor<bool> VisitArray(IJsonArray value)
         {
-            return new ArrayComparerVisitor(value, _matcher);
+            return new ArrayComparerVisitor(value);
         }
 
         public IJsonValueVisitor<bool> VisitBool(IJsonBool value)
@@ -43,7 +36,7 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
 
         public IJsonValueVisitor<bool> VisitObject(IJsonObject value)
         {
-            return new ObjectComparerVisitor(value,_matcher);
+            return new ObjectComparerVisitor(value);
         }
 
         public IJsonValueVisitor<bool> VisitString(IJsonString value)

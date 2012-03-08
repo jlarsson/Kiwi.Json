@@ -9,6 +9,14 @@ namespace Kiwi.Json.Untyped
     [DebuggerDisplay("{ToString()}")]
     public class JsonArray : List<IJsonValue>, IJsonArray
     {
+        public JsonArray()
+        {
+        }
+
+        public JsonArray(IEnumerable<IJsonValue> collection) : base(collection)
+        {
+        }
+
         #region IJsonArray Members
 
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)

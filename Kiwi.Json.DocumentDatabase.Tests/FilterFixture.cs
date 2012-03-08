@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Kiwi.Json.DocumentDatabase.Tests
 {
     [TestFixture]
-    public class FilterFixture
+    public class FilterStrategyFixture
     {
         TestCaseData Case(object filter, object value, bool expectedMatch)
         {
@@ -69,13 +69,46 @@ namespace Kiwi.Json.DocumentDatabase.Tests
                     false
                     );
 
+                // Match objects
+                yield return Case(
+                    new { A = new {B = 1} },
+                    new { A = new { B = 1, X = 1, Y = 1 }, Q = 1 },
+                    true
+                    );
+                yield return Case(
+                    new { A = new { B = 2 } },
+                    new { A = new { B = 1, X = 1, Y = 1 } },
+                    false
+                    );
+
+                // Case insesitive strings
+                yield return Case(
+                    new { A = "VALUE" },
+                    new { A = "value" },
+                    true
+                    );
+                yield return Case(
+                    new { A = "value" },
+                    new { A = "VALUE" },
+                    true
+                    );
+                yield return Case(
+                    new { A = "value" },
+                    new { A = "value" },
+                    true
+                    );
+                yield return Case(
+                    new { A = "value" },
+                    new { A = "another value" },
+                    false
+                    );
             }
         }
 
         [TestCaseSource("TestCaseData")]
         public void Write(IJsonValue filter, IJsonValue value, bool expectedMatch)
         {
-            Assert.That(expectedMatch, Is.EqualTo(new FilterMatcher().IsFilterMatch(filter, value)));
+            Assert.That(expectedMatch, Is.EqualTo(new FilterStrategy().CreateFilter(filter).Matches(value)));
         }
     }
 }

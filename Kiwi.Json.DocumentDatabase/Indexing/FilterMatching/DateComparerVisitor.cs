@@ -14,7 +14,7 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
 
         public override bool VisitDate(IJsonDate value)
         {
-            return _value.Date == value.Value.Date;
+            return _value == value.Value;
         }
     }
 }

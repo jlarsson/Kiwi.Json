@@ -9,6 +9,15 @@ namespace Kiwi.Json.Untyped
     [DebuggerDisplay("{ToString()}")]
     public class JsonObject : Dictionary<string, IJsonValue>, IJsonObject
     {
+        public JsonObject()
+        {
+        }
+
+        public JsonObject(IDictionary<string, IJsonValue> dictionary)
+            : base(dictionary)
+        {
+        }
+
         #region IJsonObject Members
 
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)

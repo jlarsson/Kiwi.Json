@@ -57,11 +57,12 @@
     <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="IDatabase.cs" />
     <Compile Include="IDocumentCollection.cs" />
+    <Compile Include="Indexing\ConvertJsonValueToIndexNormalForm.cs" />
     <Compile Include="Indexing\ExtractFilterValuesVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\AbstractComparerVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\BoolComparerVisitor.cs" />
-    <Compile Include="Indexing\FilterMatching\Class1.cs" />
-    <Compile Include="Indexing\FilterMatcher.cs" />
+    <Compile Include="Indexing\FilterMatching\ArrayComparerVisitor.cs" />
+    <Compile Include="Indexing\FilterStrategy.cs" />
     <Compile Include="Indexing\FilterMatching\CreateFilterComparerVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\DateComparerVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\DoubleComparerVisitor.cs" />
@@ -69,7 +70,10 @@
     <Compile Include="Indexing\FilterMatching\NullComparerVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\ObjectComparerVisitor.cs" />
     <Compile Include="Indexing\FilterMatching\StringComparerVisitor.cs" />
-    <Compile Include="Indexing\IJsonFilterMatcher.cs" />
+    <Compile Include="Indexing\IConvertJsonValueToIndexNormalForm.cs" />
+    <Compile Include="Indexing\IJsonFilter.cs" />
+    <Compile Include="Indexing\IJsonFilterStrategy.cs" />
+    <Compile Include="Indexing\JsonFilter.cs" />
     <Compile Include="InvalidSessionStateException.cs" />
     <Compile Include="Sqlite\SqliteDocumentCollection.cs" />
     <Compile Include="Sqlite\MemoryDatabase.cs" />

@@ -5,21 +5,20 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
 {
     internal class ArrayComparerVisitor : AbstractComparerVisitor
     {
-        private readonly IJsonFilterMatcher _matcher;
         private readonly IJsonArray _value;
 
-        public ArrayComparerVisitor(IJsonArray value, IJsonFilterMatcher matcher)
+        public ArrayComparerVisitor(IJsonArray value)
         {
             _value = value;
-            _matcher = matcher;
         }
 
         public override bool VisitArray(IJsonArray value)
         {
-            return
-                (_value.Count == 0)
-                ||
-                _value.All(a => value.Any(aa => _matcher.IsFilterMatch(a, aa)));
+            if (_value.Count == 0)
+            {
+                return true;
+            }
+            return _value.Select(elem => new JsonFilter(elem)).All(filter => value.Any(filter.Matches));
         }
     }
 }

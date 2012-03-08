@@ -3,9 +3,9 @@ using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.DocumentDatabase.Indexing
 {
-    public interface IJsonFilterMatcher
+    public interface IJsonFilterStrategy
     {
+        IJsonFilter CreateFilter(IJsonValue filter);
         IEnumerable<IJsonValue> GetFilterValues(IJsonValue value);
-        bool IsFilterMatch(IJsonValue filter, IJsonValue value);
     }
 }

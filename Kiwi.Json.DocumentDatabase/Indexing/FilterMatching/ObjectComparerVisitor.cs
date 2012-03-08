@@ -5,12 +5,10 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
     internal class ObjectComparerVisitor : AbstractComparerVisitor
     {
         private readonly IJsonObject _value;
-        private readonly IJsonFilterMatcher _matcher;
 
-        public ObjectComparerVisitor(IJsonObject value, IJsonFilterMatcher matcher)
+        public ObjectComparerVisitor(IJsonObject value)
         {
             _value = value;
-            _matcher = matcher;
         }
 
         public override bool VisitObject(IJsonObject value)
@@ -22,7 +20,9 @@ namespace Kiwi.Json.DocumentDatabase.Indexing.FilterMatching
                 {
                     return false;
                 }
-                if (!_matcher.IsFilterMatch(kv.Value, v))
+
+                var filter = new JsonFilter(kv.Value);
+                if (!filter.Matches(v))
                 {
                     return false;
                 }

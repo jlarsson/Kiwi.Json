@@ -15,12 +15,12 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         private SessionState _state;
         private SQLiteTransaction _transaction;
 
-        public IJsonFilterMatcher Matcher { get; set; }
+        public IJsonFilterStrategy FilterStrategy { get; set; }
         public SqliteCollectionSession(SQLiteConnection connection, IDocumentCollection collection)
         {
             Connection = connection;
             Collection = collection;
-            Matcher = new FilterMatcher();
+            FilterStrategy = new FilterStrategy();
         }
 
         public SQLiteConnection Connection { get; set; }
@@ -166,10 +166,9 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
                     .Param("collection", Collection.Name);
             }
 
-            var matcher = new FilterMatcher();
-
+            var f = FilterStrategy.CreateFilter(filter);
             return (from kv in command.Query(r => new KeyValuePair<string,IJsonValue>(r.GetString(0), JSON.Read(r.GetString(1))))
-                    where matcher.IsFilterMatch(filter, kv.Value)
+                    where f.Matches(kv.Value)
                     select new KeyValuePair<string, T>(kv.Key, kv.Value.ToObject<T>())).ToList();
         }
 
@@ -238,7 +237,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
             foreach (var index in indices)
             {
                 var indexValues = from pathMatch in index.JsonPath.Evaluate(document)
-                                  from filterValue in Matcher.GetFilterValues(pathMatch)
+                                  from filterValue in FilterStrategy.GetFilterValues(pathMatch)
                                   select filterValue;
 
                 foreach (var indexValue in indexValues)
