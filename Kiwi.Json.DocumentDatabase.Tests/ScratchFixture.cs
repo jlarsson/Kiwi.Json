@@ -30,10 +30,12 @@ namespace Kiwi.Json.DocumentDatabase.Tests
                 JsonPath = "$.B"
             });
 
-            coll.Put("A", new {K = 1, B = "one"});
+
+            coll.Put("A", new { K = 1, B = "one" });
             db.Dump();
 
             coll.Put("B", new { K = 2, B = "two" });
+            coll.Put("C", new { K = 2, B = "two" });
             db.Dump();
 
             var x = coll.Find(new { K = 2 });

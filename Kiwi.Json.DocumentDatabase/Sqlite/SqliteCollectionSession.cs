@@ -14,7 +14,6 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         private readonly ITxFactory _txFactory;
         private readonly IDocumentCollection _collection;
         private ITx _tx;
-        private SessionState _state;
 
         public IJsonFilterStrategy FilterStrategy { get; set; }
         public SqliteCollectionSession(ITxFactory txFactory, IDocumentCollection collection)
@@ -33,36 +32,26 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         public void Dispose()
         {
-            Rollback();
+            if (_tx != null)
+            {
+                _tx.Dispose();
+                _tx = null;
+            }
         }
 
         public void Commit()
         {
-            if (_state == SessionState.Disposed)
-            {
-                return;
-            }
-            if (_state != SessionState.Running)
-            {
-                throw new InvalidSessionStateException();
-            }
-            _state = SessionState.Disposed;
             if (_tx != null)
             {
                 _tx.Commit();
-                _tx.Dispose();
-                _tx = null;
             }
         }
 
         public void Rollback()
         {
-            _state = SessionState.Disposed;
             if (_tx != null)
             {
                 _tx.Rollback();
-                _tx.Dispose();
-                _tx = null;
             }
         }
 
@@ -293,10 +282,6 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         protected virtual T ExecuteCommand<T>(IDatabaseCommand command, Func<DbCommand, T> executeCommand)
         {
-            if (_state != SessionState.Running)
-            {
-                throw new InvalidSessionStateException();
-            }
             if (_tx == null)
             {
                 _tx = _txFactory.CreateTransaction();
@@ -320,20 +305,9 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             }
             catch (Exception e)
             {
-                _state = SessionState.Failed;
+                _tx.Rollback();
                 throw;
             }
         }
-
-        #region Nested type: SessionState
-
-        private enum SessionState
-        {
-            Running,
-            Disposed,
-            Failed
-        }
-
-        #endregion
     }
 }

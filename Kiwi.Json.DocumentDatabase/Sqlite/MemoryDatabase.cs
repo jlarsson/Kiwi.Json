@@ -35,6 +35,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         {
             private readonly SQLiteConnection _connection;
             private SQLiteTransaction _transaction;
+            private bool _isDisposed;
 
             public Tx(SQLiteConnection connection)
             {
@@ -45,6 +46,11 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
             public DbCommand CreateCommand()
             {
+                if (_isDisposed)
+                {
+                    throw new InvalidSessionStateException();
+                }
+
                 if (_transaction == null)
                 {
                     _transaction = _connection.BeginTransaction();
@@ -56,25 +62,37 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
             public void Commit()
             {
+                if (_isDisposed)
+                {
+                    throw new InvalidSessionStateException();
+                }
+                _isDisposed = true;
                 if (_transaction != null)
                 {
                     _transaction.Commit();
+                    _transaction = null;
                 }
             }
 
             public void Rollback()
             {
+                if (_isDisposed)
+                {
+                    throw new InvalidSessionStateException();
+                }
+                _isDisposed = true;
                 if (_transaction != null)
                 {
                     _transaction.Rollback();
+                    _transaction = null;
                 }
             }
 
             public void Dispose()
             {
-                if (_transaction != null)
+                if (!_isDisposed)
                 {
-                    _transaction.Dispose();
+                    Rollback();
                 }
             }
 

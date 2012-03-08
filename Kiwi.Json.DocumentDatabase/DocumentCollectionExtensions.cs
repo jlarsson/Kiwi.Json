@@ -29,7 +29,9 @@ namespace Kiwi.Json.DocumentDatabase
         {
             using (var session = collection.CreateSession())
             {
-                return session.Get<T>(key);
+                var result = session.Get<T>(key);
+                session.Commit();
+                return result;
             }
         }
 
