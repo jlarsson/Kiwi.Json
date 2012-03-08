@@ -1,18 +1,16 @@
-using System.Data.SQLite;
 using Kiwi.Json.DocumentDatabase.Data;
 
 namespace Kiwi.Json.DocumentDatabase.Sqlite
 {
     public class SqliteDocumentCollection : IDocumentCollection
     {
-        public SqliteDocumentCollection(string name, MemoryDatabase database)
+        public SqliteDocumentCollection(string name, AbstractDatabase database)
         {
             Name = name;
             Database = database;
         }
 
-        public MemoryDatabase Database { get; set; }
-        public SQLiteConnection Connection { get; set; }
+        public AbstractDatabase Database { get; set; }
 
         #region IDocumentCollection Members
 

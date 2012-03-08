@@ -75,6 +75,9 @@
     <Compile Include="Indexing\IJsonFilterStrategy.cs" />
     <Compile Include="Indexing\JsonFilter.cs" />
     <Compile Include="InvalidSessionStateException.cs" />
+    <Compile Include="Sqlite\AbstractDatabase.cs" />
+    <Compile Include="Sqlite\ITx.cs" />
+    <Compile Include="Sqlite\ITxFactory.cs" />
     <Compile Include="Sqlite\SqliteDocumentCollection.cs" />
     <Compile Include="Sqlite\MemoryDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

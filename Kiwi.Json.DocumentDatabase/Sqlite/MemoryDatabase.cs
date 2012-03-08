@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SQLite;
-using System.IO;
-using System.Reflection;
 
 namespace Kiwi.Json.DocumentDatabase.Sqlite
 {
-    public class MemoryDatabase : IDatabase
+    public class MemoryDatabase : AbstractDatabase, ITxFactory
     {
         public MemoryDatabase()
         {
@@ -18,71 +15,72 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         protected SQLiteConnection Connection { get; private set; }
 
-        #region IDatabase Members
-
-        public IEnumerable<IDocumentCollection> Collections
+        protected override ITxFactory TxFactory
         {
-            get
-            {
-                using (var session = CreateSession())
-                {
-                    return session.CreateSqlCommand("SELECT CollectionName FROM DocumentCollection")
-                        .Query(r => GetCollection(r.GetString(0)));
-                }
-            }
+            get { return this; }
         }
 
-        public IDocumentCollection GetCollection(string name)
+        #region ITxFactory Members
+
+        ITx ITxFactory.CreateTransaction()
         {
-            return new SqliteDocumentCollection(name, this);
+            return new Tx(Connection);
         }
 
         #endregion
 
-        private void EnforceSchema()
+        #region Nested type: Tx
+
+        private class Tx : ITx
         {
-            using (var session = CreateSession())
+            private readonly SQLiteConnection _connection;
+            private SQLiteTransaction _transaction;
+
+            public Tx(SQLiteConnection connection)
             {
-                var sql = new StreamReader(
-                    Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                        "Kiwi.Json.DocumentDatabase.sqlite-schema.sql")).ReadToEnd();
-
-                session.DatabaseCommandFactory.CreateSqlCommand(sql).Execute();
-
-                session.Commit();
-            }
-        }
-
-        protected SqliteCollectionSession CreateSession()
-        {
-            return new SqliteCollectionSession(Connection, null);
-        }
-
-        protected internal SqliteCollectionSession CreateCollectionSession(IDocumentCollection collection)
-        {
-            return new SqliteCollectionSession(Connection, collection);
-        }
-
-        public void Dump()
-        {
-            Console.Out.WriteLine("## dump");
-            var collections = CreateSession().CreateSqlCommand(
-                "SELECT DocumentCollectionName, DocumentCollectionId FROM DocumentCollections")
-                .Query(r => new {Name = r.GetString(0), Id = r.GetInt32(1)});
-
-            foreach (var collection in collections)
-            {
-                Console.Out.WriteLine("collection {0}: {1}", collection.Id, collection.Name);
+                _connection = connection;
             }
 
-            var documents = CreateSession().CreateSqlCommand(
-                "SELECT D.DocumentKey, D.DocumentAsJson, C.DocumentCollectionName FROM Documents D INNER JOIN DocumentCollections C ON D.DocumentCollectionId = C.DocumentCollectionId")
-                .Query(r => new {Key = r.GetString(0), Json = r.GetString(1), Collection = r.GetString(2)});
+            #region ITx Members
 
-            foreach (var document in documents)
+            public DbCommand CreateCommand()
             {
-                Console.Out.WriteLine("{0} ({1}): {2}", document.Key, document.Collection, document.Json);
+                if (_transaction == null)
+                {
+                    _transaction = _connection.BeginTransaction();
+                }
+                var command = _connection.CreateCommand();
+                command.Transaction = _transaction;
+                return command;
             }
+
+            public void Commit()
+            {
+                if (_transaction != null)
+                {
+                    _transaction.Commit();
+                }
+            }
+
+            public void Rollback()
+            {
+                if (_transaction != null)
+                {
+                    _transaction.Rollback();
+                }
+            }
+
+            public void Dispose()
+            {
+                if (_transaction != null)
+                {
+                    _transaction.Dispose();
+                }
+            }
+
+            #endregion
         }
+
+        #endregion
     }
 }

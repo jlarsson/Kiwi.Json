@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SQLite;
 using System.Linq;
 using Kiwi.Json.DocumentDatabase.Data;
 using Kiwi.Json.DocumentDatabase.Indexing;
@@ -12,19 +11,18 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 {
     public class SqliteCollectionSession : ICollectionSession, IDatabaseCommandFactory, IDatabaseCommandExecutor
     {
+        private readonly ITxFactory _txFactory;
+        private readonly IDocumentCollection _collection;
+        private ITx _tx;
         private SessionState _state;
-        private SQLiteTransaction _transaction;
 
         public IJsonFilterStrategy FilterStrategy { get; set; }
-        public SqliteCollectionSession(SQLiteConnection connection, IDocumentCollection collection)
+        public SqliteCollectionSession(ITxFactory txFactory, IDocumentCollection collection)
         {
-            Connection = connection;
-            Collection = collection;
+            _txFactory = txFactory;
+            _collection = collection;
             FilterStrategy = new FilterStrategy();
         }
-
-        public SQLiteConnection Connection { get; set; }
-        public IDocumentCollection Collection { get; set; }
 
         public IDatabaseCommandFactory DatabaseCommandFactory
         {
@@ -49,20 +47,22 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 throw new InvalidSessionStateException();
             }
             _state = SessionState.Disposed;
-            if (_transaction != null)
+            if (_tx != null)
             {
-                _transaction.Commit();
-                _transaction = null;
+                _tx.Commit();
+                _tx.Dispose();
+                _tx = null;
             }
         }
 
         public void Rollback()
         {
             _state = SessionState.Disposed;
-            if (_transaction != null)
+            if (_tx != null)
             {
-                _transaction.Rollback();
-                _transaction = null;
+                _tx.Rollback();
+                _tx.Dispose();
+                _tx = null;
             }
         }
 
@@ -70,7 +70,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         {
             var existingIndex = DatabaseCommandFactory.CreateSqlCommand(
                 @"SELECT Definition FROM CollectionIndex CI INNER JOIN DocumentCollection C ON C.CollectionId = C.CollectionId WHERE CI.JsonPath = @jsonPath AND C.CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Param("jsonPath", definition.JsonPath)
                 .Query(r => JSON.Read<IndexDefinition>(r.GetString(0)))
                 .FirstOrDefault();
@@ -96,7 +96,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
 
             DatabaseCommandFactory.CreateSqlCommand(
                 @"INSERT INTO CollectionIndex (CollectionId, JsonPath, Definition, TableName) SELECT CollectionId, @jsonPath, @definition, @tableName FROM DocumentCollection WHERE CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Param("jsonPath", definition.JsonPath)
                 .Param("definition", JSON.Write(definition))
                 .Param("tableName", indexTableName)
@@ -106,7 +106,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
             var documents = from document in
                 DatabaseCommandFactory.CreateSqlCommand(
                     "SELECT DocumentId, Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
-                    .Param("collection", Collection.Name)
+                    .Param("collection", _collection.Name)
                     .Query(r => new {DocumentId = r.GetInt64(0), Document = JSON.Read(r.GetString(1))})
             select document;
 
@@ -128,7 +128,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
         {
             var indices = DatabaseCommandFactory.CreateSqlCommand(
                 "SELECT JsonPath, TableName FROM CollectionIndex CI INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Query(r => new
                                 {
                                     JsonPath = JSON.ParseJsonPath(r.GetString(0)),
@@ -163,7 +163,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
                 command = DatabaseCommandFactory
                     .CreateSqlCommand(
                         "SELECT D.[Key], D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
-                    .Param("collection", Collection.Name);
+                    .Param("collection", _collection.Name);
             }
 
             var f = FilterStrategy.CreateFilter(filter);
@@ -176,7 +176,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
         {
             return DatabaseCommandFactory.CreateSqlCommand(
                 @"SELECT D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Param("key", key)
                 .Query(r => r.GetString(0))
                 .Select(JSON.Read<T>)
@@ -187,50 +187,42 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
         {
             EnsureCollectionExistsInDatabase();
 
-            var oldDocument = DatabaseCommandFactory.CreateSqlCommand(
-                "SELECT D.DocumentId, D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
-                .Param("collection", Collection.Name)
+            var oldDocumentId = DatabaseCommandFactory.CreateSqlCommand(
+                "SELECT D.DocumentId FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
+                .Param("collection", _collection.Name)
                 .Param("key", key)
-                .Query(r => new
-                                {
-                                    DocumentId = r.GetInt64(0),
-                                    Document = JSON.Read(r.GetString(0))
-                                })
-                                .FirstOrDefault();
+                .Query(r => (long?) r.GetInt64(0)).FirstOrDefault();
 
 
             DatabaseCommandFactory.CreateSqlCommand(
                 @"INSERT OR REPLACE INTO Document ([Key],Json, CollectionId) SELECT @key,@json,CollectionId FROM DocumentCollection WHERE CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Param("key", key)
                 .Param("json", JSON.Write(document))
                 .Execute();
 
-            var documentId = oldDocument != null
-                                 ? oldDocument.DocumentId
-                                 : DatabaseCommandFactory.CreateSqlCommand(
-                                     "SELECT D.DocumentId FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
-                                       .Param("collection", Collection.Name)
-                                       .Param("key", key)
-                                       .Query(r => r.GetInt64(0)).First();
-
+            var documentId = oldDocumentId.HasValue ? oldDocumentId.Value : DatabaseCommandFactory.CreateSqlCommand(
+                    "SELECT D.DocumentId FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
+                    .Param("collection", _collection.Name)
+                    .Param("key", key)
+                    .Query(r => (long?)r.GetInt64(0)).FirstOrDefault();
 
             var indices = DatabaseCommandFactory.CreateSqlCommand(
                 "SELECT JsonPath, TableName FROM CollectionIndex CI INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Query(r => new
                 {
                     JsonPath = JSON.ParseJsonPath(r.GetString(0)),
                     IndexTableName = r.GetString(1)
                 });
 
-            if (oldDocument != null)
+            if (oldDocumentId.HasValue)
             {
                 foreach (var index in indices)
                 {
                     DatabaseCommandFactory
                         .CreateSqlCommand(string.Format("DELETE [{0}] WHERE DocumentId = @documentId", index.IndexTableName))
-                        .Param("documentId", oldDocument.DocumentId)
+                        .Param("documentId", oldDocumentId.Value)
                         .Execute();
                 }
             }
@@ -243,7 +235,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
                 foreach (var indexValue in indexValues)
                 {
                     DatabaseCommandFactory.CreateSqlCommand(string.Format("INSERT INTO [{0}] (DocumentId, Json) VALUES(@documentId, @json)", index.IndexTableName))
-                        .Param("documentId", documentId)
+                        .Param("documentId", documentId.Value)
                         .Param("json", JSON.Write(indexValue))
                         .Execute();
                 }
@@ -254,7 +246,7 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
         {
             DatabaseCommandFactory.CreateSqlCommand(
                 @"INSERT OR IGNORE INTO DocumentCollection (CollectionName) VALUES (@collection)")
-                .Param("collection", Collection.Name)
+                .Param("collection", _collection.Name)
                 .Execute();
         }
 
@@ -296,14 +288,14 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
             {
                 throw new InvalidSessionStateException();
             }
-            if (_transaction == null)
+            if (_tx == null)
             {
-                _transaction = Connection.BeginTransaction();
+                _tx = _txFactory.CreateTransaction();
             }
 
             try
             {
-                using (var dbcommand = Connection.CreateCommand())
+                using (var dbcommand = _tx.CreateCommand())
                 {
                     dbcommand.CommandType = CommandType.Text;
                     dbcommand.CommandText = command.CommandText;
@@ -314,8 +306,6 @@ CREATE INDEX IX_{0}_Json ON {0} (Json);", indexTableName)).Execute();
                         dbparam.Value = param.Value;
                         dbcommand.Parameters.Add(dbparam);
                     }
-
-                    dbcommand.Transaction = _transaction;
                     return executeCommand(dbcommand);
                 }
             }
