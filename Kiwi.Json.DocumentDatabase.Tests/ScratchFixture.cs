@@ -31,23 +31,15 @@ namespace Kiwi.Json.DocumentDatabase.Tests
             });
 
             coll.Put("A", new {K = 1, B = "one"});
+            db.Dump();
+
             coll.Put("B", new { K = 2, B = "two" });
-
-
-            coll.EnsureIndex(new IndexDefinition()
-                                                  {
-                                                      JsonPath = "$.B"
-                                                  });
-            coll.EnsureIndex(new IndexDefinition()
-            {
-                JsonPath = "$.B"
-            });
-
+            db.Dump();
 
             var a = coll.Find(new {B = "two"});
 
 
-            a = coll.Find(new { K = 2 });
+            //a = coll.Find(new { K = 2 });
         }
     }
 }

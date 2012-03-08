@@ -58,7 +58,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         {
             Console.Out.WriteLine("## dump");
             var collections = CreateSession().CreateSqlCommand(
-                "SELECT DocumentCollectionName, DocumentCollectionId FROM DocumentCollections")
+                "SELECT CollectionName, CollectionId FROM DocumentCollection")
                 .Query(r => new {Name = r.GetString(0), Id = r.GetInt32(1)});
 
             foreach (var collection in collections)
@@ -67,13 +67,23 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             }
 
             var documents = CreateSession().CreateSqlCommand(
-                "SELECT D.DocumentKey, D.DocumentAsJson, C.DocumentCollectionName FROM Documents D INNER JOIN DocumentCollections C ON D.DocumentCollectionId = C.DocumentCollectionId")
-                .Query(r => new {Key = r.GetString(0), Json = r.GetString(1), Collection = r.GetString(2)});
+                "SELECT D.DocumentId, D.[Key], D.Json, C.CollectionName FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId")
+                .Query(r => new {Id = r.GetInt64(0), Key = r.GetString(1), Json = r.GetString(2), Collection = r.GetString(3)});
 
             foreach (var document in documents)
             {
                 Console.Out.WriteLine("{0} ({1}): {2}", document.Key, document.Collection, document.Json);
             }
+
+            var indexValues = CreateSession().CreateSqlCommand(
+                "SELECT C.CollectionName, D.[Key], CIV.Json, CI.JsonPath FROM CollectionIndexValue CIV INNER JOIN CollectionIndex CI ON CI.CollectionIndexId = CIV.CollectionIndexId INNER JOIN DocumentCollection C ON CI.CollectionId = C.CollectionID INNER JOIN Document D ON D.DocumentId = CIV.DocumentId")
+                .Query(r => new { Collection = r.GetString(0), Key= r.GetString(1), Json = r.GetString(2), JsonPath = r.GetString(3) });
+
+            foreach (var iv in indexValues)
+            {
+                Console.Out.WriteLine("{0} ({1}) => {2} ({3})", iv.Key, iv.Collection, iv.Json, iv.JsonPath);
+            }
+
         }
     }
 }
