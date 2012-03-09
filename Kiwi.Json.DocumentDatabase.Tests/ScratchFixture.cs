@@ -11,7 +11,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void T()
         {
-            var db = new Database(@"c:\temp\kiwi.db");
+            var db = new Sqlite.DocumentDatabase(@"c:\temp\kiwi.db");
 
             var coll = db.GetCollection("a");
 
@@ -25,7 +25,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
             {
                 for (var i = 0; i < 100; ++i)
                 {
-                    session.Put(i.ToString(), JSON.ToJson(i));
+                    //session.Put(i.ToString(), JSON.ToJson(i));
                 }
                 session.Commit();
             }
@@ -60,7 +60,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void Test()
         {
-            var db = new MemoryDatabase();
+            var db = new MemoryDocumentDatabase();
 
 
             var coll = db.GetCollection("a");

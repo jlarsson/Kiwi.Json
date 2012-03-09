@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Kiwi.Json.DocumentDatabase.Data;
 
 namespace Kiwi.Json.DocumentDatabase.Sqlite
 {
-    public abstract class AbstractDatabase : IDatabase
+    public abstract class AbstractDocumentDatabase : IDocumentDatabase
     {
-        protected abstract ITxFactory TxFactory { get; }
-
         #region IDatabase Members
 
         public IEnumerable<IDocumentCollection> Collections
@@ -38,20 +37,17 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     Assembly.GetExecutingAssembly().GetManifestResourceStream(
                         "Kiwi.Json.DocumentDatabase.sqlite-schema.sql")).ReadToEnd();
 
-                session.DatabaseCommandFactory.CreateSqlCommand(sql).Execute();
+                session.CreateSqlCommand(sql).Execute();
 
                 session.Commit();
             }
         }
 
-        protected SqliteCollectionSession CreateSession()
-        {
-            return new SqliteCollectionSession(TxFactory, null);
-        }
+        protected abstract IDbSession CreateSession();
 
         protected internal SqliteCollectionSession CreateCollectionSession(IDocumentCollection collection)
         {
-            return new SqliteCollectionSession(TxFactory, collection);
+            return new SqliteCollectionSession(CreateSession(), collection);
         }
 
         public void Dump()
@@ -93,7 +89,6 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     Console.Out.WriteLine("{0} ({1}) => {2} ({3})", iv.Key, iv.Collection, iv.Json, iv.JsonPath);
                 }
             }
-
         }
     }
 }

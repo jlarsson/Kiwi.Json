@@ -4,13 +4,13 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 {
     public class SqliteDocumentCollection : IDocumentCollection
     {
-        public SqliteDocumentCollection(string name, AbstractDatabase database)
+        public SqliteDocumentCollection(string name, AbstractDocumentDatabase documentDatabase)
         {
             Name = name;
-            Database = database;
+            DocumentDatabase = documentDatabase;
         }
 
-        public AbstractDatabase Database { get; set; }
+        public AbstractDocumentDatabase DocumentDatabase { get; set; }
 
         #region IDocumentCollection Members
 
@@ -18,7 +18,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         public ICollectionSession CreateSession()
         {
-            return Database.CreateCollectionSession(this);
+            return DocumentDatabase.CreateCollectionSession(this);
         }
 
         #endregion

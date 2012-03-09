@@ -27,7 +27,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
                                                  fi.Length
                                              };
 
-            var db = new MemoryDatabase();
+            var db = new MemoryDocumentDatabase();
 
 
             foreach (var s in list)
@@ -40,7 +40,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void Test()
         {
-            var db = new MemoryDatabase();
+            var db = new MemoryDocumentDatabase();
 
             db.Dump();
 

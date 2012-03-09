@@ -48,15 +48,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataRowAccessor.cs" />
+    <Compile Include="Data\DbSession.cs" />
     <Compile Include="Data\IAccessor.cs" />
     <Compile Include="Data\IDatabaseCommandExecutor.cs" />
     <Compile Include="Data\IDatabaseCommandFactory.cs" />
     <Compile Include="Data\DbCommandDatabaseCommand.cs" />
     <Compile Include="Data\IDatabaseCommand.cs" />
     <Compile Include="Data\ICollectionSession.cs" />
+    <Compile Include="Data\IDbSession.cs" />
     <Compile Include="Data\IndexDefinition.cs" />
     <Compile Include="DocumentCollectionExtensions.cs" />
-    <Compile Include="IDatabase.cs" />
+    <Compile Include="IDocumentDatabase.cs" />
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="Indexing\ConvertJsonValueToIndexNormalForm.cs" />
     <Compile Include="Indexing\ExtractFilterValuesVisitor.cs" />
@@ -76,12 +79,10 @@
     <Compile Include="Indexing\IJsonFilterStrategy.cs" />
     <Compile Include="Indexing\JsonFilter.cs" />
     <Compile Include="InvalidSessionStateException.cs" />
-    <Compile Include="Sqlite\AbstractDatabase.cs" />
-    <Compile Include="Sqlite\Database.cs" />
-    <Compile Include="Sqlite\ITx.cs" />
-    <Compile Include="Sqlite\ITxFactory.cs" />
+    <Compile Include="Sqlite\AbstractDocumentDatabase.cs" />
+    <Compile Include="Sqlite\DocumentDatabase.cs" />
     <Compile Include="Sqlite\SqliteDocumentCollection.cs" />
-    <Compile Include="Sqlite\MemoryDatabase.cs" />
+    <Compile Include="Sqlite\MemoryDocumentDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sqlite\SqliteCollectionSession.cs" />
   </ItemGroup>

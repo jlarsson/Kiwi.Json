@@ -9,7 +9,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void Test()
         {
-            var db = new MemoryDatabase();
+            var db = new MemoryDocumentDatabase();
             var c1 = db.GetCollection("c1");
             var c2 = db.GetCollection("c2");
 

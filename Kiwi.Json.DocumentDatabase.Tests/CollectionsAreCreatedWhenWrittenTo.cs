@@ -10,7 +10,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void Test()
         {
-            var db = new MemoryDatabase();
+            var db = new MemoryDocumentDatabase();
             var coll = db.GetCollection("test collection");
 
             Assert.That(0, Is.EqualTo(db.Collections.Count()), "No collection should exist since no writes are made");
