@@ -16,7 +16,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
         protected override IDbSession CreateSession()
         {
-            return new DbSession(new SQLiteConnection(@"Data Source="+_filePath), true);
+            return new DbSession(new SQLiteConnection(@"Data Source="+_filePath));
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace Kiwi.Json.DocumentDatabase.Data
 {
-    public interface IDbSession : IDatabaseCommandExecutor, IDatabaseCommandFactory, IDisposable
+    public interface IDbSession : IDatabaseCommandFactory, IDisposable
     {
         void Commit();
         void Rollback();

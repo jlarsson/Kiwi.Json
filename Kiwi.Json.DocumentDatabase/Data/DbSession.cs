@@ -6,12 +6,16 @@ using System.Linq;
 
 namespace Kiwi.Json.DocumentDatabase.Data
 {
-    public class DbSession : IDbSession
+    public class DbSession : IDbSession, IDatabaseCommandExecutor
     {
-        private DbConnection _connection;
         private readonly bool _isTransientConnection;
-        private DbTransaction _transaction;
+        private DbConnection _connection;
         private bool _isDisposed;
+        private DbTransaction _transaction;
+
+        public DbSession(DbConnection connection) : this(connection, true)
+        {
+        }
 
         public DbSession(DbConnection connection, bool isTransientConnection)
         {
@@ -19,7 +23,7 @@ namespace Kiwi.Json.DocumentDatabase.Data
             _isTransientConnection = isTransientConnection;
         }
 
-        #region IDbSession Members
+        #region IDatabaseCommandExecutor Members
 
         public void Execute(IDatabaseCommand command)
         {
@@ -41,10 +45,34 @@ namespace Kiwi.Json.DocumentDatabase.Data
                                                });
         }
 
+        #endregion
+
+        #region IDbSession Members
+
         public IDatabaseCommand CreateSqlCommand(string sql)
         {
             return new DbCommandDatabaseCommand(sql, this);
         }
+
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                Rollback();
+            }
+        }
+
+        public void Commit()
+        {
+            Dispose(tx => tx.Commit());
+        }
+
+        public void Rollback()
+        {
+            Dispose(tx => tx.Rollback());
+        }
+
+        #endregion
 
         private void Dispose(Action<DbTransaction> shutDownTransaction)
         {
@@ -66,25 +94,6 @@ namespace Kiwi.Json.DocumentDatabase.Data
                 _connection = null;
             }
         }
-        public void Dispose()
-        {
-            if (!_isDisposed)
-            {
-                Rollback();
-            }
-        }
-
-        public void Commit()
-        {
-            Dispose(tx => tx.Commit());
-        }
-
-        public void Rollback()
-        {
-            Dispose(tx => tx.Rollback());
-        }
-
-        #endregion
 
         protected virtual T ExecuteCommand<T>(IDatabaseCommand command, Func<DbCommand, T> executeCommand)
         {

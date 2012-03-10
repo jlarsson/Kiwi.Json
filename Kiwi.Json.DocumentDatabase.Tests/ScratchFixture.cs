@@ -25,7 +25,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
             {
                 for (var i = 0; i < 100; ++i)
                 {
-                    //session.Put(i.ToString(), JSON.ToJson(i));
+                    session.Put(i.ToString(), JSON.ToJson(i));
                 }
                 session.Commit();
             }

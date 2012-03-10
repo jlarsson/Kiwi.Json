@@ -57,6 +57,7 @@
     <Compile Include="Data\IDatabaseCommand.cs" />
     <Compile Include="Data\ICollectionSession.cs" />
     <Compile Include="Data\IDbSession.cs" />
+    <Compile Include="Data\IDbSessionFactory.cs" />
     <Compile Include="Data\IndexDefinition.cs" />
     <Compile Include="DocumentCollectionExtensions.cs" />
     <Compile Include="IDocumentDatabase.cs" />
