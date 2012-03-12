@@ -7,6 +7,6 @@ namespace Kiwi.Fluesent
     {
         Instance Instance { get; }
         IEsentDatabase Database { get; }
-        IEsentSession CreateSession();
+        IEsentSession CreateSession(bool attachAndOpenDatabase = true);
     }
 }

@@ -46,18 +46,21 @@ namespace Kiwi.Fluesent
 
         #endregion
 
-        private void Insert(IEnumerable<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>>> adders)
+        private T Insert<T>(IEnumerable<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>>> adders, Func<JET_SESID,JET_TABLEID,IDictionary<string, JET_COLUMNID>,T> getResult)
         {
             var session = Transaction.Session.JetSesid;
             var table = Table.JetTableid;
 
             using (var update = new Update(session, table, JET_prep.Insert))
             {
+                var result =  getResult == null ? default(T) : getResult(session, table, ColumnCache);
                 foreach (var adder in adders)
                 {
                     adder(session, table, ColumnCache);
                 }
                 update.Save();
+
+                return result;
             }
         }
 
@@ -84,7 +87,12 @@ namespace Kiwi.Fluesent
 
             public void Insert()
             {
-                _table.Insert(_adders);
+                _table.Insert<int>(_adders, null);
+            }
+
+            public Int64 InsertWithAutoIncrement64(string columnName)
+            {
+                return _table.Insert(_adders, (s, t, m) => Api.RetrieveColumnAsInt64(s, t, m[columnName], RetrieveColumnGrbit.RetrieveCopy).Value);
             }
 
             #endregion

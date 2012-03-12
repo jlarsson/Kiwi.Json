@@ -11,6 +11,24 @@ namespace Kiwi.Fluesent.Ddl
         public const int DefaultTextLength = 0;
         public const int DefaultLongBinaryLength = 0;
 
+        public static IDatabaseDefinition Database(this IColumnDefinition definition)
+        {
+            return definition.Table.Database;
+        }
+
+        public static IColumnDefinition Column(this IColumnDefinition definition, string name)
+        {
+            return definition.Table.Column(name);
+        }
+        public static IIndexDefinition Index(this IColumnDefinition definition, string name)
+        {
+            return definition.Table.Index(name);
+        }
+        public static ITableDefinition Table(this IColumnDefinition definition, string name)
+        {
+            return definition.Table.Database.Table(name);
+        }
+
 
         public static IColumnDefinition Fixed(this IColumnDefinition definition)
         {

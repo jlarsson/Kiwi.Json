@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollectionsAreCreatedWhenWrittenTo.cs" />
+    <Compile Include="Esent\ScratchFixture.cs" />
     <Compile Include="FilterFixture.cs" />
     <Compile Include="Fixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +64,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kiwi.Fluesent\Kiwi.Fluesent.csproj">
+      <Project>{B92D0281-EFCD-4B8E-823B-D03C9F2FC768}</Project>
+      <Name>Kiwi.Fluesent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kiwi.Json.DocumentDatabase\Kiwi.Json.DocumentDatabase.csproj">
       <Project>{26B27426-EF06-43F1-B646-80038549557A}</Project>
       <Name>Kiwi.Json.DocumentDatabase</Name>

@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Esent.Collections">
+      <HintPath>..\packages\ManagedEsent.1.6\lib\net20\Esent.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Esent.Interop">
+      <HintPath>..\packages\ManagedEsent.1.6\lib\net20\Esent.Interop.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
@@ -55,11 +61,15 @@
     <Compile Include="Data\IDatabaseCommandFactory.cs" />
     <Compile Include="Data\DbCommandDatabaseCommand.cs" />
     <Compile Include="Data\IDatabaseCommand.cs" />
-    <Compile Include="Data\ICollectionSession.cs" />
+    <Compile Include="Esent\EsentCollectionSession.cs" />
+    <Compile Include="ICollectionSession.cs" />
     <Compile Include="Data\IDbSession.cs" />
     <Compile Include="Data\IDbSessionFactory.cs" />
     <Compile Include="Data\IndexDefinition.cs" />
     <Compile Include="DocumentCollectionExtensions.cs" />
+    <Compile Include="Esent\EsentDocumentCollection.cs" />
+    <Compile Include="Esent\EsentDocumentDatabase.cs" />
+    <Compile Include="Esent\Mappings.cs" />
     <Compile Include="IDocumentDatabase.cs" />
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="Indexing\ConvertJsonValueToIndexNormalForm.cs" />
@@ -89,8 +99,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="README.rtf" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kiwi.Fluesent\Kiwi.Fluesent.csproj">
+      <Project>{B92D0281-EFCD-4B8E-823B-D03C9F2FC768}</Project>
+      <Name>Kiwi.Fluesent</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kiwi.Json\Kiwi.Json.csproj">
       <Project>{C32E21F8-0929-45BC-9643-0F1DE746A4CD}</Project>
       <Name>Kiwi.Json</Name>

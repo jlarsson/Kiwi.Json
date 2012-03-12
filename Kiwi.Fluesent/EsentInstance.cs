@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Kiwi.Fluesent
@@ -20,9 +21,23 @@ namespace Kiwi.Fluesent
         public IEsentDatabase Database { get; protected set; }
         public Instance Instance { get; protected set; }
 
-        public IEsentSession CreateSession()
+        public IEsentSession CreateSession(bool attachAndOpenDatabase = true)
         {
-            return new EsentSession(this, new Session(Instance));
+            var session = new EsentSession(this, new Session(Instance));
+            try
+            {
+                if (attachAndOpenDatabase)
+                {
+                    session.AttachDatabase();
+                    session.OpenDatabase();
+                }
+                return session;
+            }
+            catch (Exception)
+            {
+                session.Dispose();
+                throw;
+            }
         }
 
         #endregion

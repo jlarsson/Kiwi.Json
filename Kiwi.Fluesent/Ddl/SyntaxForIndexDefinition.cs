@@ -5,6 +5,23 @@ namespace Kiwi.Fluesent.Ddl
 {
     public static class SyntaxForIndexDefinition
     {
+        public static IDatabaseDefinition Database(this IIndexDefinition definition)
+        {
+            return definition.Table.Database;
+        }
+        public static IColumnDefinition Column(this IIndexDefinition definition, string name)
+        {
+            return definition.Table.Column(name);
+        }
+        public static IIndexDefinition Index(this IIndexDefinition definition, string name)
+        {
+            return definition.Table.Index(name);
+        }
+        public static ITableDefinition Table(this IIndexDefinition definition, string name)
+        {
+            return definition.Table.Database.Table(name);
+        }
+
         public static IIndexDefinition Asc(this IIndexDefinition definition, params string[] columns)
         {
             definition.Columns.AddRange(from column in columns

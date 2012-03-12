@@ -31,7 +31,7 @@ namespace Kiwi.Fluesent.Tests
 
             using (var instance = db.CreateInstance())
             {
-                using (var session = instance.CreateSession())
+                using (var session = instance.CreateSession(false))
                 {
                     session.CreateDatabase(null, CreateDatabaseGrbit.OverwriteExisting);
                     using (var transaction = session.CreateTransaction())
@@ -49,8 +49,6 @@ namespace Kiwi.Fluesent.Tests
             {
                 using (var session = instance.CreateSession())
                 {
-                    session.AttachDatabase();
-                    session.OpenDatabase();
                     using (var transaction = session.CreateTransaction())
                     {
                         using (var table = transaction.OpenTable("KV"))
@@ -77,8 +75,6 @@ namespace Kiwi.Fluesent.Tests
             {
                 using (var session = instance.CreateSession())
                 {
-                    session.AttachDatabase();
-                    session.OpenDatabase();
                     using (var transaction = session.CreateTransaction())
                     {
                         var stopwatch = new EsentStopwatch();
@@ -109,8 +105,6 @@ namespace Kiwi.Fluesent.Tests
             {
                 using (var session = instance.CreateSession())
                 {
-                    session.AttachDatabase();
-                    session.OpenDatabase();
                     using (var transaction = session.CreateTransaction())
                     {
                         using (var table = transaction.OpenTable("KV"))

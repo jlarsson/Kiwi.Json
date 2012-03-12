@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Kiwi.Json.DocumentDatabase.Data;
 using Kiwi.Json.Untyped;
 
-namespace Kiwi.Json.DocumentDatabase.Data
+namespace Kiwi.Json.DocumentDatabase
 {
     public interface ICollectionSession: IDisposable
     {
