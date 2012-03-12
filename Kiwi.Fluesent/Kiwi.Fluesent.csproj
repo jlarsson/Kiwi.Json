@@ -82,7 +82,7 @@
     <Compile Include="SyntaxForInsertRecord.cs" />
     <Compile Include="SyntaxForRecordMapper.cs" />
     <Compile Include="SyntaxForTableKey.cs" />
-    <Compile Include="Utility\Class1.cs" />
+    <Compile Include="Utility\SyntaxForDictionary.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Kiwi.Fluesent.Utility
 {
-    public static class SyntaxForDictionary
+    internal static class SyntaxForDictionary
     {
         public static TValue GetOrCreate<TKey,TValue>(this IDictionary<TKey,TValue> dictionary, TKey key, Func<TValue> creator)
         {
