@@ -5,25 +5,24 @@ namespace Kiwi.Fluesent
 {
     public class EsentSession : IEsentSession
     {
+        protected IEsentInstance Instance;
+        private readonly Session _session;
+
         public EsentSession(IEsentInstance instance, Session session)
         {
             Instance = instance;
-            Session = session;
+            _session = session;
             JetDbid = JET_DBID.Nil;
         }
 
-        public IEsentInstance Instance { get; protected set; }
-
         #region IEsentSession Members
+
+        public JET_DBID JetDbid { get; protected set; }
 
         public JET_SESID JetSesid
         {
-            get { return Session; }
+            get { return _session.JetSesid; }
         }
-
-        public Session Session { get; protected set; }
-
-        public JET_DBID JetDbid { get; protected set; }
 
         public void CreateDatabase(string connect, CreateDatabaseGrbit grbit)
         {
@@ -32,7 +31,7 @@ namespace Kiwi.Fluesent
                 throw new ApplicationException("Only one database may be opened in an EsentSession");
             }
             JET_DBID dbid;
-            Api.JetCreateDatabase(Session, Instance.Database.Path, connect, out dbid, grbit);
+            Api.JetCreateDatabase(_session, Instance.Database.Path, connect, out dbid, grbit);
             JetDbid = dbid;
         }
 
@@ -43,23 +42,23 @@ namespace Kiwi.Fluesent
                 throw new ApplicationException("Only one database may be opened in an EsentSession");
             }
             JET_DBID dbid;
-            Api.JetOpenDatabase(Session, Instance.Database.Path, connect, out dbid, grbit);
+            Api.JetOpenDatabase(_session, Instance.Database.Path, connect, out dbid, grbit);
             JetDbid = dbid;
         }
 
         public void AttachDatabase(AttachDatabaseGrbit grbit)
         {
-            Api.JetAttachDatabase(Session, Instance.Database.Path, grbit);
+            Api.JetAttachDatabase(_session, Instance.Database.Path, grbit);
         }
 
         public IEsentTransaction CreateTransaction()
         {
-            return new EsentTransaction(this, new Transaction(Session));
+            return new EsentTransaction(this, new Transaction(_session));
         }
 
         public void Dispose()
         {
-            Session.Dispose();
+            _session.Dispose();
         }
 
         #endregion

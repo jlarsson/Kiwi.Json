@@ -4,6 +4,8 @@ namespace Kiwi.Fluesent
 {
     public class EsentTransaction : IEsentTransaction
     {
+        protected Transaction Transaction;
+
         public EsentTransaction(IEsentSession session, Transaction transaction)
         {
             Session = session;
@@ -12,7 +14,10 @@ namespace Kiwi.Fluesent
 
         #region IEsentTransaction Members
 
-        public Transaction Transaction { get; protected set; }
+        public JET_SESID JetSesid
+        {
+            get { return Session.JetSesid; }
+        }
 
         public IEsentSession Session { get; set; }
 
@@ -29,12 +34,12 @@ namespace Kiwi.Fluesent
         public void Pulse(CommitTransactionGrbit grbit)
         {
             Transaction.Commit(grbit);
-            Transaction = new Transaction(Session.Session);
+            Transaction = new Transaction(JetSesid);
         }
 
         public IEsentTable OpenTable(string name, OpenTableGrbit grbit)
         {
-            return new EsentTable(this, new Table(Session.Session, Session.JetDbid, name, grbit));
+            return new EsentTable(this, new Table(JetSesid, Session.JetDbid, name, grbit));
         }
 
         public void Dispose()

@@ -128,7 +128,7 @@ namespace Kiwi.Json.DocumentDatabase.Data
                     return executeCommand(dbcommand);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Rollback();
                 throw;

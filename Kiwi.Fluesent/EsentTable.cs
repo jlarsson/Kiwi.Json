@@ -6,23 +6,38 @@ namespace Kiwi.Fluesent
 {
     public class EsentTable : IEsentTable
     {
-        private IDictionary<string, JET_COLUMNID> _columnCache;
+        private IDictionary<string, JET_COLUMNID> _columnNames;
+        protected readonly Table _table;
 
         public EsentTable(IEsentTransaction transaction, Table table)
         {
             Transaction = transaction;
-            Table = table;
-        }
-
-        protected IDictionary<string, JET_COLUMNID> ColumnCache
-        {
-            get { return _columnCache ?? (_columnCache = Api.GetColumnDictionary(Transaction.Session.Session, Table)); }
+            _table = table;
         }
 
         #region IEsentTable Members
 
+        public JET_SESID JetSesid
+        {
+            get { return Transaction.JetSesid; }
+        }
+
+        public JET_TABLEID JetTableid
+        {
+            get { return _table.JetTableid; }
+        }
+
+        public IEsentSession Session
+        {
+            get { return Transaction.Session; }
+        }
+
         public IEsentTransaction Transaction { get; protected set; }
-        public Table Table { get; set; }
+
+        public IDictionary<string, JET_COLUMNID> ColumnNames
+        {
+            get { return _columnNames ?? (_columnNames = Api.GetColumnDictionary(JetSesid, JetTableid)); }
+        }
 
         public IInsertRecord CreateInsertRecord()
         {
@@ -34,29 +49,30 @@ namespace Kiwi.Fluesent
             return new TableKey(this);
         }
 
-        public IEsentTableSearch<T> CreateSearch<T>(IRecordMapper<T> mapper) where T : new()
+        public IEsentCursor CreateCursor(string indexName)
         {
-            return new EsentTableSearch<T>(Transaction.Session.JetSesid, Table.JetTableid, mapper);
+            return new EsentCursor(this, indexName);
         }
 
         public void Dispose()
         {
-            Table.Dispose();
+            _table.Dispose();
         }
 
         #endregion
 
-        private T Insert<T>(IEnumerable<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>>> adders, Func<JET_SESID,JET_TABLEID,IDictionary<string, JET_COLUMNID>,T> getResult)
+        private T Insert<T>(IEnumerable<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>>> adders,
+                            Func<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>, T> getResult)
         {
             var session = Transaction.Session.JetSesid;
-            var table = Table.JetTableid;
+            var table = _table.JetTableid;
 
             using (var update = new Update(session, table, JET_prep.Insert))
             {
-                var result =  getResult == null ? default(T) : getResult(session, table, ColumnCache);
+                var result = getResult == null ? default(T) : getResult(session, table, ColumnNames);
                 foreach (var adder in adders)
                 {
-                    adder(session, table, ColumnCache);
+                    adder(session, table, ColumnNames);
                 }
                 update.Save();
 
@@ -92,7 +108,10 @@ namespace Kiwi.Fluesent
 
             public Int64 InsertWithAutoIncrement64(string columnName)
             {
-                return _table.Insert(_adders, (s, t, m) => Api.RetrieveColumnAsInt64(s, t, m[columnName], RetrieveColumnGrbit.RetrieveCopy).Value);
+                return _table.Insert(_adders,
+                                     (s, t, m) =>
+                                     Api.RetrieveColumnAsInt64(s, t, m[columnName], RetrieveColumnGrbit.RetrieveCopy).
+                                         Value);
             }
 
             #endregion

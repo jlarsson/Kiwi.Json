@@ -22,22 +22,26 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     .Index("PK_Collection_CollectionId").Asc("CollectionId").Unique().Primary()
                     .Index("IX_Collection_CollectionName").Asc("CollectionName").Unique()
                 .Table("Index")
-                    .Column("CollectionId").AsInt64().NotNull().AutoIncrement().Table
-                    .Column("JsonPath").AsString().NotNull().Table
-                    .Column("JsonDefinition").AsText().NotNull().Table
-                    .Index("PK_Collection_Id").Asc("CollectionId").DisallowNull().Table
-                    .Index("IX_Collection_Id_JsonPath").Asc("CollectionId", "JsonPath").DisallowNull()
-                .Table("IndexValue")
+                    .Column("IndexId").AsInt64().NotNull().AutoIncrement()
                     .Column("CollectionId").AsInt64().NotNull()
+                    .Column("JsonPath").AsString().NotNull()
+                    .Column("JsonDefinition").AsText().NotNull()
+                    .Index("PK_Index_IndexId").Asc("IndexId").Unique().Primary().DisallowNull()
+                    .Index("IX_Index_CollectionId").Asc("CollectionId").DisallowNull()
+                    .Index("IX_Index_CollectionId_JsonPath").Asc("CollectionId", "JsonPath").DisallowNull()
+                .Table("IndexValue")
+                    .Column("IndexId").AsInt64().NotNull()
                     .Column("DocumentId").AsInt64().NotNull()
                     .Column("Json").AsString().NotNull()
-                    .Index("PK_IndexValue_CollectionId_DocumentId").Asc("CollectionId", "DocumentId").DisallowNull()
-                    .Index("IX_IndexValue_Json").Asc("Json").DisallowNull()
+                    .Index("PK_IndexValue_IndexId_DocumentId").Asc("IndexId", "DocumentId").DisallowNull()
+                    .Index("IX_IndexValue_DocumentId").Asc("IndexId", "DocumentId").DisallowNull()
+                    .Index("IX_IndexValue_IndexId_Json").Asc("IndexId").Asc("Json").DisallowNull()
                     .Database();
 
         public class DocumentRecord
         {
             public Int64 DocumentId { get; set; }
+            public Int64 ColllectionId { get; set; }
             public string DocumentKey { get; set; }
             public string DocumentJson { get; set; }
         }
@@ -50,7 +54,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
         public class IndexRecord
         {
-            public Int64 CollectionId { get; set; }
+            public Int64 IndexId { get; set; }
             public string JsonPath { get; set; }
             public string JsonDefinition { get; set; }
         }
@@ -62,8 +66,14 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             public string Json { get; set; }
         }
 
+        public class DocumentIdRecord
+        {
+            public Int64 DocumentId { get; set; }
+        }
+
         public static readonly IRecordMapper<DocumentRecord> DocumentRecordMapper = new RecordMapper<DocumentRecord>()
             .Int64("DocumentId", (r, v) => r.DocumentId = v)
+            .Int64("CollectionId", (r, v) => r.ColllectionId = v)
             .String("DocumentKey", (r, v) => r.DocumentKey = v)
             .String("DocumentJson", (r, v) => r.DocumentJson = v);
 
@@ -72,7 +82,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             .String("CollectionName", (r, v) => r.CollectionName = v);
 
         public static readonly IRecordMapper<IndexRecord> IndexRecordMapper = new RecordMapper<IndexRecord>()
-            .Int64("CollectionId", (r, v) => r.CollectionId = v)
+            .Int64("IndexId", (r, v) => r.IndexId = v)
             .String("JsonPath", (r, v) => r.JsonPath = v)
             .String("JsonDefinition", (r, v) => r.JsonDefinition = v);
 
@@ -80,5 +90,9 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             .Int64("CollectionId", (r, v) => r.CollectionId = v)
             .Int64("DocumentId", (r, v) => r.DocumentId = v)
             .String("Json", (r, v) => r.Json = v);
+
+        public static readonly IRecordMapper<DocumentIdRecord> IndexValue_DocumentId_RecordMapper = new RecordMapper<DocumentIdRecord>()
+            .Int64("DocumentId", (r, v) => r.DocumentId = v);
+
     }
 }

@@ -5,6 +5,8 @@ namespace Kiwi.Fluesent
 {
     public class EsentInstance : IEsentInstance
     {
+        protected Instance Instance;
+
         public EsentInstance(IEsentDatabase database, Instance instance)
         {
             Database = database;
@@ -19,7 +21,6 @@ namespace Kiwi.Fluesent
         }
 
         public IEsentDatabase Database { get; protected set; }
-        public Instance Instance { get; protected set; }
 
         public IEsentSession CreateSession(bool attachAndOpenDatabase = true)
         {

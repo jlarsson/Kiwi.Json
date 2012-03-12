@@ -5,7 +5,7 @@ namespace Kiwi.Fluesent
 {
     public interface IEsentTransaction : IDisposable
     {
-        Transaction Transaction { get; }
+        JET_SESID JetSesid { get; }
         IEsentSession Session { get; set; }
         void Commit(CommitTransactionGrbit grbit);
         void Rollback();

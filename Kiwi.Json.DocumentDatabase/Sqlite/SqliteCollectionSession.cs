@@ -220,6 +220,11 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             }
         }
 
+        public void Remove(string key)
+        {
+            throw new System.NotImplementedException();
+        }
+
         #endregion
 
         private void EnsureCollectionExistsInDatabase()

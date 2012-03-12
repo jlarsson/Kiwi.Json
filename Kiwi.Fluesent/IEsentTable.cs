@@ -1,14 +1,18 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Isam.Esent.Interop;
 
 namespace Kiwi.Fluesent
 {
     public interface IEsentTable : IDisposable
     {
-        Table Table { get; }
+        JET_SESID JetSesid { get; }
+        JET_TABLEID JetTableid { get; }
+        IEsentSession Session { get; }
         IEsentTransaction Transaction { get; }
+        IDictionary<string, JET_COLUMNID> ColumnNames { get; }
         IInsertRecord CreateInsertRecord();
         ITableKey CreateKey();
-        IEsentTableSearch<T> CreateSearch<T>(IRecordMapper<T> mapper) where T : new();
+        IEsentCursor CreateCursor(string indexName);
     }
 }

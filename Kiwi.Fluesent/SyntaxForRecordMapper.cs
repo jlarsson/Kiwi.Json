@@ -8,7 +8,7 @@ namespace Kiwi.Fluesent
     {
         public static IRecordMapper<T> Int64<T>(this IRecordMapper<T> mapper, string columnName, Action<T,Int64> map)
         {
-            mapper.DefineMapping((s, t, c, o) => map(o, Api.RetrieveColumnAsInt64(s, t, c[columnName]).Value));
+            mapper.DefineMapping((s, t, c, o) => map(o, Api.RetrieveColumnAsInt64(s.JetSesid, t.JetTableid, c[columnName]).Value));
             return mapper;
         }
 
@@ -19,7 +19,7 @@ namespace Kiwi.Fluesent
 
         public static IRecordMapper<T> String<T>(this IRecordMapper<T> mapper, string columnName, Encoding encoding, Action<T,string> map)
         {
-            mapper.DefineMapping((s,t,c,o) => map(o, Api.RetrieveColumnAsString(s,t,c[columnName])));
+            mapper.DefineMapping((s, t, c, o) => map(o, Api.RetrieveColumnAsString(s.JetSesid, t.JetTableid, c[columnName])));
             return mapper;
         }
     }

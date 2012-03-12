@@ -30,9 +30,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                         {
                             using (var table = transaction.OpenTable("Collection"))
                             {
-                                var search = table.CreateSearch(Mappings.CollectionRecordMapper);
+                                var cursor = table.CreateCursor(null);
 
-                                return search.FindAll().Select(r => GetCollection(r.CollectionName)).ToList();
+                                return cursor.Scan(Mappings.CollectionRecordMapper)
+                                    .Select(c => GetCollection(c.CollectionName))
+                                    .ToList();
                             }
                         }
                     }
@@ -45,13 +47,13 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             return new EsentDocumentCollection(Database, name);
         }
 
-        public void CreateDatabase()
+        public void CreateDatabase(CreateDatabaseGrbit grbit = CreateDatabaseGrbit.None)
         {
             using (var instance = Database.CreateInstance())
             {
                 using (var session = instance.CreateSession(false))
                 {
-                    session.CreateDatabase(null, CreateDatabaseGrbit.OverwriteExisting);
+                    session.CreateDatabase(null, grbit);
                     using (var transaction = session.CreateTransaction())
                     {
                         Mappings.DatabaseDefinition.Create(transaction);

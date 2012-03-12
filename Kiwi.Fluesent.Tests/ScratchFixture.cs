@@ -113,16 +113,16 @@ namespace Kiwi.Fluesent.Tests
                                 .String("Key", (o, s) => o.Key = s)
                                 .String("Value", (o, s) => o.Value = s);
 
-                            var search = table.CreateSearch(mapper);
+                            //var search = table.CreateSearch(mapper);
 
-                            var a = search.FindEq(
-                                table.CreateKey().String("A")
-                                )
-                                .ToArray();
-                            var b = search.FindEq(
-                                table.CreateKey().String("B")
-                                )
-                                .ToArray();
+                            //var a = search.FindEq(
+                            //    table.CreateKey().String("A")
+                            //    )
+                            //    .ToArray();
+                            //var b = search.FindEq(
+                            //    table.CreateKey().String("B")
+                            //    )
+                            //    .ToArray();
                         }
                     }
                 }
@@ -142,12 +142,12 @@ namespace Kiwi.Fluesent.Tests
                                 .String("Key", (o, s) => o.Key = s)
                                 .String("Value", (o, s) => o.Value = s);
 
-                            var search = table.CreateSearch(mapper);
+                            //var search = table.CreateSearch(mapper);
 
-                            foreach (var record in search.FindAll().Take(100))
-                            {
-                                Console.Out.WriteLine("({0},{1})",record.Key,record.Value);
-                            }
+                            //foreach (var record in search.FindAll().Take(100))
+                            //{
+                            //    Console.Out.WriteLine("({0},{1})",record.Key,record.Value);
+                            //}
                         }
                     }
                 }

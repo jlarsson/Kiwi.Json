@@ -6,23 +6,21 @@ namespace Kiwi.Fluesent
 {
     public class RecordMapper<T> : IRecordMapper<T>
     {
-        private readonly List<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>, T>> _maps =
-            new List<Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>, T>>();
+        private readonly List<Action<IEsentSession, IEsentTable, IDictionary<string, JET_COLUMNID>, T>> _maps =
+            new List<Action<IEsentSession, IEsentTable, IDictionary<string, JET_COLUMNID>, T>>();
 
         #region IRecordMapper<T> Members
 
-        public void DefineMapping(Action<JET_SESID, JET_TABLEID, IDictionary<string, JET_COLUMNID>, T> map)
+        public void DefineMapping(Action<IEsentSession, IEsentTable, IDictionary<string, JET_COLUMNID>, T> map)
         {
             _maps.Add(map);
         }
 
-        public T Map(JET_SESID session, JET_TABLEID table, T instance)
+        public T Map(IEsentSession session, IEsentTable table, T instance)
         {
-            IDictionary<string, JET_COLUMNID> columns = null;
             foreach (var action in _maps)
             {
-                var c = columns ?? (columns = Api.GetColumnDictionary(session, table));
-                action(session, table, c, instance);
+                action(session, table, table.ColumnNames, instance);
             }
             return instance;
         }

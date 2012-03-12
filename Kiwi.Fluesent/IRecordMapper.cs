@@ -6,7 +6,7 @@ namespace Kiwi.Fluesent
 {
     public interface IRecordMapper<T>
     {
-        void DefineMapping(Action<JET_SESID, JET_TABLEID,IDictionary<string, JET_COLUMNID>, T> map);
-        T Map(JET_SESID session, JET_TABLEID table, T instance);
+        void DefineMapping(Action<IEsentSession, IEsentTable,IDictionary<string, JET_COLUMNID>, T> map);
+        T Map(IEsentSession session, IEsentTable table, T instance);
     }
 }

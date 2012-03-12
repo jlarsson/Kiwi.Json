@@ -6,8 +6,8 @@ namespace Kiwi.Fluesent.Ddl
     public static class SyntaxForColumnDefinition
     {
         public const JET_CP DefaultCodePage = JET_CP.Unicode;
-        public const int DefaultStringLength = 0;
-        public const int DefaultBinaryLength = 0;
+        public const int DefaultStringLength = 255;
+        public const int DefaultBinaryLength = 255;
         public const int DefaultTextLength = 0;
         public const int DefaultLongBinaryLength = 0;
 
