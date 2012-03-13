@@ -1,114 +1,52 @@
 using System;
+using System.IO;
 using Microsoft.Isam.Esent.Interop;
-using Microsoft.Isam.Esent.Interop.Windows7;
 
 namespace Kiwi.Fluesent
 {
     public class EsentDatabase : IEsentDatabase
     {
-        private static object _sync = new object();
-        private Instance _instance;
-        private int _instanceCheckoutCount;
+        public EsentDatabase(string path)
+        {
+            DatabasePath = Path.GetFullPath(path);
+        }
 
-        public string Path { get; protected set; }
         public string DatabaseFolder { get; protected set; }
+
+        #region IEsentDatabase Members
+
+        public string DatabasePath { get; protected set; }
 
         public IEsentSession CreateSession(bool attachAndOpenDatabase)
         {
-            var session = CheckoutSession();
+            var instance = default(IEsentInstanceHolder);
+            var session = default(Session);
             try
             {
+                instance = InstanceCache.GetInstance(DatabasePath);
+                session = new Session(instance.Instance);
+                var esentSession = new EsentSession(this, session, instance);
                 if (attachAndOpenDatabase)
                 {
-                    session.AttachDatabase(AttachDatabaseGrbit.None);
-                    session.OpenDatabase(null, OpenDatabaseGrbit.None);
+                    esentSession.AttachDatabase(AttachDatabaseGrbit.None);
+                    esentSession.OpenDatabase(null, OpenDatabaseGrbit.None);
                 }
-                return session;
+                return esentSession;
             }
-            catch(Exception)
+            catch (Exception)
             {
-                session.Dispose();
+                if (session != null)
+                {
+                    session.Dispose();
+                }
+                if (instance != null)
+                {
+                    instance.Dispose();
+                }
                 throw;
             }
         }
 
-        private EsentSession CheckoutSession()
-        {
-            lock (_sync)
-            {
-                if (_instance == null)
-                {
-                    ++_instanceCheckoutCount;
-                    _instance = CheckoutInstance();
-                }
-                var session = default(EsentSession);
-                try
-                {
-                    session = new EsentSession(this, new Session(_instance));
-                    session.NotifyDisposed += s => CheckinInstance();
-                }
-                catch (Exception)
-                {
-                    CheckinInstance();
-                    throw;
-                }
-                return session;
-            }
-        }
-
-        private void CheckinInstance()
-        {
-            lock (_sync)
-            {
-                if (--_instanceCheckoutCount == 0)
-                {
-                    var instance = _instance;
-                    _instance = null;
-                    instance.Dispose();
-                }
-            }
-        }
-
-        private Instance CheckoutInstance()
-        {
-            var instance = new Instance(Guid.NewGuid().ToString("n"));
-            var folder = System.IO.Path.GetDirectoryName(Path);
-            instance.Parameters.CircularLog = true;
-            instance.Parameters.CleanupMismatchedLogFiles = true;
-            instance.Parameters.CreatePathIfNotExist = true;
-            instance.Parameters.AlternateDatabaseRecoveryDirectory = folder;
-            instance.Parameters.LogFileDirectory = folder;
-            instance.Parameters.SystemDirectory = folder;
-            instance.Parameters.TempDirectory = folder;
-
-            instance.Init(Windows7Grbits.ReplayIgnoreLostLogs);
-
-            return instance;
-        }
-
-        public EsentDatabase(string path)
-        {
-            Path = path;
-            DatabaseFolder = System.IO.Path.GetDirectoryName(Path);
-        }
-
-/*
-        public IEsentInstance CreateInstance(string name, string displayName, InitGrbit grbit)
-        {
-            var instance = new Instance(name, displayName);
-            var folder = System.IO.Path.GetDirectoryName(Path);
-            instance.Parameters.CircularLog = true;
-            instance.Parameters.CleanupMismatchedLogFiles = true;
-            instance.Parameters.CreatePathIfNotExist = true;
-            instance.Parameters.AlternateDatabaseRecoveryDirectory = folder;
-            instance.Parameters.LogFileDirectory = folder;
-            instance.Parameters.SystemDirectory = folder;
-            instance.Parameters.TempDirectory = folder;
-
-            instance.Init(grbit);
-
-            return new EsentInstance(this, instance);
-        }
- */ 
-    }
+        #endregion
+   }
 }

@@ -66,10 +66,12 @@
     <Compile Include="EsentTransaction.cs" />
     <Compile Include="IEsentCursor.cs" />
     <Compile Include="IEsentDatabase.cs" />
+    <Compile Include="IEsentInstanceHolder.cs" />
     <Compile Include="IEsentSession.cs" />
     <Compile Include="IEsentTable.cs" />
     <Compile Include="IEsentTransaction.cs" />
     <Compile Include="IInsertRecord.cs" />
+    <Compile Include="InstanceCache.cs" />
     <Compile Include="IRecordMapper.cs" />
     <Compile Include="ITableKey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
