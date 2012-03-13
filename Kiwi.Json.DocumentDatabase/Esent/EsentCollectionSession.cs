@@ -10,9 +10,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 {
     public class EsentCollectionSession : ICollectionSession
     {
-        IJsonFilterStrategy _jsonFilterStrategy = new FilterStrategy();
         private readonly string _collectionName;
-        public IEsentDatabase Database { get; protected set; }
+        private readonly IJsonFilterStrategy _jsonFilterStrategy = new FilterStrategy();
         private IEsentSession _session;
         private IEsentTransaction _transaction;
 
@@ -21,6 +20,10 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             _collectionName = collectionName;
             Database = database;
         }
+
+        public IEsentDatabase Database { get; protected set; }
+
+        #region ICollectionSession Members
 
         public void Dispose()
         {
@@ -54,12 +57,15 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             EnsureSessionStarted();
 
+            _session.LockWrites();
+
             var collectionId = EnsureCollection();
 
             using (var indexTable = _transaction.OpenTable("Index"))
             {
                 var indexRecord = indexTable.CreateCursor("IX_Index_CollectionId_JsonPath")
-                    .ScanEq(Mappings.IndexRecordMapper, indexTable.CreateKey().Int64(collectionId).String(definition.JsonPath))
+                    .ScanEq(Mappings.IndexRecordMapper,
+                            indexTable.CreateKey().Int64(collectionId).String(definition.JsonPath))
                     .FirstOrDefault();
 
                 if (indexRecord != null)
@@ -68,16 +74,15 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 }
 
 
-
                 var jsonPath = JSON.ParseJsonPath(definition.JsonPath);
 
-                var indexId = indexRecord != null ? 
-                    indexRecord.IndexId : 
-                    indexTable.CreateInsertRecord()
-                        .Int64("CollectionId", collectionId)
-                        .AddString("JsonPath", definition.JsonPath)
-                        .AddString("JsonDefinition", JSON.Write(definition))
-                        .InsertWithAutoIncrement64("IndexId");
+                var indexId = indexRecord != null
+                                  ? indexRecord.IndexId
+                                  : indexTable.CreateInsertRecord()
+                                        .Int64("CollectionId", collectionId)
+                                        .AddString("JsonPath", definition.JsonPath)
+                                        .AddString("JsonDefinition", JSON.Write(definition))
+                                        .InsertWithAutoIncrement64("IndexId");
 
                 // Reindex all objects
                 using (var documentTable = _transaction.OpenTable("Document"))
@@ -130,8 +135,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                      let jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath)
                      from filterMember in jsonPath.Evaluate(filter)
                      from filterValue in _jsonFilterStrategy.GetFilterValues(filterMember)
-
-                     select new {IndexId = indexRecord.IndexId, Value = JSON.Write(filterValue).ToLowerInvariant()})
+                     select new {indexRecord.IndexId, Value = JSON.Write(filterValue).ToLowerInvariant()})
                         .ToLookup(o => o.IndexId, o => o.Value);
 
                 HashSet<Int64> documentIds = null;
@@ -147,11 +151,13 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                             foreach (var indexValue in group.Distinct().OrderBy(s => s))
                             {
                                 var cursor = indexValueTable.CreateCursor("IX_IndexValue_IndexId_Json");
-                                foreach (var documentIdRecord in cursor.ScanEq(Mappings.IndexValue_DocumentId_RecordMapper, indexValueTable.CreateKey().Int64(indexId).String(indexValue)))
+                                foreach (
+                                    var documentIdRecord in
+                                        cursor.ScanEq(Mappings.IndexValue_DocumentId_RecordMapper,
+                                                      indexValueTable.CreateKey().Int64(indexId).String(indexValue)))
                                 {
                                     documentIdsForIndex.Add(documentIdRecord.DocumentId);
                                 }
-   
                             }
                             if (documentIds == null)
                             {
@@ -171,12 +177,13 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
                 var f = _jsonFilterStrategy.CreateFilter(filter);
 
-                var found = new List<KeyValuePair<string,T>>();
+                var found = new List<KeyValuePair<string, T>>();
                 if (documentIds == null)
                 {
-                    using (var documentTable = _transaction.OpenTable("Document") )
+                    using (var documentTable = _transaction.OpenTable("Document"))
                     {
-                        foreach (var documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper))
+                        foreach (
+                            var documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper))
                         {
                             var document = JSON.Read(documentRecord.DocumentJson);
                             if (f.Matches(document))
@@ -205,7 +212,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                 var document = JSON.Read(documentRecord.DocumentJson);
                                 if (f.Matches(document))
                                 {
-                                    found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey, document.ToObject<T>()));
+                                    found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey,
+                                                                          document.ToObject<T>()));
                                 }
                             }
                         }
@@ -233,6 +241,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             EnsureSessionStarted();
 
+            _session.LockWrites();
+
             var collectionId = EnsureCollection();
 
             Remove(key);
@@ -251,7 +261,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     using (var indexValueTable = _transaction.OpenTable("IndexValue"))
                     {
                         var indexCursor = indexTable.CreateCursor("IX_Index_CollectionId");
-                        foreach ( var indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper))
+                        foreach (var indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper))
                         {
                             var jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath);
 
@@ -268,7 +278,6 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                     .Insert();
                             }
                         }
-
                     }
                 }
             }
@@ -276,9 +285,12 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
         public void Remove(string key)
         {
+            EnsureSessionStarted();
+
+            _session.LockWrites();
+
             using (var documentTable = _transaction.OpenTable("Document"))
             {
-
                 // Find existing document
                 var documentCursor = documentTable.CreateCursor("IX_Document_DocumentKey");
 
@@ -302,6 +314,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 }
             }
         }
+
+        #endregion
 
         private Int64 EnsureCollection()
         {
@@ -351,6 +365,5 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 _transaction = _session.CreateTransaction();
             }
         }
-
     }
 }

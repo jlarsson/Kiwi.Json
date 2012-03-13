@@ -7,13 +7,14 @@ namespace Kiwi.Fluesent
     {
         public IEsentDatabase Database { get; set; }
         private readonly Session _session;
-        private readonly IDisposable _closeSession;
+        private readonly IWriteLockable _writeLockable;
+        private IDisposable _writeLock;
 
-        public EsentSession(IEsentDatabase database, Session session, IDisposable closeSession)
+        public EsentSession(IEsentDatabase database, Session session, IWriteLockable writeLockable)
         {
             Database = database;
             _session = session;
-            _closeSession = closeSession;
+            _writeLockable = writeLockable;
             JetDbid = JET_DBID.Nil;
         }
 
@@ -53,6 +54,14 @@ namespace Kiwi.Fluesent
             Api.JetAttachDatabase(_session, Database.DatabasePath, grbit);
         }
 
+        public void LockWrites()
+        {
+            if (_writeLock == null)
+            {
+                _writeLock = _writeLockable.CreateWriteLock();
+            }
+        }
+
         public IEsentTransaction CreateTransaction()
         {
             return new EsentTransaction(this, new Transaction(_session));
@@ -64,9 +73,13 @@ namespace Kiwi.Fluesent
             {
                 _session.Dispose();
             }
-            if (_closeSession != null)
+            if (_writeLock != null)
             {
-                _closeSession.Dispose();
+                _writeLock.Dispose();
+            }
+            if (_writeLockable != null)
+            {
+                _writeLockable.Dispose();
             }
         }
 
