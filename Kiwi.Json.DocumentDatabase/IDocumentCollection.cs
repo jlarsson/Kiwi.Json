@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Kiwi.Json.DocumentDatabase.Data;
 
 namespace Kiwi.Json.DocumentDatabase
@@ -6,5 +7,6 @@ namespace Kiwi.Json.DocumentDatabase
     {
         string Name { get; }
         ICollectionSession CreateSession();
+        IEnumerable<IDocumentCollectionIndex> GetIndexes();
     }
 }

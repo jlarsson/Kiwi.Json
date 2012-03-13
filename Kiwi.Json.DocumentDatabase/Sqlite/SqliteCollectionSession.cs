@@ -51,9 +51,6 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 return;
             }
 
-            // Verify the indexdefinition
-            var jsonPath = JSON.ParseJsonPath(definition.JsonPath);
-
             // Create the index in the database
             EnsureCollectionExistsInDatabase();
 
@@ -74,7 +71,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
 
 
             var indexValues = from document in documents
-                              from indexValue in jsonPath.Evaluate(document.Document)
+                              from indexValue in definition.JsonPath.Evaluate(document.Document)
                               select new {document.DocumentId, IndexValue = indexValue};
 
             foreach (var indexValue in indexValues)

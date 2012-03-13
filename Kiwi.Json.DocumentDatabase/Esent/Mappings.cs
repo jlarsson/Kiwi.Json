@@ -34,6 +34,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     .Column("DocumentId").AsInt64().NotNull()
                     .Column("Json").AsString().NotNull()
                     .Index("PK_IndexValue_IndexId_DocumentId").Asc("IndexId", "DocumentId").DisallowNull()
+                    .Index("IX_IndexValue_IndexId").Asc("IndexId").DisallowNull()
                     .Index("IX_IndexValue_DocumentId").Asc("IndexId", "DocumentId").DisallowNull()
                     .Index("IX_IndexValue_IndexId_Json").Asc("IndexId").Asc("Json").DisallowNull()
                     .Database();
@@ -61,7 +62,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
         public class IndexValueRecord
         {
-            public Int64 CollectionId { get; set; }
+            public Int64 IndexId { get; set; }
             public Int64 DocumentId { get; set; }
             public string Json { get; set; }
         }
@@ -70,6 +71,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             public Int64 DocumentId { get; set; }
         }
+
+        public static readonly IRecordMapper<DocumentRecord> Document_Key_RecordMapper = new RecordMapper<DocumentRecord>()
+            .String("DocumentKey", (r, v) => r.DocumentKey = v);
+        public static readonly IRecordMapper<DocumentRecord> Document_Id_RecordMapper = new RecordMapper<DocumentRecord>()
+            .Int64("DocumentId", (r, v) => r.DocumentId = v);
 
         public static readonly IRecordMapper<DocumentRecord> DocumentRecordMapper = new RecordMapper<DocumentRecord>()
             .Int64("DocumentId", (r, v) => r.DocumentId = v)
@@ -87,8 +93,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             .String("JsonDefinition", (r, v) => r.JsonDefinition = v);
 
         public static readonly IRecordMapper<IndexValueRecord> IndexValueRecordMapper = new RecordMapper<IndexValueRecord>()
-            .Int64("CollectionId", (r, v) => r.CollectionId = v)
+            .Int64("IndexId", (r, v) => r.IndexId = v)
             .Int64("DocumentId", (r, v) => r.DocumentId = v)
+            .String("Json", (r, v) => r.Json = v);
+
+        public static readonly IRecordMapper<IndexValueRecord> IndexValue_Json_RecordMapper = new RecordMapper<IndexValueRecord>()
             .String("Json", (r, v) => r.Json = v);
 
         public static readonly IRecordMapper<DocumentIdRecord> IndexValue_DocumentId_RecordMapper = new RecordMapper<DocumentIdRecord>()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Kiwi.Json.JPath;
 
 namespace Kiwi.Json.DocumentDatabase.Data
 {
@@ -6,10 +7,10 @@ namespace Kiwi.Json.DocumentDatabase.Data
     {
         public IndexDefinition()
         {
-            ExcludedValues = new HashSet<object>();
+            //ExcludedValues = new HashSet<object>();
         }
 
-        public string JsonPath { get; set; }
-        public HashSet<object> ExcludedValues { get; set; }
+        public IJsonPath JsonPath { get; set; }
+        //public HashSet<object> ExcludedValues { get; set; }
     }
 }

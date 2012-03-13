@@ -12,12 +12,12 @@ namespace Kiwi.Fluesent
             return record;
         }
 
-        public static IInsertRecord AddString(this IInsertRecord record, string name, string value)
+        public static IInsertRecord String(this IInsertRecord record, string name, string value)
         {
-            return AddString(record, name, value, Encoding.Unicode);
+            return String(record, name, value, Encoding.Unicode);
         }
 
-        public static IInsertRecord AddString(this IInsertRecord record, string name, string value, Encoding encoding)
+        public static IInsertRecord String(this IInsertRecord record, string name, string value, Encoding encoding)
         {
             record.DefineValue((s, t, m) => Api.SetColumn(s, t, m[name], value, encoding));
             return record;

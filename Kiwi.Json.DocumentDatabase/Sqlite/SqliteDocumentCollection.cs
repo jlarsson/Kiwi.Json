@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Kiwi.Json.DocumentDatabase.Data;
 
 namespace Kiwi.Json.DocumentDatabase.Sqlite
@@ -19,6 +20,11 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
         public ICollectionSession CreateSession()
         {
             return DocumentDatabase.CreateCollectionSession(this);
+        }
+
+        public IEnumerable<IDocumentCollectionIndex> GetIndexes()
+        {
+            throw new System.NotImplementedException();
         }
 
         #endregion

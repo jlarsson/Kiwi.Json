@@ -64,6 +64,7 @@
     <Compile Include="Data\IDatabaseCommandFactory.cs" />
     <Compile Include="Data\DbCommandDatabaseCommand.cs" />
     <Compile Include="Data\IDatabaseCommand.cs" />
+    <Compile Include="Esent\DocumentCollectionIndex.cs" />
     <Compile Include="Esent\EsentCollectionSession.cs" />
     <Compile Include="ICollectionSession.cs" />
     <Compile Include="Data\IDbSession.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Esent\EsentDocumentCollection.cs" />
     <Compile Include="Esent\EsentDocumentDatabase.cs" />
     <Compile Include="Esent\Mappings.cs" />
+    <Compile Include="IDocumentCollectionIndex.cs" />
     <Compile Include="IDocumentDatabase.cs" />
     <Compile Include="IDocumentCollection.cs" />
     <Compile Include="Indexing\ConvertJsonValueToIndexNormalForm.cs" />

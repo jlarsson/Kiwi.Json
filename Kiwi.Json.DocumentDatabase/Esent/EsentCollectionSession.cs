@@ -68,7 +68,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             {
                 var indexRecord = indexTable.CreateCursor("IX_Index_CollectionId_JsonPath")
                     .ScanEq(Mappings.IndexRecordMapper,
-                            indexTable.CreateKey().Int64(collectionId).String(definition.JsonPath))
+                            indexTable.CreateKey().Int64(collectionId).String(definition.JsonPath.Path))
                     .FirstOrDefault();
 
                 if (indexRecord != null)
@@ -78,15 +78,12 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 }
 
                 Log.TraceFormat("EnsureIndex({0}): Creating index.", definition.JsonPath);
-                var jsonPath = JSON.ParseJsonPath(definition.JsonPath);
 
-                var indexId = indexRecord != null
-                                  ? indexRecord.IndexId
-                                  : indexTable.CreateInsertRecord()
-                                        .Int64("CollectionId", collectionId)
-                                        .AddString("JsonPath", definition.JsonPath)
-                                        .AddString("JsonDefinition", JSON.Write(definition))
-                                        .InsertWithAutoIncrement64("IndexId");
+                var indexId = indexTable.CreateInsertRecord()
+                    .Int64("CollectionId", collectionId)
+                    .String("JsonPath", definition.JsonPath.Path)
+                    .String("JsonDefinition", "") // TODO: Save definition in suitable format
+                    .InsertWithAutoIncrement64("IndexId");
 
                 // Reindex all objects
                 using (var documentTable = _transaction.OpenTable("Document"))
@@ -102,7 +99,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                 .DeleteEq(indexValueTable.CreateKey().Int64(indexId).Int64(documentRecord.DocumentId));
 
                             var documentValue = JSON.Read<IJsonValue>(documentRecord.DocumentJson);
-                            var indexValues = from documentMember in jsonPath.Evaluate(documentValue)
+                            var indexValues = from documentMember in definition.JsonPath.Evaluate(documentValue)
                                               from filterValue in _jsonFilterStrategy.GetFilterValues(documentMember)
                                               select JSON.Write(filterValue).ToLowerInvariant();
 
@@ -111,7 +108,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                 indexValueTable.CreateInsertRecord()
                                     .Int64("IndexId", indexId)
                                     .Int64("DocumentId", documentRecord.DocumentId)
-                                    .AddString("Json", indexValue)
+                                    .String("Json", indexValue)
                                     .Insert();
                             }
                         }
@@ -175,8 +172,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             {
                 var documentId = documentTable.CreateInsertRecord()
                     .Int64("CollectionId", collectionId)
-                    .AddString("DocumentKey", key.ToLowerInvariant())
-                    .AddString("DocumentJson", JSON.Write(document))
+                    .String("DocumentKey", key.ToLowerInvariant())
+                    .String("DocumentJson", JSON.Write(document))
                     .InsertWithAutoIncrement64("DocumentId");
 
                 // Get all indexes
@@ -198,7 +195,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                 indexValueTable.CreateInsertRecord()
                                     .Int64("IndexId", indexRecord.IndexId)
                                     .Int64("DocumentId", documentId)
-                                    .AddString("Json", indexValue)
+                                    .String("Json", indexValue)
                                     .Insert();
                             }
                         }
@@ -354,7 +351,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 }
 
                 return table.CreateInsertRecord()
-                    .AddString("CollectionName", _collectionName)
+                    .String("CollectionName", _collectionName)
                     .InsertWithAutoIncrement64("CollectionId");
             }
         }

@@ -18,7 +18,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
 
             coll.EnsureIndex(new IndexDefinition()
             {
-                JsonPath = "$.B"
+                JsonPath = JSON.ParseJsonPath("$.B")
             });
 
 
@@ -73,7 +73,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
 
             coll.EnsureIndex(new IndexDefinition()
             {
-                JsonPath = "$.B"
+                JsonPath = JSON.ParseJsonPath("$.B")
             });
 
             coll.Put("A", new { K = 1, B = "one" });
