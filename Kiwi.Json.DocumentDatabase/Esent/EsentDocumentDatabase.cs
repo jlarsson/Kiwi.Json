@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Fluesent;
-using Microsoft.Isam.Esent.Interop;
 
 namespace Kiwi.Json.DocumentDatabase.Esent
 {
-    public class EsentDocumentDatabase: IDocumentDatabase
+    public class EsentDocumentDatabase : IDocumentDatabase
     {
-        public IEsentDatabase Database { get; protected set; }
-
         public EsentDocumentDatabase(IEsentDatabase database)
         {
             Database = database;
         }
 
-        public EsentDocumentDatabase(string path): this(new EsentDatabase(path))
+        public EsentDocumentDatabase(string path) : this(new EsentDatabase(path))
         {
         }
+
+        public IEsentDatabase Database { get; protected set; }
+
+        #region IDocumentDatabase Members
 
         public IEnumerable<IDocumentCollection> Collections
         {
@@ -44,18 +45,12 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             return new EsentDocumentCollection(Database, name);
         }
 
-        public void CreateDatabase(CreateDatabaseGrbit grbit = CreateDatabaseGrbit.None)
-        {
-            using (var session = Database.CreateSession(false))
-            {
-                session.CreateDatabase(null, grbit);
-                using (var transaction = session.CreateTransaction())
-                {
-                    Mappings.DatabaseDefinition.Create(transaction);
+        #endregion
 
-                    transaction.Commit();
-                }
-            }
+        public EsentDocumentDatabase AlwaysCreateNew()
+        {
+            Database.SetCreateDatabaseOptions(Mappings.DatabaseDefinition, true);
+            return this;
         }
     }
 }

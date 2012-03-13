@@ -8,6 +8,28 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
     public class IndexFixture: DatabaseTestFixtureBase
     {
         [Test]
+        public void EmptyCollectionHasNoIndexes()
+        {
+            var coll = Db.GetCollection("Index");
+            Assert.AreEqual(0, coll.GetIndexes().Count());
+        }
+
+        [Test]
+        public void VerifyObjectIndex()
+        {
+            var coll = Db.GetCollection("Index");
+            coll.Put("K", new {A = new object[] {1, 2, 3, "four"}, Ignore = "this value is not covered by index"});
+            coll.EnsureIndex(new IndexDefinition { JsonPath = JSON.ParseJsonPath("$.A") });
+
+            var index = coll.GetIndexes().FirstOrDefault(ix => ix.JsonPath.Path == "$.A");
+            Assert.NotNull(index);
+
+            var indexValues = index.GetValues("K").Select(v => v.ToObject()).ToArray();
+
+            Assert.That(indexValues, Is.EqualTo(new object[]{1,2,3,"four"}));
+        }
+
+        [Test]
         public void Test()
         {
             var coll = Db.GetCollection("Index");

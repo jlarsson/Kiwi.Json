@@ -12,8 +12,8 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
         public void Test()
         {
             const string dbPath = @"c:\temp\testdb\test.db";
-            var db = new EsentDocumentDatabase(dbPath);
-            db.CreateDatabase();
+            var db = new EsentDocumentDatabase(dbPath).AlwaysCreateNew();
+
 
             db.GetCollection("Test").Put("A",new {X = 1});
 

@@ -1,11 +1,11 @@
-using Microsoft.Isam.Esent.Interop;
+using Kiwi.Fluesent.Ddl;
 
 namespace Kiwi.Fluesent
 {
     public interface IEsentDatabase
     {
         string DatabasePath { get; }
-        //IEsentInstance CreateInstance(string name, string displayName, InitGrbit grbit);
+        void SetCreateDatabaseOptions(IDatabaseDefinition databaseDefinition, bool alwaysCreate);
         IEsentSession CreateSession(bool attachAndOpenDatabase);
     }
 }
