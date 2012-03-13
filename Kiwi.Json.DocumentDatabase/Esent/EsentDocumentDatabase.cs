@@ -9,6 +9,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         public EsentDocumentDatabase(IEsentDatabase database)
         {
             Database = database;
+            Database.SetCreateDatabaseOptions(Mappings.DatabaseDefinition, false);
         }
 
         public EsentDocumentDatabase(string path) : this(new EsentDatabase(path))
@@ -51,6 +52,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             Database.SetCreateDatabaseOptions(Mappings.DatabaseDefinition, true);
             return this;
+        }
+
+        public static void Collect()
+        {
+            InstanceCache.Collect();
         }
     }
 }

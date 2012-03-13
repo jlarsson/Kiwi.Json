@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Isam.Esent.Interop;
 using Microsoft.Isam.Esent.Interop.Windows7;
@@ -16,6 +18,19 @@ namespace Kiwi.Fluesent
 
         private static readonly Dictionary<string, Registration> Registrations =
             new Dictionary<string, Registration>(StringComparer.OrdinalIgnoreCase);
+
+
+        static InstanceCache()
+        {
+            new Thread(() =>
+                           {
+                               while (true)
+                               {
+                                   Thread.Sleep(TimeSpan.FromSeconds(10));
+                                   Collect();
+                               }
+                           }).Start();
+        }
 
         public static IEsentInstanceHolder GetInstance(string databasePath)
         {
@@ -59,13 +74,13 @@ namespace Kiwi.Fluesent
             lock (CacheLock)
             {
                 --registration.ReferenceCount;
-                if (registration.ReferenceCount == 0)
-                {
-                    registration.Instance.Dispose();
-                    Registrations.Remove(registration.DatabasePath);
+                //if (registration.ReferenceCount == 0)
+                //{
+                //    registration.Instance.Dispose();
+                //    Registrations.Remove(registration.DatabasePath);
 
-                    Log.TraceFormat("Released database instance {0}", registration.DatabasePath);
-                }
+                //    Log.TraceFormat("Released database instance {0}", registration.DatabasePath);
+                //}
             }
         }
 
@@ -172,5 +187,26 @@ namespace Kiwi.Fluesent
         }
 
         #endregion
+
+        public static void Collect()
+        {
+            lock (CacheLock)
+            {
+                var bad = Registrations.Values.Where(r => r.ReferenceCount > 2);
+                if (bad.Any())
+                {
+                    Console.Out.WriteLine("found bad");
+                }
+                var cleanup = Registrations.Values.Where(r => r.ReferenceCount == 0).ToList();
+
+                foreach (var registration in cleanup)
+                {
+                    Registrations.Remove(registration.DatabasePath);
+                    registration.Instance.Dispose();
+
+                    Log.TraceFormat("Released database instance {0}", registration.DatabasePath);
+                }
+            }
+        }
     }
 }

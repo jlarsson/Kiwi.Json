@@ -56,6 +56,14 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             }
         }
 
+        public void Pulse()
+        {
+            if (_transaction != null)
+            {
+                _transaction.Pulse();
+            }
+        }
+
         public void EnsureIndex(IndexDefinition definition)
         {
             EnsureSessionStarted();

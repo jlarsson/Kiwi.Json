@@ -37,6 +37,11 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             DbSession.Rollback();
         }
 
+        public void Pulse()
+        {
+            
+        }
+
         public void EnsureIndex(IndexDefinition definition)
         {
             var existingIndex = DbSession.CreateSqlCommand(

@@ -11,7 +11,8 @@ namespace Kiwi.Fluesent
 
         public static void Pulse(this IEsentTransaction transaction)
         {
-            transaction.Pulse(CommitTransactionGrbit.LazyFlush);
+            //transaction.Pulse(CommitTransactionGrbit.LazyFlush);
+            transaction.Pulse(CommitTransactionGrbit.None);
         }
 
         public static IEsentTable OpenTable(this IEsentTransaction transaction, string name)
