@@ -4,9 +4,7 @@ using System.Linq;
 using Kiwi.Fluesent;
 using Kiwi.Json.DocumentDatabase.Data;
 using Kiwi.Json.DocumentDatabase.Indexing;
-using Kiwi.Json.JPath;
 using Kiwi.Json.Untyped;
-using Microsoft.Isam.Esent.Interop;
 
 namespace Kiwi.Json.DocumentDatabase.Esent
 {
@@ -15,7 +13,6 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         IJsonFilterStrategy _jsonFilterStrategy = new FilterStrategy();
         private readonly string _collectionName;
         public IEsentDatabase Database { get; protected set; }
-        private IEsentInstance _instance;
         private IEsentSession _session;
         private IEsentTransaction _transaction;
 
@@ -34,10 +31,6 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             if (_session != null)
             {
                 _session.Dispose();
-            }
-            if (_instance != null)
-            {
-                _instance.Dispose();
             }
         }
 
@@ -65,10 +58,16 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
             using (var indexTable = _transaction.OpenTable("Index"))
             {
-                var cursor = indexTable.CreateCursor("IX_Index_CollectionId_JsonPath");
-                var indexRecord = cursor
+                var indexRecord = indexTable.CreateCursor("IX_Index_CollectionId_JsonPath")
                     .ScanEq(Mappings.IndexRecordMapper, indexTable.CreateKey().Int64(collectionId).String(definition.JsonPath))
                     .FirstOrDefault();
+
+                if (indexRecord != null)
+                {
+                    return;
+                }
+
+
 
                 var jsonPath = JSON.ParseJsonPath(definition.JsonPath);
 
@@ -222,10 +221,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
             using (var documenTable = _transaction.OpenTable("Document"))
             {
-                var cursor = documenTable.CreateCursor("IX_Document_DocumentKey");
-                var document = cursor
-                    .EnumerateEq(documenTable.CreateKey().String(key.ToLowerInvariant()))
-                    .Select(i => cursor.ReadTo(new Mappings.DocumentRecord(), Mappings.DocumentRecordMapper))
+                var document = documenTable.CreateCursor("IX_Document_DocumentKey")
+                    .ScanEq(Mappings.DocumentRecordMapper, documenTable.CreateKey().String(key.ToLowerInvariant()))
                     .FirstOrDefault();
 
                 return document == null ? default(T) : JSON.Read<T>(document.DocumentJson);
@@ -286,7 +283,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 var documentCursor = documentTable.CreateCursor("IX_Document_DocumentKey");
 
                 var documentKey = documentTable.CreateKey().String("key");
-                var documentRecord = documentCursor.EnumerateEq(documentKey)
+                var documentRecord = documentCursor.ScanEq(Mappings.DocumentRecordMapper, documentKey)
                     .Select(i => documentCursor.ReadTo(new Mappings.DocumentRecord(), Mappings.DocumentRecordMapper))
                     .FirstOrDefault();
 
@@ -313,8 +310,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 var cursor = table.CreateCursor("IX_Collection_CollectionName");
 
                 var collectionRecord = cursor
-                    .EnumerateEq(table.CreateKey().String(_collectionName))
-                    .Select(i => cursor.ReadTo(new Mappings.CollectionRecord(), Mappings.CollectionRecordMapper))
+                    .ScanEq(Mappings.CollectionRecordMapper, table.CreateKey().String(_collectionName))
                     .FirstOrDefault();
 
                 if (collectionRecord != null)
@@ -332,10 +328,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             using (var table = _transaction.OpenTable("Collection"))
             {
-                var cursor = table.CreateCursor("IX_Collection_CollectionName");
-                var collectionRecord = cursor
-                    .EnumerateEq(table.CreateKey().String(_collectionName))
-                    .Select(i => cursor.ReadTo(new Mappings.CollectionRecord(), Mappings.CollectionRecordMapper))
+                var collectionRecord = table.CreateCursor("IX_Collection_CollectionName")
+                    .ScanEq(Mappings.CollectionRecordMapper, table.CreateKey().String(_collectionName))
                     .FirstOrDefault();
 
                 if (collectionRecord != null)
@@ -348,13 +342,9 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
         private void EnsureSessionStarted()
         {
-            if (_instance == null)
-            {
-                _instance = Database.CreateInstance();
-            }
             if (_session == null)
             {
-                _session = _instance.CreateSession();
+                _session = Database.CreateSession(true);
             }
             if (_transaction == null)
             {

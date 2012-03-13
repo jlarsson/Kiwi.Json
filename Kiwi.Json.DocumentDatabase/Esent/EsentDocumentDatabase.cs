@@ -22,20 +22,17 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         {
             get
             {
-                using (var instance = Database.CreateInstance())
+                using (var session = Database.CreateSession(true))
                 {
-                    using (var session = instance.CreateSession())
+                    using (var transaction = session.CreateTransaction())
                     {
-                        using (var transaction = session.CreateTransaction())
+                        using (var table = transaction.OpenTable("Collection"))
                         {
-                            using (var table = transaction.OpenTable("Collection"))
-                            {
-                                var cursor = table.CreateCursor(null);
+                            var cursor = table.CreateCursor(null);
 
-                                return cursor.Scan(Mappings.CollectionRecordMapper)
-                                    .Select(c => GetCollection(c.CollectionName))
-                                    .ToList();
-                            }
+                            return cursor.Scan(Mappings.CollectionRecordMapper)
+                                .Select(c => GetCollection(c.CollectionName))
+                                .ToList();
                         }
                     }
                 }
@@ -49,17 +46,14 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
         public void CreateDatabase(CreateDatabaseGrbit grbit = CreateDatabaseGrbit.None)
         {
-            using (var instance = Database.CreateInstance())
+            using (var session = Database.CreateSession(false))
             {
-                using (var session = instance.CreateSession(false))
+                session.CreateDatabase(null, grbit);
+                using (var transaction = session.CreateTransaction())
                 {
-                    session.CreateDatabase(null, grbit);
-                    using (var transaction = session.CreateTransaction())
-                    {
-                        Mappings.DatabaseDefinition.Create(transaction);
+                    Mappings.DatabaseDefinition.Create(transaction);
 
-                        transaction.Commit();
-                    }
+                    transaction.Commit();
                 }
             }
         }

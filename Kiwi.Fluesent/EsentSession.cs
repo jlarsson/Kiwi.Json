@@ -5,12 +5,14 @@ namespace Kiwi.Fluesent
 {
     public class EsentSession : IEsentSession
     {
-        protected IEsentInstance Instance;
+        public IEsentDatabase Database { get; set; }
         private readonly Session _session;
 
-        public EsentSession(IEsentInstance instance, Session session)
+        public event Action<EsentSession> NotifyDisposed;
+
+        public EsentSession(IEsentDatabase database, Session session)
         {
-            Instance = instance;
+            Database = database;
             _session = session;
             JetDbid = JET_DBID.Nil;
         }
@@ -31,7 +33,7 @@ namespace Kiwi.Fluesent
                 throw new ApplicationException("Only one database may be opened in an EsentSession");
             }
             JET_DBID dbid;
-            Api.JetCreateDatabase(_session, Instance.Database.Path, connect, out dbid, grbit);
+            Api.JetCreateDatabase(_session, Database.Path, connect, out dbid, grbit);
             JetDbid = dbid;
         }
 
@@ -42,13 +44,13 @@ namespace Kiwi.Fluesent
                 throw new ApplicationException("Only one database may be opened in an EsentSession");
             }
             JET_DBID dbid;
-            Api.JetOpenDatabase(_session, Instance.Database.Path, connect, out dbid, grbit);
+            Api.JetOpenDatabase(_session, Database.Path, connect, out dbid, grbit);
             JetDbid = dbid;
         }
 
         public void AttachDatabase(AttachDatabaseGrbit grbit)
         {
-            Api.JetAttachDatabase(_session, Instance.Database.Path, grbit);
+            Api.JetAttachDatabase(_session, Database.Path, grbit);
         }
 
         public IEsentTransaction CreateTransaction()
@@ -58,7 +60,14 @@ namespace Kiwi.Fluesent
 
         public void Dispose()
         {
-            _session.Dispose();
+            if (_session != null)
+            {
+                _session.Dispose();
+                if (NotifyDisposed != null)
+                {
+                    NotifyDisposed(this);
+                }
+            }
         }
 
         #endregion

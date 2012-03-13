@@ -16,6 +16,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
             coll.Put("B", new {B = new[] {1, 2, 3}});
 
             coll.EnsureIndex(new IndexDefinition {JsonPath = "$.B"});
+            coll.EnsureIndex(new IndexDefinition { JsonPath = "$.B" });
 
             coll.Put("C", new { B = new[] { 4,5,6 } });
 

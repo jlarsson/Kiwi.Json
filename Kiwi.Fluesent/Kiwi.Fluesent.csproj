@@ -62,12 +62,10 @@
     <Compile Include="EsentCursor.cs" />
     <Compile Include="EsentDatabase.cs" />
     <Compile Include="EsentTable.cs" />
-    <Compile Include="EsentInstance.cs" />
     <Compile Include="EsentSession.cs" />
     <Compile Include="EsentTransaction.cs" />
     <Compile Include="IEsentCursor.cs" />
     <Compile Include="IEsentDatabase.cs" />
-    <Compile Include="IEsentInstance.cs" />
     <Compile Include="IEsentSession.cs" />
     <Compile Include="IEsentTable.cs" />
     <Compile Include="IEsentTransaction.cs" />

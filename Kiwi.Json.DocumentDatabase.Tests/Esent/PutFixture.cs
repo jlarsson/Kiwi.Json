@@ -19,8 +19,9 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
         public void PutOverwritesExisting()
         {
             var coll = Db.GetCollection("test");
+
             coll.Put("key", "hello");
-            coll.Put("key", "world");
+            coll.Put("Key", "world");
 
             Assert.That("world", Is.EqualTo(coll.Get<string>("key")));
         }
