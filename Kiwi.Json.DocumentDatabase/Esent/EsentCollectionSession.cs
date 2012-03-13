@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Logging;
 using Kiwi.Fluesent;
 using Kiwi.Json.DocumentDatabase.Data;
 using Kiwi.Json.DocumentDatabase.Indexing;
@@ -10,6 +11,8 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 {
     public class EsentCollectionSession : ICollectionSession
     {
+        private static readonly ILog Log = LogManager.GetCurrentClassLogger();
+
         private readonly string _collectionName;
         private readonly IJsonFilterStrategy _jsonFilterStrategy = new FilterStrategy();
         private IEsentSession _session;
@@ -70,10 +73,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
                 if (indexRecord != null)
                 {
+                    Log.TraceFormat("EnsureIndex({0}) has nothing to do. Already present.", definition.JsonPath);
                     return;
                 }
 
-
+                Log.TraceFormat("EnsureIndex({0}): Creating index.", definition.JsonPath);
                 var jsonPath = JSON.ParseJsonPath(definition.JsonPath);
 
                 var indexId = indexRecord != null
@@ -126,101 +130,21 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 return Enumerable.Empty<KeyValuePair<string, T>>();
             }
 
-            using (var indexTable = _transaction.OpenTable("Index"))
+            var indexValues = GetIndexValuesByFindFilterGroupedByIndexId<T>(filter);
+
+            if (indexValues.Any())
             {
-                var indexCursor = indexTable.CreateCursor(null);
-
-                var indexValues =
-                    (from indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper)
-                     let jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath)
-                     from filterMember in jsonPath.Evaluate(filter)
-                     from filterValue in _jsonFilterStrategy.GetFilterValues(filterMember)
-                     select new {indexRecord.IndexId, Value = JSON.Write(filterValue).ToLowerInvariant()})
-                        .ToLookup(o => o.IndexId, o => o.Value);
-
-                HashSet<Int64> documentIds = null;
-                if (indexValues.Any())
-                {
-                    using (var indexValueTable = _transaction.OpenTable("IndexValue"))
-                    {
-                        foreach (var group in indexValues)
-                        {
-                            var indexId = group.Key;
-
-                            var documentIdsForIndex = new HashSet<Int64>();
-                            foreach (var indexValue in group.Distinct().OrderBy(s => s))
-                            {
-                                var cursor = indexValueTable.CreateCursor("IX_IndexValue_IndexId_Json");
-                                foreach (
-                                    var documentIdRecord in
-                                        cursor.ScanEq(Mappings.IndexValue_DocumentId_RecordMapper,
-                                                      indexValueTable.CreateKey().Int64(indexId).String(indexValue)))
-                                {
-                                    documentIdsForIndex.Add(documentIdRecord.DocumentId);
-                                }
-                            }
-                            if (documentIds == null)
-                            {
-                                documentIds = documentIdsForIndex;
-                            }
-                            else
-                            {
-                                documentIds.IntersectWith(documentIdsForIndex);
-                            }
-                            if (documentIds.Count == 0)
-                            {
-                                return Enumerable.Empty<KeyValuePair<string, T>>();
-                            }
-                        }
-                    }
-                }
-
-                var f = _jsonFilterStrategy.CreateFilter(filter);
-
-                var found = new List<KeyValuePair<string, T>>();
+                var documentIds = FindUsingIndex(indexValues);
                 if (documentIds == null)
                 {
-                    using (var documentTable = _transaction.OpenTable("Document"))
-                    {
-                        foreach (
-                            var documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper))
-                        {
-                            var document = JSON.Read(documentRecord.DocumentJson);
-                            if (f.Matches(document))
-                            {
-                                found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey, document.ToObject<T>()));
-                            }
-                        }
-                    }
+                    return Enumerable.Empty<KeyValuePair<string, T>>();
                 }
-                else if (documentIds.Count > 0)
-                {
-                    using (var documentTable = _transaction.OpenTable("Document"))
-                    {
-                        foreach (var documentId in documentIds.OrderBy(id => id))
-                        {
-                            var documentRecord =
-                                documentTable.CreateCursor("PK_Doucment_DocumentId").ScanEq(
-                                    Mappings.DocumentRecordMapper, documentTable.CreateKey().Int64(documentId)).
-                                    FirstOrDefault();
-                            if (documentRecord == null)
-                            {
-                                // TODO: Really bad incosistency
-                            }
-                            else
-                            {
-                                var document = JSON.Read(documentRecord.DocumentJson);
-                                if (f.Matches(document))
-                                {
-                                    found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey,
-                                                                          document.ToObject<T>()));
-                                }
-                            }
-                        }
-                    }
-                }
-                return found;
+
+                return LoadObjectsFiltered<T>(documentIds, _jsonFilterStrategy.CreateFilter(filter));
             }
+
+            Log.WarnFormat("Find({0}): No suitable indexes, scanning table", filter);
+            return ScanObjectsFiltered<T>(_jsonFilterStrategy.CreateFilter(filter));
         }
 
         public T Get<T>(string key)
@@ -316,6 +240,103 @@ namespace Kiwi.Json.DocumentDatabase.Esent
         }
 
         #endregion
+
+        private ILookup<Int64, string> GetIndexValuesByFindFilterGroupedByIndexId<T>(IJsonValue filter)
+        {
+            using (var indexTable = _transaction.OpenTable("Index"))
+            {
+                var indexCursor = indexTable.CreateCursor(null);
+
+                return
+                    (from indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper)
+                     let jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath)
+                     from filterMember in jsonPath.Evaluate(filter)
+                     from filterValue in _jsonFilterStrategy.GetFilterValues(filterMember)
+                     select new {indexRecord.IndexId, Value = JSON.Write(filterValue).ToLowerInvariant()})
+                        .ToLookup(o => o.IndexId, o => o.Value);
+            }
+        }
+
+        private List<KeyValuePair<string, T>> ScanObjectsFiltered<T>(IJsonFilter filter)
+        {
+            using (var documentTable = _transaction.OpenTable("Document"))
+            {
+                return new List<KeyValuePair<string, T>>(
+                    from documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper)
+                    let document = JSON.Read(documentRecord.DocumentJson)
+                    where filter.Matches(document)
+                    select new KeyValuePair<string, T>(documentRecord.DocumentKey, document.ToObject<T>()));
+            }
+        }
+
+        private List<KeyValuePair<string, T>> LoadObjectsFiltered<T>(IEnumerable<long> documentIds, IJsonFilter filter)
+        {
+            var found = new List<KeyValuePair<string, T>>();
+
+            using (var documentTable = _transaction.OpenTable("Document"))
+            {
+                foreach (var documentId in documentIds.OrderBy(id => id))
+                {
+                    var documentRecord =
+                        documentTable.CreateCursor("PK_Doucment_DocumentId").ScanEq(
+                            Mappings.DocumentRecordMapper, documentTable.CreateKey().Int64(documentId)).
+                            FirstOrDefault();
+                    if (documentRecord == null)
+                    {
+                        // TODO: Really bad incosistency
+                        Log.ErrorFormat("Database is inconsistent - object id from index is not valid");
+                    }
+                    else
+                    {
+                        var document = JSON.Read(documentRecord.DocumentJson);
+                        if (filter.Matches(document))
+                        {
+                            found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey,
+                                                                  document.ToObject<T>()));
+                        }
+                    }
+                }
+            }
+            return found;
+        }
+
+        private HashSet<Int64> FindUsingIndex(IEnumerable<IGrouping<Int64, string>> indexIdToIndexValues)
+        {
+            HashSet<Int64> documentIds = null;
+            using (var indexValueTable = _transaction.OpenTable("IndexValue"))
+            {
+                foreach (var group in indexIdToIndexValues)
+                {
+                    var indexId = @group.Key;
+
+                    var documentIdsForIndex = new HashSet<Int64>();
+                    foreach (var indexValue in @group.Distinct().OrderBy(s => s))
+                    {
+                        var cursor = indexValueTable.CreateCursor("IX_IndexValue_IndexId_Json");
+                        foreach (
+                            var documentIdRecord in
+                                cursor.ScanEq(Mappings.IndexValue_DocumentId_RecordMapper,
+                                              indexValueTable.CreateKey().Int64(indexId).String(indexValue)))
+                        {
+                            documentIdsForIndex.Add(documentIdRecord.DocumentId);
+                        }
+                    }
+                    if (documentIds == null)
+                    {
+                        documentIds = documentIdsForIndex;
+                    }
+                    else
+                    {
+                        documentIds.IntersectWith(documentIdsForIndex);
+                    }
+                    if (documentIds.Count == 0)
+                    {
+                        return null;
+                    }
+                }
+            }
+            return documentIds;
+        }
 
         private Int64 EnsureCollection()
         {

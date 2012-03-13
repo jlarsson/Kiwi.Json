@@ -6,7 +6,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
     public class PutFixture: DatabaseTestFixtureBase
     {
         [Test]
-        public void KeysAreNormalizedToLowercase()
+        public void KeysAreCaseInsensitive()
         {
             var coll = Db.GetCollection("test");
 

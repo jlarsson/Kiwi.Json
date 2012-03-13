@@ -138,6 +138,7 @@ namespace Kiwi.Fluesent
 
             public IDisposable CreateWriteLock()
             {
+                Log.TraceFormat("Acquiring writelock for {0}", DatabasePath);
                 var writeLock = new ExitLock(_writeLock);
                 Monitor.Enter(_writeLock);
                 return writeLock;
