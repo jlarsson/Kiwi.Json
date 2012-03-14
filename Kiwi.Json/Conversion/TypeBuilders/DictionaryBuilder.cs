@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
+using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder, IObjectBuilder
-        where TDictionary : class, IDictionary<string, TValue>, new()
+        where TDictionary : class, IDictionary<string, TValue>//, new()
     {
         private readonly ITypeBuilder _memberBuilder;
+        private readonly IClassActivator _activator;
 
-        public DictionaryBuilder(ITypeBuilder memberBuilder)
+        public DictionaryBuilder(ITypeBuilder memberBuilder, IClassActivator activator)
         {
             _memberBuilder = memberBuilder;
+            _activator = activator;
         }
 
         #region IObjectBuilder Members
@@ -24,9 +27,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             if (instanceState is TDictionary)
             {
+                (instanceState as TDictionary).Clear();
                 return instanceState;
             }
-            return new TDictionary();
+            return _activator.CreateInstance();
         }
 
         public override object GetMemberState(string memberName, object @object)
@@ -61,7 +65,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
         {
-            var builder = new DictionaryBuilder<TDictionary, TValue>(registry.GetTypeBuilder<TValue>());
+            var builder = new DictionaryBuilder<TDictionary, TValue>(registry.GetTypeBuilder<TValue>(), ClassActivator.Create(typeof(TDictionary)));
             return () => builder;
         }
 

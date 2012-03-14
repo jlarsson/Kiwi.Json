@@ -50,6 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JPath\GetJsonPathsFixture.cs" />
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ParseTextToCustomModel\SelfReferencingClassFixture.cs" />
     <Compile Include="ScratchFixture.cs" />

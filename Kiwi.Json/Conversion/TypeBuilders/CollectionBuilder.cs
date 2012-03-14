@@ -83,6 +83,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             if (instanceState is TCollection)
             {
+                (instanceState as TCollection).Clear();
                 return instanceState;
             }
             return new TCollection();

@@ -10,6 +10,11 @@ namespace Kiwi.Json.Untyped
     {
         #region IJsonNull Members
 
+        public IEnumerable<string> GetJsonPaths(string prefix, bool includeWildcards)
+        {
+            yield return prefix;
+        }
+
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)
         {
             yield return new JsonPathValue(prefix, this);

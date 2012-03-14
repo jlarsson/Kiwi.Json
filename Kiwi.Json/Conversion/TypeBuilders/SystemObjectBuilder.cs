@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
@@ -10,7 +11,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public SystemObjectBuilder()
         {
-            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(this);
+            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(this, new ClassActivator<Dictionary<string, object>>());
             _arrayBuilder = new CollectionBuilder<List<object>, object>(this);
         }
 

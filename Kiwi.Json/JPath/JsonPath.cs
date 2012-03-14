@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Kiwi.Json.Untyped;
@@ -9,7 +8,7 @@ namespace Kiwi.Json.JPath
     [DebuggerDisplay("JsonPath: {Path}")]
     public class JsonPath : IJsonPath
     {
-        private readonly Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>>[] _evaluators;
+        private readonly IJsonPathPartEvaluator[] _evaluators;
 
         public JsonPath(string path)
         {
@@ -28,7 +27,7 @@ namespace Kiwi.Json.JPath
                 return null;
             }
             IEnumerable<IJsonValue> values = new[] {obj};
-            return _evaluators.Aggregate(values, (current, evaluator) => evaluator(current).Where(v => v != null));
+            return _evaluators.Aggregate(values, (current, evaluator) => evaluator.Evaluate(current).Where(v => v != null));
         }
 
         #endregion

@@ -6,13 +6,15 @@ using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : new()
+    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass: class // where TClass : new()
     {
         private readonly Lazy<Dictionary<string, ClassMember>> _memberSetters;
+        private readonly IClassActivator _activator;
 
-        private ClassBuilder(Lazy<Dictionary<string, ClassMember>> memberSetters)
+        private ClassBuilder(Lazy<Dictionary<string, ClassMember>> memberSetters, IClassActivator activator)
         {
             _memberSetters = memberSetters;
+            _activator = activator;
         }
 
         #region IObjectBuilder Members
@@ -33,7 +35,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             {
                 return instanceState;
             }
-            return new TClass();
+            return _activator.CreateInstance();
         }
 
         public override object GetMemberState(string memberName, object @object)
@@ -100,7 +102,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                })
                 .ToDictionary(m => m.Name, m => m));
 
-            var classBuilder = new ClassBuilder<TClass>(memberSetters);
+            var classBuilder = new ClassBuilder<TClass>(memberSetters, ClassActivator.Create(typeof(TClass)));
             return () => classBuilder;
         }
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Kiwi.Json.JPath;
 using Kiwi.Json.Conversion;
+using Kiwi.Json.JPath;
 
 namespace Kiwi.Json.Untyped
 {
@@ -18,6 +18,23 @@ namespace Kiwi.Json.Untyped
         }
 
         #region IJsonArray Members
+
+        public IEnumerable<string> GetJsonPaths(string prefix, bool includeWildcards)
+        {
+            yield return prefix;
+
+            if (includeWildcards)
+            {
+                var wc = prefix + "[*]";
+                yield return wc;
+                foreach (var p in from element in this
+                                  from p in element.GetJsonPaths(wc, includeWildcards)
+                                  select p)
+                {
+                    yield return p;
+                }
+            }
+        }
 
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)
         {

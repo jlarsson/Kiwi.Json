@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Kiwi.Json.JPath.Visitors;
-using Kiwi.Json.Untyped;
+using Kiwi.Json.JPath.Evaluators;
 using Kiwi.Json.Util;
 
 namespace Kiwi.Json.JPath
@@ -14,60 +12,11 @@ namespace Kiwi.Json.JPath
         {
         }
 
-        private IEnumerable<IJsonValue> EvalCurrent(IEnumerable<IJsonValue> values)
-        {
-            return values;
-        }
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> EvalAllMembersRecursive()
-        {
-            var valueVisitor = new AllSimpleValuesVisitor();
-            return values => from value in values
-                             from v in value.Visit(valueVisitor)
-                             select v;
-        }
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> EvalAllObjectsRecursive()
-        {
-            var valueVisitor = new AllObjectValuesVisitor();
-            return values => from value in values
-                             from v in value.Visit(valueVisitor)
-                             select v;
-        }
-
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> AllMembers()
-        {
-            return values => values;
-        }
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> Member(string name)
-        {
-            var visitor = new MemberVisitor(name);
-            return values => from value in values select value.Visit(visitor);
-        }
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> Member(int index)
-        {
-            var visitor = new IndexedMemberVisitor(index);
-            return values => from value in values select value.Visit(visitor);
-        }
-
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> AllObjectMembersOrArrayElements()
-        {
-            var visitor = new AllObjectMembersOrArrayElementsVisitor();
-            return values => from value in values from v in value.Visit(visitor) select v;
-        }
-
-
-        public Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>>[] Parse()
+        public IJsonPathPartEvaluator[] Parse()
         {
             Match('$');
 
-            var evaluators = new List<Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>>>
-                                 {
-                                     EvalCurrent
-                                 };
+            var evaluators = new List<IJsonPathPartEvaluator> {IdentityEvaluator.Default};
             while (!EndOfInput)
             {
                 if (TryMatch('.'))
@@ -76,14 +25,14 @@ namespace Kiwi.Json.JPath
                     {
                         if (TryMatch('*'))
                         {
-                            evaluators.Add(EvalAllMembersRecursive());
+                            evaluators.Add(MatchAllRecursiveEvaluator.Default);
                             continue;
                         }
                         var m = PeekNextChar() == '"' ? MatchString() : MatchIdent("string or identifier");
                         if (m != null)
                         {
-                            evaluators.Add(EvalAllObjectsRecursive());
-                            evaluators.Add(Member(m));
+                            evaluators.Add(MatchObjectRecursiveEvaluator.Default);
+                            evaluators.Add(new NamedMemberEvaluator(m));
                             continue;
                         }
 
@@ -92,13 +41,13 @@ namespace Kiwi.Json.JPath
                     }
                     if (TryMatch('*'))
                     {
-                        evaluators.Add(AllMembers());
+                        evaluators.Add(AnyMemberEvaluator.Default);
                         continue;
                     }
                     var member = PeekNextChar() == '"' ? MatchString() : MatchIdent("string or identifier");
                     if (member != null)
                     {
-                        evaluators.Add(Member(member));
+                        evaluators.Add(new NamedMemberEvaluator(member));
                         continue;
                     }
                     throw CreateExpectedException("member");
@@ -107,7 +56,7 @@ namespace Kiwi.Json.JPath
                 if (TryMatch('['))
                 {
                     var c = (char) PeekNextChar();
-                    if (char.IsDigit(c) || (c == ':'))
+                    if (char.IsDigit(c) || (c == ':') || (c == '-'))
                     {
                         var expr = MatchUntil(']');
 
@@ -124,7 +73,7 @@ namespace Kiwi.Json.JPath
                     if (c == '*')
                     {
                         MatchAnyChar();
-                        evaluators.Add(AllObjectMembersOrArrayElements());
+                        evaluators.Add(MatchObjectMembersOrArrayElementsEvaluator.Default);
                         Match(']');
                         continue;
                     }
@@ -132,7 +81,7 @@ namespace Kiwi.Json.JPath
                     var member = PeekNextChar() == '"' ? MatchString() : MatchIdent("index");
                     if (member != null)
                     {
-                        evaluators.Add(Member(member));
+                        evaluators.Add(new NamedMemberEvaluator(member));
                         Match(']');
                         continue;
                     }
@@ -141,14 +90,64 @@ namespace Kiwi.Json.JPath
             return evaluators.ToArray();
         }
 
-        private Func<IEnumerable<IJsonValue>, IEnumerable<IJsonValue>> CreateEvaluatorFromIndexExpression(string expr)
+        private IJsonPathPartEvaluator CreateEvaluatorFromIndexExpression(string expr)
         {
             var m = Regex.Match(expr, @"^\d+$", RegexOptions.Multiline);
             if (m.Success)
             {
-                return Member(int.Parse(m.Value));
+                return new IndexedElementEvaluator(int.Parse(m.Value));
+            }
+
+            var start_end_step = TryParseNullableInts(expr.Split(':'));
+            if (start_end_step != null)
+            {
+                if (start_end_step.Length > 3)
+                {
+                    return null;
+                }
+                return new ArraySliceEvaluator(
+                    start_end_step.Length > 0 ? start_end_step[0]: null,
+                    start_end_step.Length > 1 ? start_end_step[1] : null,
+                    start_end_step.Length > 2 ? start_end_step[2] : null);
+            }
+            var indexes = TryParseInts(expr.Split(','));
+            if (indexes != null)
+            {
+                return new IndexedElementsEvaluator(indexes);
             }
             return null;
+        }
+
+        private int?[] TryParseNullableInts(string[] ints)
+        {
+            var result = new int?[ints.Length];
+            for (var i = 0; i < ints.Length; ++i)
+            {
+                if (!string.IsNullOrEmpty(ints[i]))
+                {
+                    int d;
+                    if (!int.TryParse(ints[i], out d))
+                    {
+                        return null;
+                    }
+                    result[i] = d;
+                }
+            }
+            return result;
+        }
+        private int[] TryParseInts(string[] ints)
+        {
+            var result = new int[ints.Length];
+            for (var i = 0; i < ints.Length; ++i)
+            {
+                int d;
+                if (!int.TryParse(ints[i], out d))
+                {
+                    return null;
+                }
+                result[i] = d;
+            }
+            return result;
         }
 
         public override Exception CreateExpectedException(object expectedWhat)

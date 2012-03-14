@@ -1,8 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kiwi.Json.Conversion;
 using NUnit.Framework;
 using SharpTestsEx;
 
 namespace Kiwi.Json.Tests.ParseTextToCustomModel
 {
+    [TestFixture]
+    public class Fixture
+    {
+        public class CustomDictionary : Dictionary<string, object>
+        {
+            public CustomDictionary(IEqualityComparer<string> comparer) : base(comparer)
+            {
+            }
+        }
+
+        public class A
+        {
+            public string Name { get; set; }
+
+            public A(string name)
+            {
+                Name = name;
+            }
+        }
+
+        [Test]
+        public void DictionariesDontNeedDefaultConstructorIfInitialized()
+        {
+            var d = JSON.Read(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
+            Assert.That(new []{"A"}, Is.EqualTo(d.Keys.ToArray()));
+            Assert.That(new[] { 1 }, Is.EqualTo(d.Values.ToArray()));
+        }
+
+        [Test]
+        public void ClassesDontNeedDefaultConstructorIfInitialized()
+        {
+            //var d = JSON.Read(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
+
+            var json = @"{""Name"":""hello world""}";
+            Assert.Throws<InvalidClassForDeserializationException>(() => JSON.Read<A>(json));
+
+            var a = JSON.Read(json, new A("this will be overwritten"));
+            Assert.That(a, Is.Not.Null);
+            Assert.That(a.Name, Is.EqualTo("hello world"));
+        }
+
+        [Test]
+        public void Test()
+        {
+            var d = JSON.Read<Dictionary<string,object>>(@"{""A"":1}");
+        }
+    }
+
     [TestFixture]
     public class ApplicationModelFixture
     {

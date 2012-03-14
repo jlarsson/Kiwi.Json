@@ -12,6 +12,8 @@ namespace Kiwi.Json.Conversion
             _typeBuilder = typeBuilder;
         }
 
+        public object InstanceState { get; set; }
+
         #region IJsonValueVisitor<object> Members
 
         public object VisitArray(IJsonArray value)
@@ -53,10 +55,13 @@ namespace Kiwi.Json.Conversion
         public object VisitObject(IJsonObject value)
         {
             var objectBuilder = _typeBuilder.CreateObjectBuilder();
-            var @object = objectBuilder.CreateNewObject(null);
+            var @object = objectBuilder.CreateNewObject(InstanceState);
             foreach (var kv in value)
             {
-                objectBuilder.SetMember(kv.Key, @object, kv.Value.Visit(new ConvertJsonToCustom(objectBuilder.GetMemberBuilder(kv.Key))));
+                var memberState = objectBuilder.GetMemberState(kv.Key, @object);
+                objectBuilder.SetMember(kv.Key, @object,
+                                        kv.Value.Visit(new ConvertJsonToCustom(objectBuilder.GetMemberBuilder(kv.Key))
+                                                           {InstanceState = memberState}));
             }
             return objectBuilder.GetObject(@object);
         }

@@ -2,11 +2,11 @@ using System.IO;
 
 namespace Kiwi.Json.Conversion
 {
-    public class JsonReader : AbstractJsonReader
+    public class JsonTextReader : AbstractJsonReader
     {
         private readonly TextReader _reader;
 
-        public JsonReader(TextReader reader)
+        public JsonTextReader(TextReader reader)
         {
             _reader = reader;
         }

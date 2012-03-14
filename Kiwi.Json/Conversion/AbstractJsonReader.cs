@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -21,46 +20,12 @@ namespace Kiwi.Json.Conversion
         public int Line { get; private set; }
         public int Column { get; private set; }
 
-        public IEnumerable<string> Tokenize()
-        {
-            SkipWhitespace();
-
-            while (true)
-            {
-                var c = Peek();
-                switch (c)
-                {
-                    case char.MinValue:
-                        yield break;
-                    case '\"':
-                        yield return ParseString();
-                        break;
-                    default:
-                        if (char.IsDigit((char) c) || (c == '-'))
-                        {
-                            bool isInteger;
-                            yield return ParseNumber(out isInteger);
-                            break;
-                        }
-                        if (char.IsLetter((char) c))
-                        {
-                            yield return ParseIdent();
-                            break;
-                        }
-
-                        var token = Next();
-                        yield return new string(token, 1);
-                        break;
-                }
-            }
-        }
-
         public object Parse(ITypeBuilder builder)
         {
             return Parse(builder, null);
         }
 
-        protected object Parse(ITypeBuilder builder, object instanceState)
+        public object Parse(ITypeBuilder builder, object instanceState)
         {
             SkipWhitespace();
 

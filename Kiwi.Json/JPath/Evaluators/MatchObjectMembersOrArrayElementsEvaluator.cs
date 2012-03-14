@@ -2,15 +2,32 @@ using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Json.Untyped;
 
-namespace Kiwi.Json.JPath.Visitors
+namespace Kiwi.Json.JPath.Evaluators
 {
-    internal class AllObjectValuesVisitor : IJsonValueVisitor<IEnumerable<IJsonValue>>
+    public class MatchObjectMembersOrArrayElementsEvaluator : IJsonPathPartEvaluator,
+                                                         IJsonValueVisitor<IEnumerable<IJsonValue>>
     {
+        public static readonly MatchObjectMembersOrArrayElementsEvaluator Default = new MatchObjectMembersOrArrayElementsEvaluator();
+
+        #region IJsonPathPartEvaluator Members
+
+        public JsonPathFlags Flags
+        {
+            get { return JsonPathFlags.HasWildCardMember; }
+        }
+
+        public IEnumerable<IJsonValue> Evaluate(IEnumerable<IJsonValue> values)
+        {
+            return from value in values from v in value.Visit(this) select v;
+        }
+
+        #endregion
+
+        #region IJsonValueVisitor<IEnumerable<IJsonValue>> Members
+
         public IEnumerable<IJsonValue> VisitArray(IJsonArray value)
         {
-            return from elem in value
-                   from v in elem.Visit(this)
-                   select v;
+            return value;
         }
 
         public IEnumerable<IJsonValue> VisitBool(IJsonBool value)
@@ -40,19 +57,14 @@ namespace Kiwi.Json.JPath.Visitors
 
         public IEnumerable<IJsonValue> VisitObject(IJsonObject value)
         {
-            yield return value;
-            foreach (var v in from member in value.Values
-                                     from v in member.Visit(this)
-                                     select v)
-            {
-                yield return v;
-            }
-
+            return value.Values;
         }
 
         public IEnumerable<IJsonValue> VisitString(IJsonString value)
         {
             yield break;
         }
+
+        #endregion
     }
 }

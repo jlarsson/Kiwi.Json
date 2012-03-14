@@ -24,11 +24,11 @@ namespace Kiwi.Json.Tests.JPath
             {
                 yield return new TestCaseData("$[*]", new[] {1, 2, 3}).Returns(new[] {1, 2, 3});
                 yield return new TestCaseData("$[1]", new[] {1, 2, 3}).Returns(new[] {2});
-                yield return new TestCaseData("$[-1:]", new[] {1, 2, 3}).Returns(new[] {3});
+                yield return new TestCaseData("$[-1:]", new[] {1, 2, 3}).Returns(new[] {3}).SetDescription("Negative slice start index is offset from end");
+                yield return new TestCaseData("$[1:10:2]", new[] { 1, 2, 3, 4, 5, 6 }).Returns(new[] { 2,4,6 });
                 yield return new TestCaseData("$[0,1,4]", new[] {1, 2, 3, 4, 5}).Returns(new[] {1, 2, 5});
-                yield return
-                    new TestCaseData("$[100]", new[] {1, 2, 3}).Returns(new int[0]).SetDescription(
-                        "Array index out of bounds silently ignored");
+                yield return new TestCaseData("$[-1,0,1,4,1000]", new[] { 1, 2, 3, 4, 5 }).Returns(new[] { 1, 2, 5 }).SetDescription("Array index out of bounds silently ignored");
+                yield return new TestCaseData("$[100]", new[] {1, 2, 3}).Returns(new int[0]).SetDescription("Array index out of bounds silently ignored");
             }
         }
 
@@ -38,7 +38,9 @@ namespace Kiwi.Json.Tests.JPath
             {
                 yield return new TestCaseData("$.MissingProperty", new {Title = "Hello"}).Returns(new object[0]);
                 yield return new TestCaseData("$.Title", new {Title = "Hello"}).Returns(new[] {"Hello"});
+                yield return new TestCaseData("$.\"Title\"", new { Title = "Hello" }).Returns(new[] { "Hello" });
                 yield return new TestCaseData("$[\"Title\"]", new {Title = "Hello"}).Returns(new[] {"Hello"});
+                yield return new TestCaseData("$.A.*", new { A = new { X = 1, Y = 2 } }).Returns(new[] { 1, 2 });
             }
         }
 
@@ -77,7 +79,7 @@ namespace Kiwi.Json.Tests.JPath
             var result = (from v in new JsonPath(jpath).Evaluate(JSON.ToJson(inputObject))
                           select v.ToObject()).ToArray();
 
-            Console.Out.WriteLine("result to native (as json): " + JSON.Write(result));
+            Console.Out.WriteLine("result to native (from json): " + JSON.Write(result));
             return result;
         }
     }

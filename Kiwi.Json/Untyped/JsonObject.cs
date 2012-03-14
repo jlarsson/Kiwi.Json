@@ -20,6 +20,33 @@ namespace Kiwi.Json.Untyped
 
         #region IJsonObject Members
 
+        public IEnumerable<string> GetJsonPaths(string prefix, bool includeWildcards)
+        {
+            string head = null;
+            IEnumerable<string> tail = null;
+            if (string.IsNullOrEmpty(prefix))
+            {
+                tail = this.Select(kv => kv.Value.GetJsonPaths(kv.Key, includeWildcards)).SelectMany(l => l);
+            }
+            else
+            {
+                if (includeWildcards)
+                {
+                    head = prefix + ".*";
+                }
+                tail = this.Select(kv => kv.Value.GetJsonPaths(prefix + '.' + kv.Key, includeWildcards)).SelectMany(l => l);
+            }
+            if (head != null)
+            {
+                yield return head;
+            }
+            yield return prefix;
+            foreach (var t in tail)
+            {
+                yield return t;
+            }
+        }
+
         public IEnumerable<IJsonPathValue> JsonPathValues(string prefix)
         {
             if (string.IsNullOrEmpty(prefix))

@@ -39,10 +39,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
+    <Compile Include="Conversion\Reflection\ClassActivator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
     <Compile Include="Conversion\Reflection\FieldSetter.cs" />
+    <Compile Include="Conversion\Reflection\IClassActivator.cs" />
     <Compile Include="Conversion\Reflection\IMemberGetter.cs" />
     <Compile Include="Conversion\Reflection\IMemberSetter.cs" />
+    <Compile Include="Conversion\Reflection\MissingDefaultClassActivator.cs" />
     <Compile Include="Conversion\Reflection\PropertyGetter.cs" />
     <Compile Include="Conversion\Reflection\PropertySetter.cs" />
     <Compile Include="Conversion\ConvertJsonToCustom.cs" />
@@ -75,12 +78,18 @@
     <Compile Include="Conversion\TypeWriters\StructWriterFactory.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriter.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriterFactory.cs" />
-    <Compile Include="JPath\Visitors\AllObjectMembersOrArrayElementsVisitor.cs" />
-    <Compile Include="JPath\Visitors\AllObjectValuesVisitor.cs" />
-    <Compile Include="JPath\Visitors\IndexedMemberVisitor.cs" />
+    <Compile Include="JPath\Evaluators\AnyMemberEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\MatchAllRecursiveEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\MatchObjectRecursiveEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\IndexedElementsEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\ArraySliceEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\IdentityEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\IndexedElementVisitor.cs" />
+    <Compile Include="JPath\Evaluators\NamedMemberEvaluator.cs" />
+    <Compile Include="JPath\Evaluators\MatchObjectMembersOrArrayElementsEvaluator.cs" />
+    <Compile Include="JPath\IJsonPathPartEvaluator.cs" />
+    <Compile Include="JPath\JsonPathFlags.cs" />
     <Compile Include="JPath\JsonPathParserRunner.cs" />
-    <Compile Include="JPath\Visitors\MemberVisitor.cs" />
-    <Compile Include="JPath\Visitors\AllSimpleValuesVisitor.cs" />
     <Compile Include="JPath\IJsonPath.cs" />
     <Compile Include="JPath\IJsonPathValue.cs" />
     <Compile Include="JPath\JsonPath.cs" />
@@ -98,7 +107,7 @@
     <Compile Include="Untyped\NullJsonValueVisitor.cs" />
     <Compile Include="Util\AbstractTextMatcher.cs" />
     <Compile Include="Util\JsonCharacters.cs" />
-    <Compile Include="Conversion\JsonReader.cs" />
+    <Compile Include="Conversion\JsonTextReader.cs" />
     <Compile Include="Util\JsonFormats.cs" />
     <Compile Include="Conversion\JsonSerializationException.cs" />
     <Compile Include="Conversion\JsonStringReader.cs" />
@@ -148,7 +157,9 @@
     <Compile Include="Util\StringMatcher.cs" />
     <Compile Include="Util\ThreadsafeRegistry.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="JPath\Visitors\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

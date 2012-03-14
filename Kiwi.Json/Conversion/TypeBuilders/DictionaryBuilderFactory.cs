@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
@@ -37,12 +38,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 return null;
             }
 
-            var constructor = concreteClass.GetConstructor(Type.EmptyTypes);
-
-            if (constructor == null)
-            {
-                return () => new ClassWithoutDefaultConstructorBuilder(type);
-            }
+            //if (constructor == null)
+            //{
+            //    return () => new ClassWithoutDefaultConstructorBuilder(type);
+            //}
 
             return
                 (Func<ITypeBuilder>)

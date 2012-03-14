@@ -11,12 +11,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             if (type.IsClass)
             {
-                var constructor = type.GetConstructor(Type.EmptyTypes);
+                //var constructor = type.GetConstructor(Type.EmptyTypes);
 
-                if (constructor == null)
-                {
-                    return () => new ClassWithoutDefaultConstructorBuilder(type);
-                }
+                //if (constructor == null)
+                //{
+                //    return () => new ClassWithoutDefaultConstructorBuilder(type);
+                //}
 
                 return
                     (Func<ITypeBuilder>)
