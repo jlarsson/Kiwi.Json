@@ -86,9 +86,9 @@ namespace Kiwi.Json.Tests.WriteJson
                 yield return Case<Guid?>(null, "null");
 
                 // Datetime
-                yield return Case(new DateTime(2012, 03, 07, 20, 35, 00), @"""\/Date(634667493000000000)\/""");
+                yield return Case(new DateTime(2012, 03, 07, 20, 35, 54), @"""2012-03-07T20:35:54""");
                 // Nullable DateTime
-                yield return Case<DateTime?>(new DateTime(2012, 03, 07, 20, 35, 00), @"""\/Date(634667493000000000)\/""");
+                yield return Case<DateTime?>(new DateTime(2012, 03, 07, 20, 35, 54), @"""2012-03-07T20:35:54""");
                 yield return Case<DateTime?>(null, "null");
             
 

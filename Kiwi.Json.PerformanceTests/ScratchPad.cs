@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Kiwi.Json.PerformanceTests
 {
-    [TestFixture]
+    [TestFixture, Explicit]
     public class ScratchPad
     {
         private void RunTest(ITypeSwitch<object> typeSwitch)

@@ -40,9 +40,9 @@ namespace Kiwi.Json.Conversion
 
         public void WriteDate(DateTime value)
         {
-            StringBuilder.Append(@"""\/Date(");
-            StringBuilder.Append((ulong) value.ToBinary());
-            StringBuilder.Append(@")\/""");
+            StringBuilder.Append('"');
+            StringBuilder.Append(value.ToString("s"));
+            StringBuilder.Append('"');
         }
 
         public void WriteBool(bool value)

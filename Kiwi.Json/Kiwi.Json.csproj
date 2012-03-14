@@ -58,6 +58,7 @@
     <Compile Include="Conversion\TypeBuilders\EnumBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\JsonDateAndString.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\CollectionBuilderFactory.cs" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 using Kiwi.Json.Conversion.TypeBuilders;
 using Kiwi.Json.Util;
 
@@ -9,8 +8,6 @@ namespace Kiwi.Json.Conversion
 {
     public abstract class AbstractJsonReader
     {
-        private static readonly Regex MatchDate = new Regex(@"\/Date\((\d+)\)\/");
-
         protected AbstractJsonReader()
         {
             Column = 1;
@@ -334,15 +331,8 @@ namespace Kiwi.Json.Conversion
         {
             var s = ParseString();
 
-            //if (s.StartsWith("/Date("))
-            {
-                var m = MatchDate.Match(s);
-                if (m.Success)
-                {
-                    return builder.CreateDateTime(new DateTime((long) ulong.Parse(m.Groups[1].Value)));
-                }
-            }
-            return builder.CreateString(s);
+            var dt = JsonFormats.TryParseDateTime(s);
+            return dt.HasValue ? builder.CreateDateTime(dt.Value, s) : builder.CreateString(s);
         }
 
         protected object ParserArray(ITypeBuilder builder, object instanceState)

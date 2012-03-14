@@ -34,7 +34,7 @@ namespace Kiwi.Json.Conversion
 
         public object VisitDate(IJsonDate value)
         {
-            return _typeBuilder.CreateDateTime(value.Value);
+            return _typeBuilder.CreateDateTime(value.Value, null);
         }
 
         public object VisitDouble(IJsonDouble value)

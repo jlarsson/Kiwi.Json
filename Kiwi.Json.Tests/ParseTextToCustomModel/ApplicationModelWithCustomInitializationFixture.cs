@@ -24,7 +24,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
 
             a.Should().Not.Be.Null();
 
-            a.L.Should().Have.SameSequenceAs(1, 2, 3, 4, 5, 6);
+            a.L.Should().Have.SameSequenceAs(4, 5, 6);
 
         }
     }

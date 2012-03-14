@@ -36,7 +36,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             throw CreateInvalidTypeException("boolean");
         }
 
-        public virtual object CreateDateTime(DateTime value)
+        public virtual object CreateDateTime(DateTime value, object sourceValue)
         {
             throw CreateInvalidTypeException("date");
         }

@@ -165,13 +165,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 return base.CreateBool(value);
             }
 
-            public override object CreateDateTime(DateTime value)
+            public override object CreateDateTime(DateTime value, object sourceValue)
             {
                 if (DateTime != null)
                 {
                     return DateTime(value);
                 }
-                return base.CreateDateTime(value);
+                return base.CreateDateTime(value, sourceValue);
             }
         }
 

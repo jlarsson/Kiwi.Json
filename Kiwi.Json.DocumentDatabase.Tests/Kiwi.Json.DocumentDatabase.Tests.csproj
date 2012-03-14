@@ -58,6 +58,7 @@
     <Compile Include="CollectionsAreCreatedWhenWrittenTo.cs" />
     <Compile Include="Esent\DatabaseTestFixtureBase.cs" />
     <Compile Include="Esent\IndexFixture.cs" />
+    <Compile Include="Esent\PerfScratchFixture.cs" />
     <Compile Include="Esent\PutFixture.cs" />
     <Compile Include="Esent\ScratchFixture.cs" />
     <Compile Include="FilterFixture.cs" />

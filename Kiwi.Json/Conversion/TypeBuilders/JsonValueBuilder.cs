@@ -37,8 +37,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return new JsonBool(value);
         }
 
-        public object CreateDateTime(DateTime value)
+        public object CreateDateTime(DateTime value, object sourceValue)
         {
+            if (sourceValue is string)
+            {
+                return new JsonDateAndString(value, sourceValue as string);
+            }
             return new JsonDate(value);
         }
 

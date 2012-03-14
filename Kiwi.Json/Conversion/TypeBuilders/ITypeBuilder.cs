@@ -11,7 +11,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         object CreateNumber(long value);
         object CreateNumber(double value);
         object CreateBool(bool value);
-        object CreateDateTime(DateTime value);
+        object CreateDateTime(DateTime value, object sourceValue);
         object CreateNull();
     }
 }

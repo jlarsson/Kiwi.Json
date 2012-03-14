@@ -19,7 +19,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void DateTime()
         {
             Assert.That(
-                JSON.Read<DateTime?>(@"""\/Date(634504823560000000)\/"""),
+                JSON.Read<DateTime?>(@"""2011-09-01 13:59:16Z"""),
                 Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
                 );
         }

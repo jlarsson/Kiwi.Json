@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using Kiwi.Json.DocumentDatabase.Data;
 using Kiwi.Json.DocumentDatabase.Sqlite;
@@ -6,7 +5,7 @@ using NUnit.Framework;
 
 namespace Kiwi.Json.DocumentDatabase.Tests
 {
-    [TestFixture]
+    [TestFixture,Explicit]
     public class ScratchFixture
     {
         [Test]

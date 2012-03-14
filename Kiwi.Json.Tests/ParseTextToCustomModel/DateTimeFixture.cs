@@ -7,10 +7,19 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
     public class DateTimeFixture
     {
         [Test]
-        public void DateTime()
+        public void DateTimeInSortablePattern()
         {
             Assert.That(
-                JSON.Read<DateTime>(@"""\/Date(634504823560000000)\/"""),
+                JSON.Read<DateTime>(@"""2011-09-01T13:59:16"""),
+                Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
+                );
+        }
+
+        [Test]
+        public void DateTimeInUniversalSortablePattern()
+        {
+            Assert.That(
+                JSON.Read<DateTime>(@"""2011-09-01 13:59:16Z"""),
                 Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
                 );
         }
