@@ -1,47 +1,48 @@
 using System;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Kiwi.Json.Conversion.Reflection
 {
     public class ClassActivator<TClass> : IClassActivator where TClass : new()
     {
+        #region IClassActivator Members
+
         public object CreateInstance()
         {
             return new TClass();
         }
+
+        #endregion
     }
 
-    public class ClassActivator : IClassActivator
+    public static class ClassActivator
     {
-        private Func<object, object> _activator;
-
-        public ClassActivator(ConstructorInfo constructor)
+        public static IClassActivator Create(Type type)
         {
-            _activator = CreateActivator(constructor);
-        }
+            if (!type.IsClass)
+            {
+                return new NullClassActivator();
+            }
+            var constructor = type.GetConstructor(Type.EmptyTypes);
 
-        private Func<object, object> CreateActivator(ConstructorInfo constructorInfo)
-        {
-            var getter = new DynamicMethod("", typeof(object), new[] { typeof(object) },
-                                           constructorInfo.DeclaringType, true);
-            var il = getter.GetILGenerator();
-            il.Emit(OpCodes.Newobj, constructorInfo);
-            il.Emit(OpCodes.Ret);
-            return (Func<object, object>)getter.CreateDelegate(typeof(Func<object, object>));
+            if (constructor == null)
+            {
+                return new MissingDefaultClassActivator(type);
+            }
+
+            //return (IClassActivator)typeof (ClassActivator<>).MakeGenericType(type).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+            return new ConstructorInfoClassActivator(constructor);
         }
+    }
+
+    public class NullClassActivator : IClassActivator
+    {
+        #region IClassActivator Members
 
         public object CreateInstance()
         {
-            return _activator(null);
+            return null;
         }
 
-        public static IClassActivator Create(Type type)
-        {
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-            return constructor == null
-                                            ? new MissingDefaultClassActivator(type) as IClassActivator
-                                            : new ClassActivator(constructor);
-        }
+        #endregion
     }
 }

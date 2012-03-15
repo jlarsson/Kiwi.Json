@@ -5,14 +5,17 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class JsonValueBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
-            if (typeof(IJsonValue).IsAssignableFrom(type))
+            if (typeof (IJsonValue).IsAssignableFrom(type))
             {
-                var builder = new JsonValueBuilder();
-                return () => builder;
+                return new JsonValueBuilder();
             }
             return null;
         }
+
+        #endregion
     }
 }

@@ -5,14 +5,14 @@ namespace Kiwi.Json.Util
 {
     public abstract class AbstractTextMatcher
     {
-        public int Line { get; private set; }
-        public int Column { get; private set; }
-
         protected AbstractTextMatcher()
         {
             Line = 1;
             Column = 1;
         }
+
+        public int Line { get; private set; }
+        public int Column { get; private set; }
 
         public abstract bool EndOfInput { get; }
 
@@ -90,7 +90,7 @@ namespace Kiwi.Json.Util
                     }
                     else if (c == 'u')
                     {
-                        sb.Append((char) ParseUnicodeHexEncoding());
+                        sb.Append(ParseUnicodeHexEncoding());
                     }
                     else
                     {
@@ -104,7 +104,7 @@ namespace Kiwi.Json.Util
                 }
                 else if (JsonCharacters.IsUnescapedStringChar(c))
                 {
-                    sb.Append((char) c);
+                    sb.Append(c);
                 }
                 else if (c == '\"')
                 {
@@ -120,8 +120,8 @@ namespace Kiwi.Json.Util
 
         protected char ParseUnicodeHexEncoding()
         {
-            return (char)(ParseHexCharValue() * 0x1000 + ParseHexCharValue() * 0x100 + ParseHexCharValue() * 0x10 +
-                          ParseHexCharValue());
+            return (char) (ParseHexCharValue()*0x1000 + ParseHexCharValue()*0x100 + ParseHexCharValue()*0x10 +
+                           ParseHexCharValue());
         }
 
         protected int ParseHexCharValue()
@@ -158,7 +158,7 @@ namespace Kiwi.Json.Util
             {
                 ++Column;
             }
-            return (char)c;
+            return (char) c;
         }
 
         protected abstract int Read();
@@ -171,11 +171,11 @@ namespace Kiwi.Json.Util
         {
             var c = PeekNextChar();
             var sb = new StringBuilder();
-            
-            while (char.IsLetterOrDigit((char)c) || (c == '_'))
+
+            while (char.IsLetterOrDigit((char) c) || (c == '_'))
             {
                 MatchAnyChar();
-                sb.Append((char)c);
+                sb.Append((char) c);
 
                 c = PeekNextChar();
             }

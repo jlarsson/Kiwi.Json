@@ -19,7 +19,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                                                     new UntypedListBuilderFactory(),
                                                                     new ClassBuilderFactory(),
                                                                     new EnumBuilderFactory(),
-                                                                    new StructBuilderFactory()
+                                                                    new StructBuilderFactory(),
+                                                                    new SystemDataNamespaceTypeFactory()
                                                                 };
 
         private readonly IRegistry<Type, ITypeBuilder> _typeBuilders =
@@ -41,8 +42,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         private ITypeBuilder CreateTypeBuilder(Type type)
         {
-            var creator = _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null);
-            return creator == null ? null : creator();
+            return _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null);
         }
     }
 }

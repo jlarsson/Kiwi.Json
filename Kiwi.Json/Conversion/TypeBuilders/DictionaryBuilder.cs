@@ -1,25 +1,16 @@
-using System;
 using System.Collections.Generic;
 using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder, IObjectBuilder
-        where TDictionary : class, IDictionary<string, TValue>//, new()
+        where TDictionary : class, IDictionary<string, TValue> //, new()
     {
-        private readonly IClassActivator _activator;
-
-        public DictionaryBuilder(IClassActivator activator)
-        {
-            _activator = activator;
-        }
+// ReSharper disable StaticFieldInGenericType
+        private static readonly IClassActivator Activator = ClassActivator.Create(typeof (TDictionary));
+// ReSharper restore StaticFieldInGenericType
 
         #region IObjectBuilder Members
-
-        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
-        {
-            return this;
-        }
 
         public override object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
@@ -28,7 +19,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 (instanceState as TDictionary).Clear();
                 return instanceState;
             }
-            return _activator.CreateInstance();
+            return Activator.CreateInstance();
         }
 
         public override object GetMemberState(string memberName, object @object)
@@ -61,10 +52,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
+        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
-            var builder = new DictionaryBuilder<TDictionary, TValue>(ClassActivator.Create(typeof(TDictionary)));
-            return () => builder;
+            return this;
         }
 
         public override object CreateNull(ITypeBuilderRegistry registry)

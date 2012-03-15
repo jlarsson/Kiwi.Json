@@ -1,6 +1,9 @@
 namespace Kiwi.Json.Untyped
 {
-    public class NullJsonValueVisitor<T>: IJsonValueVisitor<T> where T: class{
+    public class NullJsonValueVisitor<T> : IJsonValueVisitor<T> where T : class
+    {
+        #region IJsonValueVisitor<T> Members
+
         public virtual T VisitArray(IJsonArray value)
         {
             return null;
@@ -40,5 +43,7 @@ namespace Kiwi.Json.Untyped
         {
             return null;
         }
+
+        #endregion
     }
 }

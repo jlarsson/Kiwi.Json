@@ -18,7 +18,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public void AddElement(object array, object element)
         {
-            ((JsonArray)array).Add((IJsonValue) element);
+            ((JsonArray) array).Add((IJsonValue) element);
         }
 
         public object GetArray(object array)

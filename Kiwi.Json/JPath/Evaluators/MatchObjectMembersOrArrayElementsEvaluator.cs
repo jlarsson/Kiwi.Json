@@ -5,9 +5,10 @@ using Kiwi.Json.Untyped;
 namespace Kiwi.Json.JPath.Evaluators
 {
     public class MatchObjectMembersOrArrayElementsEvaluator : IJsonPathPartEvaluator,
-                                                         IJsonValueVisitor<IEnumerable<IJsonValue>>
+                                                              IJsonValueVisitor<IEnumerable<IJsonValue>>
     {
-        public static readonly MatchObjectMembersOrArrayElementsEvaluator Default = new MatchObjectMembersOrArrayElementsEvaluator();
+        public static readonly MatchObjectMembersOrArrayElementsEvaluator Default =
+            new MatchObjectMembersOrArrayElementsEvaluator();
 
         #region IJsonPathPartEvaluator Members
 

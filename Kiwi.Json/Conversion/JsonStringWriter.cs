@@ -8,6 +8,7 @@ namespace Kiwi.Json.Conversion
     {
         private const int MaxNestingLevel = 64;
         private int _nestingLevel;
+
         public JsonStringWriter() : this(new StringBuilder())
         {
         }

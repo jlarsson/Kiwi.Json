@@ -8,12 +8,18 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class StructBuilder<TStruct> : AbstractTypeBuilder, IObjectBuilder
     {
-        private readonly Dictionary<string, StructMember> _members;
-
-        private StructBuilder(Dictionary<string, StructMember> members)
-        {
-            _members = members;
-        }
+        private static readonly Dictionary<string, StructMember> Members = (from field in
+                                                                                typeof (TStruct).GetFields(
+                                                                                    BindingFlags.SetField |
+                                                                                    BindingFlags.Public |
+                                                                                    BindingFlags.Instance)
+                                                                            select new StructMember
+                                                                                       {
+                                                                                           Name = field.Name,
+                                                                                           Type = field.FieldType,
+                                                                                           Member = field
+                                                                                       })
+            .ToDictionary(m => m.Name, m => m);
 
         #region IObjectBuilder Members
 
@@ -30,7 +36,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             StructMember member;
-            if (_members.TryGetValue(memberName, out member))
+            if (Members.TryGetValue(memberName, out member))
             {
                 return registry.GetTypeBuilder(member.Type);
             }
@@ -39,7 +45,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override void SetMember(string memberName, object @object, object value)
         {
-            if (_members.ContainsKey(memberName))
+            if (Members.ContainsKey(memberName))
             {
                 ((Dictionary<string, object>) @object).Add(memberName, value);
             }
@@ -51,7 +57,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             var membersToSet = (from kv in instanceMemberValues
                                 select new
                                            {
-                                               _members[kv.Key].Member,
+                                               Members[kv.Key].Member,
                                                kv.Value
                                            }).ToArray();
 
@@ -68,24 +74,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return this;
-        }
-
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
-        {
-            var members = (from field in
-                               typeof (TStruct).GetFields(BindingFlags.SetField | BindingFlags.Public |
-                                                          BindingFlags.Instance)
-                           select new StructMember
-                                      {
-                                          Name = field.Name,
-                                          Type = field.FieldType,
-                                          Member = field
-                                      })
-                .ToDictionary(m => m.Name, m => m);
-
-            var structBuilder = new StructBuilder<TStruct>(members);
-
-            return () => structBuilder;
         }
 
         #region Nested type: StructMember

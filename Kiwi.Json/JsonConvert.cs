@@ -29,11 +29,12 @@ namespace Kiwi.Json
             var registry = TypeBuilderRegistry;
             return (T) value.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder<T>()));
         }
-        
+
         public static IJsonValue MergeWith(this IJsonValue value, IJsonValue mergeWith)
         {
             var registry = TypeBuilderRegistry;
-            mergeWith.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder(value.GetType())){InstanceState = value});
+            mergeWith.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder(value.GetType()))
+                                {InstanceState = value});
             return value;
         }
 

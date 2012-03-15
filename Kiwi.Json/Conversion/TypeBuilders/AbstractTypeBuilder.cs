@@ -4,50 +4,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public abstract class AbstractTypeBuilder : ITypeBuilder, IArrayBuilder, IObjectBuilder
     {
-        #region ITypeBuilder Members
-
-        public virtual IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
-        {
-            throw CreateInvalidTypeException("object");
-        }
-
-        public virtual IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
-        {
-            throw CreateInvalidTypeException("array");
-        }
-
-        public virtual object CreateString(ITypeBuilderRegistry registry, string value)
-        {
-            throw CreateInvalidTypeException("string");
-        }
-
-        public virtual object CreateNumber(ITypeBuilderRegistry registry, long value)
-        {
-            throw CreateInvalidTypeException("integer");
-        }
-
-        public virtual object CreateNumber(ITypeBuilderRegistry registry, double value)
-        {
-            throw CreateInvalidTypeException("floating point number");
-        }
-
-        public virtual object CreateBool(ITypeBuilderRegistry registry, bool value)
-        {
-            throw CreateInvalidTypeException("boolean");
-        }
-
-        public virtual object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
-        {
-            throw CreateInvalidTypeException("date");
-        }
-
-        public virtual object CreateNull(ITypeBuilderRegistry registry)
-        {
-            throw CreateInvalidTypeException("null");
-        }
-
-        #endregion
-
         #region IArrayBuilder Members
 
         public virtual object CreateNewArray(ITypeBuilderRegistry registry, object instanceState)
@@ -97,6 +53,50 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public virtual object GetObject(object @object)
         {
             throw CreateInvalidCallException("object");
+        }
+
+        #endregion
+
+        #region ITypeBuilder Members
+
+        public virtual IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
+        {
+            throw CreateInvalidTypeException("object");
+        }
+
+        public virtual IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
+        {
+            throw CreateInvalidTypeException("array");
+        }
+
+        public virtual object CreateString(ITypeBuilderRegistry registry, string value)
+        {
+            throw CreateInvalidTypeException("string");
+        }
+
+        public virtual object CreateNumber(ITypeBuilderRegistry registry, long value)
+        {
+            throw CreateInvalidTypeException("integer");
+        }
+
+        public virtual object CreateNumber(ITypeBuilderRegistry registry, double value)
+        {
+            throw CreateInvalidTypeException("floating point number");
+        }
+
+        public virtual object CreateBool(ITypeBuilderRegistry registry, bool value)
+        {
+            throw CreateInvalidTypeException("boolean");
+        }
+
+        public virtual object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
+        {
+            throw CreateInvalidTypeException("date");
+        }
+
+        public virtual object CreateNull(ITypeBuilderRegistry registry)
+        {
+            throw CreateInvalidTypeException("null");
         }
 
         #endregion

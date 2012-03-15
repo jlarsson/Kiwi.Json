@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class SystemObjectBuilder : ITypeBuilder
     {
-        private readonly IObjectBuilder _dictionaryBuilder;
         private readonly IArrayBuilder _arrayBuilder;
+        private readonly IObjectBuilder _dictionaryBuilder;
 
         public SystemObjectBuilder()
         {
-            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(new ClassActivator<Dictionary<string, object>>());
+            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>();
             _arrayBuilder = new CollectionBuilder<List<object>, object>();
         }
 
@@ -34,7 +33,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
-            return (int)value;
+            return (int) value;
         }
 
         public object CreateNumber(ITypeBuilderRegistry registry, double value)

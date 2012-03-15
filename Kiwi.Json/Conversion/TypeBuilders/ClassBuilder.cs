@@ -6,28 +6,49 @@ using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass: class // where TClass : new()
+    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : class // where TClass : new()
     {
-        private readonly Dictionary<string, ClassMember> _memberSetters;
-        private readonly IClassActivator _activator;
+// ReSharper disable StaticFieldInGenericType
+        private static readonly Dictionary<string, ClassMember> MemberSetters = (from property in
+                                                                                     typeof (TClass).GetProperties(
+                                                                                         BindingFlags.GetProperty |
+                                                                                         BindingFlags.SetProperty |
+                                                                                         BindingFlags.Public |
+                                                                                         BindingFlags.Instance)
+                                                                                 where
+                                                                                     (property.GetGetMethod().
+                                                                                          GetParameters().Length == 0)
+                                                                                 select new ClassMember
+                                                                                            {
+                                                                                                Name = property.Name,
+                                                                                                Type =
+                                                                                                    property.
+                                                                                                    PropertyType,
+                                                                                                Getter =
+                                                                                                    new PropertyGetter(
+                                                                                                    property),
+                                                                                                Setter =
+                                                                                                    new PropertySetter(
+                                                                                                    property),
+                                                                                            })
+            .Union(
+                from field in
+                    typeof (TClass).GetFields(BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Public |
+                                              BindingFlags.Instance)
+                select new ClassMember
+                           {
+                               Name = field.Name,
+                               Type = field.FieldType,
+                               Getter = new FieldGetter(field),
+                               Setter = new FieldSetter(field),
+                           })
+            .ToDictionary(m => m.Name, m => m);
 
-        private ClassBuilder(Dictionary<string, ClassMember> memberSetters, IClassActivator activator)
-        {
-            _memberSetters = memberSetters;
-            _activator = activator;
-        }
+
+        private static readonly IClassActivator Activator = ClassActivator.Create(typeof (TClass));
+// ReSharper restore StaticFieldInGenericType
 
         #region IObjectBuilder Members
-
-        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
-        {
-            return this;
-        }
-
-        public override object CreateNull(ITypeBuilderRegistry registry)
-        {
-            return null;
-        }
 
         public override object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
@@ -35,13 +56,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             {
                 return instanceState;
             }
-            return _activator.CreateInstance();
+            return Activator.CreateInstance();
         }
 
         public override object GetMemberState(string memberName, object @object)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (MemberSetters.TryGetValue(memberName, out member))
             {
                 return member.Getter.GetMemberValue(@object);
             }
@@ -51,7 +72,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (MemberSetters.TryGetValue(memberName, out member))
             {
                 return registry.GetTypeBuilder(member.Type);
             }
@@ -61,7 +82,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override void SetMember(string memberName, object @object, object value)
         {
             ClassMember member;
-            if (_memberSetters.TryGetValue(memberName, out member))
+            if (MemberSetters.TryGetValue(memberName, out member))
             {
                 member.Setter.SetValue(@object, value);
             }
@@ -74,41 +95,19 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
+        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
-            var memberSetters = (from property in
-                                     typeof (TClass).GetProperties(
-                                         BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Public |
-                                         BindingFlags.Instance)
-                                 where
-                                     (property.GetGetMethod().GetParameters().Length == 0)
-                                 select new ClassMember
-                                            {
-                                                Name = property.Name,
-                                                Type = property.PropertyType,
-                                                Getter = new PropertyGetter(property),
-                                                Setter = new PropertySetter(property),
-                                            })
-                .Union(
-                    from field in
-                        typeof(TClass).GetFields(BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Public |
-                                                  BindingFlags.Instance)
-                    select new ClassMember
-                               {
-                                   Name = field.Name,
-                                   Type = field.FieldType,
-                                   Getter = new FieldGetter(field),
-                                   Setter = new FieldSetter(field),
-                               })
-                .ToDictionary(m => m.Name, m => m);
+            return this;
+        }
 
-            var classBuilder = new ClassBuilder<TClass>(memberSetters, ClassActivator.Create(typeof(TClass)));
-            return () => classBuilder;
+        public override object CreateNull(ITypeBuilderRegistry registry)
+        {
+            return null;
         }
 
         #region Nested type: ClassMember
 
-        private class ClassMember
+        protected class ClassMember
         {
             public string Name { get; set; }
             public Type Type { get; set; }

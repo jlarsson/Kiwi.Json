@@ -1,16 +1,18 @@
 using System;
 using System.Collections;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class UntypedListBuilderFactory: ITypeBuilderFactory
+    public class UntypedListBuilderFactory : ITypeBuilderFactory
     {
+        #region ITypeBuilderFactory Members
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             // Check if ICollection or IEnumerable is supported by type
-            var interfaceType = typeof (IList).IsAssignableFrom(type) ? typeof (IList) : typeof(IEnumerable).IsAssignableFrom(type) ? typeof(IEnumerable) : null;
+            var interfaceType = typeof (IList).IsAssignableFrom(type)
+                                    ? typeof (IList)
+                                    : typeof (IEnumerable).IsAssignableFrom(type) ? typeof (IEnumerable) : null;
             if (interfaceType == null)
             {
                 return null;
@@ -18,7 +20,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
             // Determine concrete ICollection to instantiate
             var listType = type.IsInterface
-                               ? typeof(ArrayList)
+                               ? typeof (ArrayList)
                                : type;
 
             if (!type.IsAssignableFrom(listType))
@@ -33,9 +35,25 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             }
 
             return
-                (Func<ITypeBuilder>)
-                typeof(UntypedListBuilder<>).MakeGenericType(listType).GetMethod(
-                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] {});
+                ((ITypeBuilderFactory)
+                 typeof (UntypedListBuilderFactory<>)
+                     .MakeGenericType(listType)
+                     .GetConstructor(Type.EmptyTypes)
+                     .Invoke(new object[0])).CreateTypeBuilder(type);
         }
+
+        #endregion
+    }
+
+    public class UntypedListBuilderFactory<TCollection> : ITypeBuilderFactory where TCollection : class, IList, new()
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new UntypedListBuilder<TCollection>();
+        }
+
+        #endregion
     }
 }

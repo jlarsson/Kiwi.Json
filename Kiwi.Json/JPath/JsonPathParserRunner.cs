@@ -8,7 +8,7 @@ namespace Kiwi.Json.JPath
 {
     public class JsonPathParserRunner : AbstractStringMatcher
     {
-        public JsonPathParserRunner(string path): base(path)
+        public JsonPathParserRunner(string path) : base(path)
         {
         }
 
@@ -37,7 +37,6 @@ namespace Kiwi.Json.JPath
                         }
 
                         throw CreateExpectedException("member");
-                        
                     }
                     if (TryMatch('*'))
                     {
@@ -106,7 +105,7 @@ namespace Kiwi.Json.JPath
                     return null;
                 }
                 return new ArraySliceEvaluator(
-                    start_end_step.Length > 0 ? start_end_step[0]: null,
+                    start_end_step.Length > 0 ? start_end_step[0] : null,
                     start_end_step.Length > 1 ? start_end_step[1] : null,
                     start_end_step.Length > 2 ? start_end_step[2] : null);
             }
@@ -135,6 +134,7 @@ namespace Kiwi.Json.JPath
             }
             return result;
         }
+
         private int[] TryParseInts(string[] ints)
         {
             var result = new int[ints.Length];
@@ -152,7 +152,8 @@ namespace Kiwi.Json.JPath
 
         public override Exception CreateExpectedException(object expectedWhat)
         {
-            throw new JsonPathException(string.Format("Expected {0} at ({1},{2}) in {3}", expectedWhat, Line, Column, Source));
+            throw new JsonPathException(string.Format("Expected {0} at ({1},{2}) in {3}", expectedWhat, Line, Column,
+                                                      Source));
         }
     }
 }

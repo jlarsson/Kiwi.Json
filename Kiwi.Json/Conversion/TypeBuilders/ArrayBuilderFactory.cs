@@ -1,23 +1,39 @@
 using System;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ArrayBuilderFactory: ITypeBuilderFactory
+    public class ArrayBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             if (type.IsArray && type.GetArrayRank() == 1)
             {
                 var elementType = type.GetElementType();
 
                 return
-                    (Func<ITypeBuilder>)
-                    typeof(ArrayBuilder<>).MakeGenericType(elementType)
-                        .GetMethod("CreateTypeBuilderFactory",BindingFlags.Static |BindingFlags.Public)
-                        .Invoke(null, new object[]{});
+                    ((ITypeBuilderFactory)
+                     typeof (ArrayBuilderFactory<>)
+                         .MakeGenericType(elementType)
+                         .GetConstructor(Type.EmptyTypes)
+                         .Invoke(new object[0])).CreateTypeBuilder(type);
             }
             return null;
         }
+
+        #endregion
+    }
+
+    public class ArrayBuilderFactory<TElem> : ITypeBuilderFactory
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new ArrayBuilder<TElem>();
+        }
+
+        #endregion
     }
 }

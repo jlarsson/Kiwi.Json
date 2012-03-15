@@ -1,29 +1,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class CollectionBuilderFactory: ITypeBuilderFactory
+    public class CollectionBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             // Check which ICollection<T> is implemented
-            var interfaceType = (from @interface in new[] { type }.Concat(type.GetInterfaces())
+            var interfaceType = (from @interface in new[] {type}.Concat(type.GetInterfaces())
                                  where
                                      @interface.IsGenericType &&
-                                     @interface.GetGenericTypeDefinition() == typeof(ICollection<>)
+                                     @interface.GetGenericTypeDefinition() == typeof (ICollection<>)
                                  select @interface)
                 .FirstOrDefault();
 
             if (interfaceType == null)
             {
                 // Check if it is IEnumerable<T>
-                interfaceType = (from @interface in new[] { type }.Concat(type.GetInterfaces())
+                interfaceType = (from @interface in new[] {type}.Concat(type.GetInterfaces())
                                  where
                                      @interface.IsGenericType &&
-                                     @interface.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                                     @interface.GetGenericTypeDefinition() == typeof (IEnumerable<>)
                                  select @interface)
                     .FirstOrDefault();
             }
@@ -36,7 +37,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
             // Determine concrete ICollection<T> to instantiate
             var listType = type.IsInterface
-                               ? typeof(List<>).MakeGenericType(elementType)
+                               ? typeof (List<>).MakeGenericType(elementType)
                                : type;
 
             if (!type.IsAssignableFrom(listType))
@@ -51,9 +52,27 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             }
 
             return
-                (Func<ITypeBuilder>)
-                typeof(CollectionBuilder<,>).MakeGenericType(listType, interfaceType.GetGenericArguments()[0]).GetMethod(
-                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[]{});
+                ((ITypeBuilderFactory)
+                 typeof (CollectionBuilderFactory<,>)
+                     .MakeGenericType(listType, interfaceType.GetGenericArguments()[0])
+                     .GetConstructor(Type.EmptyTypes)
+                     .Invoke(new object[0])).CreateTypeBuilder(type);
         }
+
+        #endregion
+    }
+
+
+    public class CollectionBuilderFactory<TCollection, TElem> : ITypeBuilderFactory
+        where TCollection : class, ICollection<TElem>, new()
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new CollectionBuilder<TCollection, TElem>();
+        }
+
+        #endregion
     }
 }

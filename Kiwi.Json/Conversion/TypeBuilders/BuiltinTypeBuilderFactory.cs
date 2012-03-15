@@ -2,22 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class BuiltinTypeBuilderFactory: ITypeBuilderFactory
+    public class BuiltinTypeBuilderFactory : ITypeBuilderFactory
     {
-        private static readonly Dictionary<Type, Func<ITypeBuilder>> BuiltinTypeBuilders =
+        private static readonly Dictionary<Type, ITypeBuilder> BuiltinTypeBuilders =
             new[]
                 {
-                    //Tuple.Create(typeof(object), SystemObjectBuilder.CreateTypeBuilderFactory()),
-
-                    //Tuple.Create(typeof (IJsonValue), JsonValueBuilder.CreateTypeBuilderFactory()),
-                    //Tuple.Create(typeof (IJsonArray), JsonArrayBuilder.CreateTypeBuilderFactory()),
-                    //Tuple.Create(typeof (JsonArray), JsonArrayBuilder.CreateTypeBuilderFactory()),
-                    //Tuple.Create(typeof (IJsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
-                    //Tuple.Create(typeof (JsonObject), JsonObjectBuilder.CreateTypeBuilderFactory()),
                     CreateBuilder<bool>(@bool: b => b),
                     CreateBuilder<sbyte>(@long: l => (sbyte) l),
                     CreateBuilder<short>(@long: l => (short) l),
@@ -90,7 +82,17 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 }
                 .ToDictionary(t => t.Item1, t => t.Item2);
 
-        private static Tuple<Type, Func<ITypeBuilder>> CreateBuilder<T>(
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            ITypeBuilder builder;
+            return BuiltinTypeBuilders.TryGetValue(type, out builder) ? builder : null;
+        }
+
+        #endregion
+
+        private static Tuple<Type, ITypeBuilder> CreateBuilder<T>(
             Func<string, object> @string = null,
             Func<long, object> @long = null,
             Func<double, object> @double = null,
@@ -99,16 +101,18 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             Func<object> @null = null)
         {
             var builder = new SimpleTypeBuilder
-            {
-                String = @string,
-                Long = @long,
-                Double = @double,
-                Bool = @bool,
-                DateTime = @dateTime,
-                Null = @null
-            };
-            return Tuple.Create(typeof(T), (Func<ITypeBuilder>)(() => builder));
+                              {
+                                  String = @string,
+                                  Long = @long,
+                                  Double = @double,
+                                  Bool = @bool,
+                                  DateTime = @dateTime,
+                                  Null = @null
+                              };
+            return Tuple.Create<Type, ITypeBuilder>(typeof (T), builder);
         }
+
+        #region Nested type: SimpleTypeBuilder
 
         private class SimpleTypeBuilder : AbstractTypeBuilder
         {
@@ -175,10 +179,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             }
         }
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
-        {
-            Func<ITypeBuilder> factory;
-            return BuiltinTypeBuilders.TryGetValue(type, out factory) ? factory : null;
-        }
+        #endregion
     }
 }

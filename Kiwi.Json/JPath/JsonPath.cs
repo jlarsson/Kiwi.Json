@@ -27,7 +27,8 @@ namespace Kiwi.Json.JPath
                 return null;
             }
             IEnumerable<IJsonValue> values = new[] {obj};
-            return _evaluators.Aggregate(values, (current, evaluator) => evaluator.Evaluate(current).Where(v => v != null));
+            return _evaluators.Aggregate(values,
+                                         (current, evaluator) => evaluator.Evaluate(current).Where(v => v != null));
         }
 
         #endregion

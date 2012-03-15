@@ -1,22 +1,37 @@
 using System;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class EnumBuilderFactory: ITypeBuilderFactory
+    public class EnumBuilderFactory : ITypeBuilderFactory
     {
+        #region ITypeBuilderFactory Members
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             if (type.IsEnum)
             {
                 return
-                    (Func<ITypeBuilder>)
-                    typeof(EnumBuilder<>).MakeGenericType(type).GetMethod("CreateTypeBuilderFactory",
-                                                                          BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[]{});
+                    ((ITypeBuilderFactory)
+                     typeof (EnumBuilderFactory<>)
+                         .MakeGenericType(type)
+                         .GetConstructor(Type.EmptyTypes)
+                         .Invoke(new object[0])).CreateTypeBuilder(type);
             }
             return null;
         }
+
+        #endregion
+    }
+
+    public class EnumBuilderFactory<TEnum> : ITypeBuilderFactory where TEnum : struct
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new EnumBuilder<TEnum>();
+        }
+
+        #endregion
     }
 }

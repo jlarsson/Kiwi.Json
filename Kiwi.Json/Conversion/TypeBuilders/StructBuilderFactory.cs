@@ -1,21 +1,37 @@
 using System;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class StructBuilderFactory: ITypeBuilderFactory
+    public class StructBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             if (type.IsValueType && !type.IsPrimitive && !type.IsEnum)
             {
                 return
-                    (Func<ITypeBuilder>)
-                    typeof(StructBuilder<>).MakeGenericType(type).GetMethod("CreateTypeBuilderFactory",
-                                                                            BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[]{});
+                    ((ITypeBuilderFactory)
+                     typeof (StructBuilderFactory<>)
+                         .MakeGenericType(type)
+                         .GetConstructor(Type.EmptyTypes)
+                         .Invoke(new object[0])).CreateTypeBuilder(type);
             }
             return null;
         }
+
+        #endregion
+    }
+
+    public class StructBuilderFactory<TStruct> : ITypeBuilderFactory
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new StructBuilder<TStruct>();
+        }
+
+        #endregion
     }
 }

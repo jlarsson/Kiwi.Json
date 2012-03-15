@@ -10,7 +10,10 @@ namespace Kiwi.Json.Util
             _source = source;
         }
 
-        public override bool EndOfInput { get { return _sourcePosition >= Source.Length; } }
+        public override bool EndOfInput
+        {
+            get { return _sourcePosition >= Source.Length; }
+        }
 
         public string Source
         {

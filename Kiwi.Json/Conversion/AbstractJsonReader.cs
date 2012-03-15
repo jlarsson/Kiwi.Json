@@ -17,7 +17,7 @@ namespace Kiwi.Json.Conversion
         public int Line { get; private set; }
         public int Column { get; private set; }
 
-        #region IJsonParser Members
+        #region IJsonReader Members
 
         public bool EndOfInput()
         {
@@ -303,7 +303,8 @@ namespace Kiwi.Json.Conversion
 
                 var memberState = objectBuilder.GetMemberState(memberName, @object);
                 objectBuilder.SetMember(memberName, @object,
-                                        Parse(registry, objectBuilder.GetMemberBuilder(registry, memberName), memberState));
+                                        Parse(registry, objectBuilder.GetMemberBuilder(registry, memberName),
+                                              memberState));
 
                 SkipWhitespace();
 

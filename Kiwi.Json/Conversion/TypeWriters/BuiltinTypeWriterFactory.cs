@@ -26,8 +26,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     CreateSimpleWriter<Guid>((w, v) => w.WriteString(v.ToString("n"))),
                     CreateSimpleWriter<string>((w, v) => w.WriteString(v)),
                     CreateSimpleWriter<char>((w, v) => w.WriteString(v.ToString(CultureInfo.CurrentCulture))),
-
-
                     CreateSimpleNullableWriter<bool>((w, v) => w.WriteBool(v)),
                     CreateSimpleNullableWriter<sbyte>((w, v) => w.WriteInteger(v)),
                     CreateSimpleNullableWriter<short>((w, v) => w.WriteInteger(v)),
@@ -63,7 +61,8 @@ namespace Kiwi.Json.Conversion.TypeWriters
             return Tuple.Create(typeof (T), (Func<ITypeWriter>) (() => writer));
         }
 
-        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action) where T: struct
+        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action)
+            where T : struct
         {
             var writer = new SimpleWriter<T?>(
                 (w, v) =>
@@ -77,7 +76,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                             w.WriteNull();
                         }
                     });
-            return Tuple.Create(typeof(T?), (Func<ITypeWriter>)(() => writer));
+            return Tuple.Create(typeof (T?), (Func<ITypeWriter>) (() => writer));
         }
 
         #region Nested type: SimpleWriter

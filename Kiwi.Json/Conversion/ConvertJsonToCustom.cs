@@ -24,7 +24,9 @@ namespace Kiwi.Json.Conversion
             var array = arrayBuilder.CreateNewArray(_registry, InstanceState);
             foreach (var element in value)
             {
-                arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(_registry, arrayBuilder.GetElementBuilder(_registry))));
+                arrayBuilder.AddElement(array,
+                                        element.Visit(new ConvertJsonToCustom(_registry,
+                                                                              arrayBuilder.GetElementBuilder(_registry))));
             }
             return arrayBuilder.GetArray(array);
         }
@@ -62,7 +64,9 @@ namespace Kiwi.Json.Conversion
             {
                 var memberState = objectBuilder.GetMemberState(kv.Key, @object);
                 objectBuilder.SetMember(kv.Key, @object,
-                                        kv.Value.Visit(new ConvertJsonToCustom(_registry, objectBuilder.GetMemberBuilder(_registry, kv.Key))
+                                        kv.Value.Visit(new ConvertJsonToCustom(_registry,
+                                                                               objectBuilder.GetMemberBuilder(
+                                                                                   _registry, kv.Key))
                                                            {InstanceState = memberState}));
             }
             return objectBuilder.GetObject(@object);

@@ -36,11 +36,13 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
     <Compile Include="Conversion\IJsonReader.cs" />
     <Compile Include="Conversion\Reflection\ClassActivator.cs" />
+    <Compile Include="Conversion\Reflection\ConstructorInfoClassActivator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
     <Compile Include="Conversion\Reflection\FieldSetter.cs" />
     <Compile Include="Conversion\Reflection\IClassActivator.cs" />
@@ -59,11 +61,12 @@
     <Compile Include="Conversion\TypeBuilders\EnumBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
-    <Compile Include="Conversion\TypeBuilders\JsonDateAndString.cs" />
+    <Compile Include="Untyped\JsonDateAndString.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\CollectionBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\StructBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\SystemDataNamespaceTypeFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\UntypedListBuilder.cs" />
@@ -126,7 +129,6 @@
     <Compile Include="Conversion\TypeBuilders\ArrayBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ClassBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\EnumBuilder.cs" />
-    <Compile Include="Conversion\TypeBuilders\ClassWithoutDefaultConstructorBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderRegistry.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilder.cs" />

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class DictionaryBuilderFactory: ITypeBuilderFactory
+    public class DictionaryBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
         {
             // Check which IDictionary<string,T> is implemented
             var kvTypes = (from @interface in new[] {type}.Concat(type.GetInterfaces())
@@ -24,13 +25,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 return null;
             }
 
-            if (kvTypes.KeyType != typeof(string))
+            if (kvTypes.KeyType != typeof (string))
             {
-                return () => new DictionaryWithWrongKeyTypeBuilder(kvTypes.KeyType);
-
+                return new DictionaryWithWrongKeyTypeBuilder(kvTypes.KeyType);
             }
 
-            var concreteClass = type.IsClass ? type : typeof(Dictionary<,>).MakeGenericType(typeof(string), kvTypes.ValueType);
+            var concreteClass = type.IsClass
+                                    ? type
+                                    : typeof (Dictionary<,>).MakeGenericType(typeof (string), kvTypes.ValueType);
 
             if (!type.IsAssignableFrom(concreteClass))
             {
@@ -38,10 +40,26 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             }
 
             return
-                (Func<ITypeBuilder>)
-                typeof(DictionaryBuilder<,>).MakeGenericType(concreteClass, kvTypes.ValueType).GetMethod("CreateTypeBuilderFactory",
-                                                                                                 BindingFlags.Static | BindingFlags.Public).
-                    Invoke(null, new object[]{});
+                ((ITypeBuilderFactory)
+                 typeof (DictionaryBuilderFactory<,>)
+                     .MakeGenericType(concreteClass, kvTypes.ValueType)
+                     .GetConstructor(Type.EmptyTypes)
+                     .Invoke(new object[0])).CreateTypeBuilder(type);
         }
+
+        #endregion
+    }
+
+    public class DictionaryBuilderFactory<TDictionary, TValue> : ITypeBuilderFactory
+        where TDictionary : class, IDictionary<string, TValue>
+    {
+        #region ITypeBuilderFactory Members
+
+        public ITypeBuilder CreateTypeBuilder(Type type)
+        {
+            return new DictionaryBuilder<TDictionary, TValue>();
+        }
+
+        #endregion
     }
 }

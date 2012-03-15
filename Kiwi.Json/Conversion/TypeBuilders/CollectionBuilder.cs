@@ -1,21 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class CollectionBuilder<TCollection, TElem> : AbstractTypeBuilder, IArrayBuilder where TCollection : class, ICollection<TElem>, new()
+    public class CollectionBuilder<TCollection, TElem> : AbstractTypeBuilder, IArrayBuilder
+        where TCollection : class, ICollection<TElem>, new()
     {
-        public override IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
-        {
-            return this;
-        }
-
         #region IArrayBuilder Members
-
-        public override object CreateNull(ITypeBuilderRegistry registry)
-        {
-            return null;
-        }
 
         public override object CreateNewArray(ITypeBuilderRegistry registry, object instanceState)
         {
@@ -34,7 +24,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override void AddElement(object array, object element)
         {
-            ((TCollection)array).Add((TElem) element);
+            ((TCollection) array).Add((TElem) element);
         }
 
         public override object GetArray(object array)
@@ -44,11 +34,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
+        public override IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
-            var builder = new CollectionBuilder<TCollection, TElem>();
+            return this;
+        }
 
-            return () => builder;
+        public override object CreateNull(ITypeBuilderRegistry registry)
+        {
+            return null;
         }
     }
 }

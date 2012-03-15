@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Kiwi.Json.JPath;
 using Kiwi.Json.Conversion;
+using Kiwi.Json.JPath;
 
 namespace Kiwi.Json.Untyped
 {
@@ -34,7 +34,8 @@ namespace Kiwi.Json.Untyped
                 {
                     head = prefix + ".*";
                 }
-                tail = this.Select(kv => kv.Value.GetJsonPaths(prefix + '.' + kv.Key, includeWildcards)).SelectMany(l => l);
+                tail =
+                    this.Select(kv => kv.Value.GetJsonPaths(prefix + '.' + kv.Key, includeWildcards)).SelectMany(l => l);
             }
             if (head != null)
             {

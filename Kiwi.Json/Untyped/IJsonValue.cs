@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Kiwi.Json.JPath;
 using Kiwi.Json.Conversion;
+using Kiwi.Json.JPath;
 
 namespace Kiwi.Json.Untyped
 {

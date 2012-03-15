@@ -12,7 +12,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         public static T Read<T>(this ITypeBuilderRegistry registry, IJsonReader reader, object instanceState)
         {
-            return (T)reader.Parse(registry, registry.GetTypeBuilder<T>(), instanceState);
+            return (T) reader.Parse(registry, registry.GetTypeBuilder<T>(), instanceState);
         }
     }
 }

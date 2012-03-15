@@ -10,12 +10,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         private readonly List<ClassMember> _members;
 
-        protected class ClassMember
-        {
-            public string Name { get; set; }
-            public IMemberGetter Getter { get; set; }
-        }
-
         protected ClassWriter(List<ClassMember> members)
         {
             _members = members;
@@ -69,7 +63,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                                   typeof (T).GetFields(BindingFlags.GetField |
                                                        BindingFlags.Public |
                                                        BindingFlags.Instance)
-                              select new ClassMember()
+                              select new ClassMember
                                          {
                                              Name = field.Name,
                                              Getter = new FieldGetter(field),
@@ -79,5 +73,15 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
             return () => new ClassWriter<T>(members.ToList());
         }
+
+        #region Nested type: ClassMember
+
+        protected class ClassMember
+        {
+            public string Name { get; set; }
+            public IMemberGetter Getter { get; set; }
+        }
+
+        #endregion
     }
 }

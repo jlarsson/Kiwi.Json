@@ -33,7 +33,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public void SetMember(string memberName, object @object, object value)
         {
-            ((JsonObject)@object)[memberName] = (IJsonValue) value;
+            ((JsonObject) @object)[memberName] = (IJsonValue) value;
         }
 
         public object GetObject(object @object)
