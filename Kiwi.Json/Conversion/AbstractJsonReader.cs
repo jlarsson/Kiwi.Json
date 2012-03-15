@@ -6,7 +6,7 @@ using Kiwi.Json.Util;
 
 namespace Kiwi.Json.Conversion
 {
-    public abstract class AbstractJsonReader
+    public abstract class AbstractJsonReader : IJsonReader
     {
         protected AbstractJsonReader()
         {
@@ -17,9 +17,12 @@ namespace Kiwi.Json.Conversion
         public int Line { get; private set; }
         public int Column { get; private set; }
 
-        public object Parse(ITypeBuilder builder)
+        #region IJsonParser Members
+
+        public bool EndOfInput()
         {
-            return Parse(builder, null);
+            SkipWhitespace();
+            return Peek() == char.MinValue;
         }
 
         public object Parse(ITypeBuilder builder, object instanceState)
@@ -50,6 +53,8 @@ namespace Kiwi.Json.Conversion
             }
             throw CreateException("Expected Json at ({1},{2})", c, Line, Column);
         }
+
+        #endregion
 
         /*
          * number = [ minus ] int [ frac ] [ exp ]
@@ -227,68 +232,6 @@ namespace Kiwi.Json.Conversion
             return sb.ToString();
         }
 
-        private string ParseNumber(out bool isInteger)
-        {
-            var startLine = Line;
-            var startColumn = Column;
-            var sb = new StringBuilder();
-            if (Peek() == '-')
-            {
-                sb.Append(Next());
-            }
-            var hasInteger = false;
-            while (char.IsDigit((char) Peek()))
-            {
-                sb.Append(Next());
-                hasInteger = true;
-            }
-            if (!hasInteger)
-            {
-                throw CreateExpectedNumberException(startLine, startColumn);
-            }
-
-            if (Peek() != '.')
-            {
-                isInteger = true;
-                return sb.ToString();
-            }
-
-            sb.Append(Next());
-            var hasFrac = false;
-            while (char.IsDigit((char) Peek()))
-            {
-                sb.Append(Next());
-                hasFrac = true;
-            }
-            if (!hasFrac)
-            {
-                throw CreateExpectedNumberException(startLine, startColumn);
-            }
-
-            if ("eE".IndexOf((char) Peek()) >= 0)
-            {
-                sb.Append(Next());
-
-                if ("+-".IndexOf((char) Peek()) >= 0)
-                {
-                    sb.Append(Next());
-                }
-                var hasExp = false;
-                while (char.IsDigit((char) Peek()))
-                {
-                    sb.Append(Next());
-                    hasExp = true;
-                }
-                if (!hasExp)
-                {
-                    throw CreateExpectedNumberException(startLine, startColumn);
-                }
-            }
-
-            isInteger = false;
-            return sb.ToString();
-        }
-
         protected char ParseUnicodeHexEncoding()
         {
             return (char) (ParseHexCharValue()*0x1000 + ParseHexCharValue()*0x100 + ParseHexCharValue()*0x10 +
@@ -313,20 +256,6 @@ namespace Kiwi.Json.Conversion
             throw CreateException("Bad Hex character at ({0},{1})", Line, Column);
         }
 
-        private string ParseIdent()
-        {
-            var sb = new StringBuilder();
-            var c = Peek();
-            while (char.IsLetterOrDigit((char) c) || (c == '_'))
-            {
-                Next();
-                sb.Append((char) c);
-
-                c = Peek();
-            }
-            return sb.ToString();
-        }
-
         protected object ParseString(ITypeBuilder builder)
         {
             var s = ParseString();
@@ -344,7 +273,7 @@ namespace Kiwi.Json.Conversion
 
             while (Peek() != ']')
             {
-                arrayBuilder.AddElement(array, Parse(arrayBuilder.GetElementBuilder()));
+                arrayBuilder.AddElement(array, Parse(arrayBuilder.GetElementBuilder(), null));
                 SkipWhitespace();
 
                 if (!TryMatch(','))
@@ -373,7 +302,8 @@ namespace Kiwi.Json.Conversion
                 Match(':');
 
                 var memberState = objectBuilder.GetMemberState(memberName, @object);
-                objectBuilder.SetMember(memberName, @object, Parse(objectBuilder.GetMemberBuilder(memberName), memberState));
+                objectBuilder.SetMember(memberName, @object,
+                                        Parse(objectBuilder.GetMemberBuilder(memberName), memberState));
 
                 SkipWhitespace();
 

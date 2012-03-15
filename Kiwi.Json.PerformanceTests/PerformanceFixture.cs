@@ -44,7 +44,7 @@ namespace Kiwi.Json.PerformanceTests
         public void FromJson()
         {
             //var json = Conversion.JsonConverter.ToJson(_post).ToString();
-            var json = JSON.ToJson(_post).PrettyPrint();
+            var json = JSON.Write(JSON.ToJson(_post));
 
             const int warmUpCount = 1000;
             Run("Warming up Kiwi.Json", warmUpCount, json,

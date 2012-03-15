@@ -19,7 +19,7 @@ namespace Kiwi.Json.Conversion
         public object VisitArray(IJsonArray value)
         {
             var arrayBuilder = _typeBuilder.CreateArrayBuilder();
-            var array = arrayBuilder.CreateNewArray(null);
+            var array = arrayBuilder.CreateNewArray(InstanceState);
             foreach (var element in value)
             {
                 arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(arrayBuilder.GetElementBuilder())));

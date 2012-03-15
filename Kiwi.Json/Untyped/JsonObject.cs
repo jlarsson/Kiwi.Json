@@ -86,7 +86,7 @@ namespace Kiwi.Json.Untyped
 
         public override string ToString()
         {
-            return this.PrettyPrint();
+            return JSON.Write(this);
         }
     }
 }

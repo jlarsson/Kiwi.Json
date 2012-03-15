@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
+    <Compile Include="Conversion\IJsonReader.cs" />
     <Compile Include="Conversion\Reflection\ClassActivator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
     <Compile Include="Conversion\Reflection\FieldSetter.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="Untyped\JsonDouble.cs" />
     <Compile Include="Untyped\JsonObject.cs" />
     <Compile Include="Untyped\JsonString.cs" />
-    <Compile Include="JsonValueExtensions.cs" />
     <Compile Include="Untyped\JsonValueKind.cs" />
     <Compile Include="Util\IRegistry.cs" />
     <Compile Include="Util\StringMatcher.cs" />

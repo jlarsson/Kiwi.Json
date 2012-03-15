@@ -40,10 +40,27 @@ namespace Kiwi.Json
             return Read<IJsonValue>(json);
         }
 
+        public static IJsonValue Read(IJsonReader reader)
+        {
+            return Read(reader, default(IJsonValue));
+        }
+
+
+        public static T Read<T>(IJsonReader reader)
+        {
+            return Read(reader, default(T));
+        }
+
+        public static T Read<T>(IJsonReader reader, T initializedInstance)
+        {
+            return (T)reader.Parse(TypeBuilderRegistry.GetTypeBuilder<T>(), initializedInstance);
+        }
+
         public static T Read<T>(string json)
         {
-            return (T) new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>());
+            return Read(json, default(T));
         }
+
         public static T Read<T>(string json, T initializedInstance)
         {
             return (T)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>(), initializedInstance);
@@ -52,9 +69,15 @@ namespace Kiwi.Json
         public static string Write(object obj)
         {
             var writer = new JsonStringWriter();
-            TypeWriterRegistry.GetTypeWriterForValue(obj).Write(writer, obj);
+            Write(obj, writer);
             return writer.ToString();
         }
+
+        public static void Write(object obj, IJsonWriter writer)
+        {
+            TypeWriterRegistry.GetTypeWriterForValue(obj).Write(writer, obj);
+        }
+
 
         public static IJsonPath ParseJsonPath(string jsonPath)
         {
