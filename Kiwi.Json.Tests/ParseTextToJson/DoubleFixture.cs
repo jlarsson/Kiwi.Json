@@ -10,23 +10,23 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Double()
         {
-            JSON.Read("0.1")
+            JsonConvert.Read("0.1")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(0.1);
 
-            JSON.Read("1.23")
+            JsonConvert.Read("1.23")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(1.23);
-            JSON.Read("-1.23")
+            JsonConvert.Read("-1.23")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23);
-            JSON.Read("1.23e45")
+            JsonConvert.Read("1.23e45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(1.23e45);
-            JSON.Read("-1.23e45")
+            JsonConvert.Read("-1.23e45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23e45);
-            JSON.Read("-1.23e-45")
+            JsonConvert.Read("-1.23e-45")
                 .Should().Be.InstanceOf<IJsonDouble>()
                 .And.Value.Value.Should().Be.EqualTo(-1.23e-45);
         }

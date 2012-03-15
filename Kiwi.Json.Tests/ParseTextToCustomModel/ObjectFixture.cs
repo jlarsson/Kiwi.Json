@@ -11,7 +11,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Dictionary()
         {
-            var d = JSON.Read<object>(@"{""a"":1,""b"":2}")
+            var d = JsonConvert.Read<object>(@"{""a"":1,""b"":2}")
                 .Should().Be.InstanceOf<IDictionary<string, object>>()
                 .And.Value;
 
@@ -22,7 +22,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void List()
         {
-            var l = JSON.Read<object>(@"[1,2,3.14,""four""]")
+            var l = JsonConvert.Read<object>(@"[1,2,3.14,""four""]")
                 .Should().Be.InstanceOf<IList<object>>()
                 .And.Value.Should().Have.SameSequenceAs(new object[]{1,2,3.14,"four"});
         }
@@ -30,7 +30,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Integer()
         {
-            JSON.Read<object>("123")
+            JsonConvert.Read<object>("123")
                 .Should().Be.InstanceOf<int>()
                 .And.Value.Should().Be.EqualTo(123);
         }
@@ -38,21 +38,21 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Null()
         {
-            JSON.Read<object>("null")
+            JsonConvert.Read<object>("null")
                 .Should().Be.Null();
         }
 
         [Test]
         public void True()
         {
-            JSON.Read<object>("true")
+            JsonConvert.Read<object>("true")
                 .Should().Be.InstanceOf<bool>()
                 .And.Value.Should().Be.EqualTo(true);
         }
         [Test]
         public void False()
         {
-            JSON.Read<object>("false")
+            JsonConvert.Read<object>("false")
                 .Should().Be.InstanceOf<bool>()
                 .And.Value.Should().Be.EqualTo(false);
         }
@@ -60,7 +60,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Double()
         {
-            JSON.Read<object>("3.14")
+            JsonConvert.Read<object>("3.14")
                 .Should().Be.InstanceOf<double>()
                 .And.Value.Should().Be.EqualTo(3.14);
         }

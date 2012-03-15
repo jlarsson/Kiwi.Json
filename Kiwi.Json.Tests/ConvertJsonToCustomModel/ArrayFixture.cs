@@ -14,7 +14,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void AbstractEnumerable()
         {
-            var list = JSON
+            var list = JsonConvert
                 .ToJson(new[] { 1, 2, 3 })
                 .ToObject<IEnumerable<int>>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
@@ -23,7 +23,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void AbstractList()
         {
-            var list = JSON
+            var list = JsonConvert
                 .ToJson(new[] {1, 2, 3})
                 .ToObject<IList<int>>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
@@ -32,7 +32,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void Array()
         {
-            var array = JSON
+            var array = JsonConvert
                 .ToJson(new[] {1, 2, 3})
                 .ToObject<int[]>();
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(array));
@@ -41,7 +41,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void List()
         {
-            var list = JSON
+            var list = JsonConvert
                 .ToJson(new[] {1, 2, 3})
                 .ToObject<List<int>>();
 
@@ -58,7 +58,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void SubclassedList()
         {
-            var list = JSON
+            var list = JsonConvert
                 .ToJson(new[] {1, 2, 3})
                 .ToObject<SublassedList<int>>();
 

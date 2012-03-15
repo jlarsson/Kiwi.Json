@@ -9,7 +9,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Integer()
         {
             Assert.That(
-                JSON.Read<int?>("123"),
+                JsonConvert.Read<int?>("123"),
                 Is.EqualTo(123)
                 );
         }
@@ -18,7 +18,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.Read<int?>("null").HasValue,
+                JsonConvert.Read<int?>("null").HasValue,
                 Is.False
                 );
         }

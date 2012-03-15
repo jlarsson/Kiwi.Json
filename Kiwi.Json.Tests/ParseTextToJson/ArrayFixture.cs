@@ -11,7 +11,7 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Array()
         {
-            var parsed = JSON.Read(@"[1,2,3,""four""]");
+            var parsed = JsonConvert.Read(@"[1,2,3,""four""]");
 
             parsed.Should().Be.InstanceOf<IJsonArray>();
 

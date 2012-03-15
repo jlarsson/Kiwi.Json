@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void DateTimeInSortablePattern()
         {
             Assert.That(
-                JSON.Read<DateTime>(@"""2011-09-01T13:59:16"""),
+                JsonConvert.Read<DateTime>(@"""2011-09-01T13:59:16"""),
                 Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
                 );
         }
@@ -19,7 +19,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void DateTimeInUniversalSortablePattern()
         {
             Assert.That(
-                JSON.Read<DateTime>(@"""2011-09-01 13:59:16Z"""),
+                JsonConvert.Read<DateTime>(@"""2011-09-01 13:59:16Z"""),
                 Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
                 );
         }

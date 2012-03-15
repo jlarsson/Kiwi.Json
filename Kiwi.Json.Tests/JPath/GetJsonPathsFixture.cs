@@ -33,7 +33,7 @@ namespace Kiwi.Json.Tests.JPath
                                         "$.X.B[*].Q"
                                     };
 
-            var jsonPaths = JSON
+            var jsonPaths = JsonConvert
                 .ToJson(obj)
                 .GetJsonPaths("$", true)
                 .Distinct()
@@ -66,7 +66,7 @@ namespace Kiwi.Json.Tests.JPath
                                     };
 
 
-            var jsonPaths = JSON
+            var jsonPaths = JsonConvert
                 .ToJson(obj)
                 .GetJsonPaths("$", false)
                 .Distinct()

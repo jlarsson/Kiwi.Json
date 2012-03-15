@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Object()
         {
-            JSON.Read("null")
+            JsonConvert.Read("null")
                 .Should().Be.InstanceOf<IJsonNull>();
         }
     }

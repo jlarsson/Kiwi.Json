@@ -106,10 +106,10 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                             indexValueTable.CreateCursor("PK_IndexValue_IndexId_DocumentId")
                                 .DeleteEq(indexValueTable.CreateKey().Int64(indexId).Int64(documentRecord.DocumentId));
 
-                            var documentValue = JSON.Read<IJsonValue>(documentRecord.DocumentJson);
+                            var documentValue = JsonConvert.Read<IJsonValue>(documentRecord.DocumentJson);
                             var indexValues = from documentMember in definition.JsonPath.Evaluate(documentValue)
                                               from filterValue in _jsonFilterStrategy.GetFilterValues(documentMember)
-                                              select JSON.Write(filterValue).ToLowerInvariant();
+                                              select JsonConvert.Write(filterValue).ToLowerInvariant();
 
                             foreach (var indexValue in indexValues)
                             {
@@ -162,7 +162,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     .ScanEq(Mappings.DocumentRecordMapper, documenTable.CreateKey().String(key.ToLowerInvariant()))
                     .FirstOrDefault();
 
-                return document == null ? default(T) : JSON.Read<T>(document.DocumentJson);
+                return document == null ? default(T) : JsonConvert.Read<T>(document.DocumentJson);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 var documentId = documentTable.CreateInsertRecord()
                     .Int64("CollectionId", collectionId)
                     .String("DocumentKey", key.ToLowerInvariant())
-                    .String("DocumentJson", JSON.Write(document))
+                    .String("DocumentJson", JsonConvert.Write(document))
                     .InsertWithAutoIncrement64("DocumentId");
 
                 // Get all indexes
@@ -192,11 +192,11 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                         var indexCursor = indexTable.CreateCursor("IX_Index_CollectionId");
                         foreach (var indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper))
                         {
-                            var jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath);
+                            var jsonPath = JsonConvert.ParseJsonPath(indexRecord.JsonPath);
 
                             var indexValues = from documentMember in jsonPath.Evaluate(document)
                                               from filterValue in _jsonFilterStrategy.GetFilterValues(documentMember)
-                                              select JSON.Write(filterValue).ToLowerInvariant();
+                                              select JsonConvert.Write(filterValue).ToLowerInvariant();
 
                             foreach (var indexValue in indexValues)
                             {
@@ -254,10 +254,10 @@ namespace Kiwi.Json.DocumentDatabase.Esent
 
                 return
                     (from indexRecord in indexCursor.Scan(Mappings.IndexRecordMapper)
-                     let jsonPath = JSON.ParseJsonPath(indexRecord.JsonPath)
+                     let jsonPath = JsonConvert.ParseJsonPath(indexRecord.JsonPath)
                      from filterMember in jsonPath.Evaluate(filter)
                      from filterValue in _jsonFilterStrategy.GetFilterValues(filterMember)
-                     select new {indexRecord.IndexId, Value = JSON.Write(filterValue).ToLowerInvariant()})
+                     select new { indexRecord.IndexId, Value = JsonConvert.Write(filterValue).ToLowerInvariant() })
                         .ToLookup(o => o.IndexId, o => o.Value);
             }
         }
@@ -268,7 +268,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             {
                 return new List<KeyValuePair<string, T>>(
                     from documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper)
-                    let document = JSON.Read(documentRecord.DocumentJson)
+                    let document = JsonConvert.Read(documentRecord.DocumentJson)
                     where filter.Matches(document)
                     select new KeyValuePair<string, T>(documentRecord.DocumentKey, document.ToObject<T>()));
             }
@@ -293,7 +293,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     }
                     else
                     {
-                        var document = JSON.Read(documentRecord.DocumentJson);
+                        var document = JsonConvert.Read(documentRecord.DocumentJson);
                         if (filter.Matches(document))
                         {
                             found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey,

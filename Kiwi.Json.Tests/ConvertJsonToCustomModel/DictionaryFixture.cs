@@ -15,7 +15,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         [Test]
         public void Dictionary()
         {
-            var parsed = JSON.Read<IDictionary<string, A>>(@"{""a"":{""Value"":1},""b"":{""Value"":2}}");
+            var parsed = JsonConvert.Read<IDictionary<string, A>>(@"{""a"":{""Value"":1},""b"":{""Value"":2}}");
 
             parsed.Count.Should().Be.EqualTo(2);
 

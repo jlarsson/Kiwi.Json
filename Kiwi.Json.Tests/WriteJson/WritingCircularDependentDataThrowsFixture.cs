@@ -19,7 +19,7 @@ namespace Kiwi.Json.Tests.WriteJson
             var first = new Circular() {Next = new Circular() {Next = new Circular(){Next = last}}};
             last.Next = first;
 
-            Assert.Throws<JsonSerializationException>(() => JSON.Write(first));
+            Assert.Throws<JsonSerializationException>(() => JsonConvert.Write(first));
         }
     }
 }

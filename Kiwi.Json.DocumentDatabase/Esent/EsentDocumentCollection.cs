@@ -49,7 +49,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                                         indexTable.CreateKey().Int64(collection.CollectionId))
                                 .Select(r => new DocumentCollectionIndex(Database, Name)
                                                  {
-                                                     JsonPath = JSON.ParseJsonPath(r.JsonPath)
+                                                     JsonPath = JsonConvert.ParseJsonPath(r.JsonPath)
                                                  })
                                 .ToList();
                         }

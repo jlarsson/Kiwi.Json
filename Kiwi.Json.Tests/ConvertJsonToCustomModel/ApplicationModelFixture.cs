@@ -7,7 +7,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
     [TestFixture]
     public class ApplicationModelFixture
     {
-        private readonly IJsonObject SampleJsonObject = (IJsonObject)JSON.Read(
+        private readonly IJsonObject SampleJsonObject = (IJsonObject)JsonConvert.Read(
             @"
                     {
                         ""Title"": ""Sample blog"",

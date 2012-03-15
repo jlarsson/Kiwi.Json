@@ -13,7 +13,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Test()
         {
-            var c = JSON.Read<Circular>("{\"Next\":{\"Next\":null}}");
+            var c = JsonConvert.Read<Circular>("{\"Next\":{\"Next\":null}}");
         }
     }
 }

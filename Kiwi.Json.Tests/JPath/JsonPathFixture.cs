@@ -75,11 +75,11 @@ namespace Kiwi.Json.Tests.JPath
         public object[] TestJsonPath(string jpath, object inputObject)
         {
             Console.Out.WriteLine("jpath: " + jpath);
-            Console.Out.WriteLine("input object (as json): " + JSON.Write(inputObject));
-            var result = (from v in new JsonPath(jpath).Evaluate(JSON.ToJson(inputObject))
+            Console.Out.WriteLine("input object (as json): " + JsonConvert.Write(inputObject));
+            var result = (from v in new JsonPath(jpath).Evaluate(JsonConvert.ToJson(inputObject))
                           select v.ToObject()).ToArray();
 
-            Console.Out.WriteLine("result to native (from json): " + JSON.Write(result));
+            Console.Out.WriteLine("result to native (from json): " + JsonConvert.Write(result));
             return result;
         }
     }

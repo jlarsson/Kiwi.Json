@@ -145,7 +145,7 @@ namespace Kiwi.Json.Tests.WriteJson
         [TestCaseSource("TestData")]
         public void Write(Type type, object value, string expectedJson)
         {
-            Assert.That(expectedJson, Is.EqualTo(JSON.Write(value)), "Serialization failed for {0} of type {1}",
+            Assert.That(expectedJson, Is.EqualTo(JsonConvert.Write(value)), "Serialization failed for {0} of type {1}",
                         value, type);
         }
     }

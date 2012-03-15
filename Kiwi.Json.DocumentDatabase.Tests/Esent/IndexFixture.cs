@@ -19,7 +19,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
         {
             var coll = Db.GetCollection("Index");
             coll.Put("K", new {A = new object[] {1, 2, 3, "four"}, Ignore = "this value is not covered by index"});
-            coll.EnsureIndex(new IndexDefinition { JsonPath = JSON.ParseJsonPath("$.A") });
+            coll.EnsureIndex(new IndexDefinition { JsonPath = JsonConvert.ParseJsonPath("$.A") });
 
             var index = coll.GetIndexes().FirstOrDefault(ix => ix.JsonPath.Path == "$.A");
             Assert.NotNull(index);
@@ -44,8 +44,8 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
 
             coll.Put("B", new {B = new[] {1, 2, 3}});
 
-            coll.EnsureIndex(new IndexDefinition {JsonPath = JSON.ParseJsonPath("$.B")});
-            coll.EnsureIndex(new IndexDefinition { JsonPath = JSON.ParseJsonPath("$.B") });
+            coll.EnsureIndex(new IndexDefinition { JsonPath = JsonConvert.ParseJsonPath("$.B") });
+            coll.EnsureIndex(new IndexDefinition { JsonPath = JsonConvert.ParseJsonPath("$.B") });
 
             indexes = coll.GetIndexes().ToList();
 

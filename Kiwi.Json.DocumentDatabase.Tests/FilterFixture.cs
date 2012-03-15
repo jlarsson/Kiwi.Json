@@ -10,7 +10,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
     {
         TestCaseData Case(object filter, object value, bool expectedMatch)
         {
-            return new TestCaseData(JSON.ToJson(filter), JSON.ToJson(value), expectedMatch);
+            return new TestCaseData(JsonConvert.ToJson(filter), JsonConvert.ToJson(value), expectedMatch);
         }
 
         IEnumerable<TestCaseData> TestCaseData

@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.Read<DateTime?>("null").HasValue,
+                JsonConvert.Read<DateTime?>("null").HasValue,
                 Is.False
                 );
         }
@@ -19,7 +19,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void DateTime()
         {
             Assert.That(
-                JSON.Read<DateTime?>(@"""2011-09-01 13:59:16Z"""),
+                JsonConvert.Read<DateTime?>(@"""2011-09-01 13:59:16Z"""),
                 Is.EqualTo(new DateTime(2011, 09, 01, 13, 59, 16))
                 );
         }

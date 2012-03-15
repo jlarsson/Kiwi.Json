@@ -25,7 +25,7 @@ namespace Kiwi.Json.Tests.JPath
         {
             var jpath = new JsonPath(@"$.A[""B""][2]");
 
-            var j = JSON.ToJson(new { A = new { B = new[] { 1, 2, 3 } } });
+            var j = JsonConvert.ToJson(new { A = new { B = new[] { 1, 2, 3 } } });
 
             var a = jpath.Evaluate(j);
 
@@ -41,7 +41,7 @@ namespace Kiwi.Json.Tests.JPath
         [Test]
         public void Test()
         {
-            var json = JSON.ToJson(new {A = "a", B = new {X = 1, Y = 2}});
+            var json = JsonConvert.ToJson(new { A = "a", B = new { X = 1, Y = 2 } });
 
             json.JsonPathValues().Select(v => v.Path.Path).ToArray()
                 .Should().Have.SameSequenceAs("$.A", "$.B.X", "$.B.Y");

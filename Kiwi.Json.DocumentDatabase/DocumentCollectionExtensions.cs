@@ -19,7 +19,7 @@ namespace Kiwi.Json.DocumentDatabase
         {
             using (var session = collection.CreateSession())
             {
-                return session.Find<IJsonValue>(JSON.ToJson(filter));
+                return session.Find<IJsonValue>(JsonConvert.ToJson(filter));
             }
         }
 
@@ -35,7 +35,7 @@ namespace Kiwi.Json.DocumentDatabase
         {
             using (var session = collection.CreateSession())
             {
-                session.Put(key, JSON.ToJson(document));
+                session.Put(key, JsonConvert.ToJson(document));
                 session.Commit();
             }
         }

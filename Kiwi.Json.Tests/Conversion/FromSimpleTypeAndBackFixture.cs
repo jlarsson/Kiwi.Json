@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.Conversion
     {
         private void TestSimpleTypeToJsonAndBack<T>(T value)
         {
-            JSON.ToJson(value)
+            JsonConvert.ToJson(value)
                 .ToObject<T>()
                 .Should().Be.InstanceOf<T>()
                 .And.Value.Should().Be.EqualTo(value);

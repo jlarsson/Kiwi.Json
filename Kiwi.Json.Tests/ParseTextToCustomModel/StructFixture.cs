@@ -21,7 +21,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void PropertiesAreIgnored()
         {
-            var s = JSON.Read<StructWithProperties>(@"{""P1"":""hello"",""P2"":123}");
+            var s = JsonConvert.Read<StructWithProperties>(@"{""P1"":""hello"",""P2"":123}");
 
             s.P1.Should().Be.EqualTo(default(string));
             s.P2.Should().Be.EqualTo(default(int));
@@ -30,7 +30,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void PublicFieldsAreParsed()
         {
-            var s = JSON.Read<StructWithFields>(@"{""F1"":""hello"",""F2"":123}");
+            var s = JsonConvert.Read<StructWithFields>(@"{""F1"":""hello"",""F2"":123}");
 
             s.F1.Should().Be.EqualTo("hello");
             s.F2.Should().Be.EqualTo(123);

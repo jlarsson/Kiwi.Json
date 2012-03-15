@@ -10,11 +10,11 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Bool()
         {
-            JSON.Read("true")
+            JsonConvert.Read("true")
                 .Should().Be.InstanceOf<IJsonBool>()
                 .And.Value.Value.Should().Be.EqualTo(true);
 
-            JSON.Read("false")
+            JsonConvert.Read("false")
                 .Should().Be.InstanceOf<IJsonBool>()
                 .And.Value.Value.Should().Be.EqualTo(false);
         }

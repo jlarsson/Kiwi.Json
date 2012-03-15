@@ -9,7 +9,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Null()
         {
             Assert.That(
-                JSON.Read<double?>("null").HasValue,
+                JsonConvert.Read<double?>("null").HasValue,
                 Is.False
                 );
         }
@@ -18,7 +18,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Double()
         {
             Assert.That(
-                JSON.Read<double?>("123.45e67"),
+                JsonConvert.Read<double?>("123.45e67"),
                 Is.EqualTo(123.45e67)
                 );
         }

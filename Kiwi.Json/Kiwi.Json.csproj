@@ -97,7 +97,7 @@
     <Compile Include="JPath\JsonPath.cs" />
     <Compile Include="JPath\JsonPathException.cs" />
     <Compile Include="JPath\JsonPathValue.cs" />
-    <Compile Include="JSON.cs" />
+    <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonException.cs" />
     <Compile Include="InvalidClassForDeserializationException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

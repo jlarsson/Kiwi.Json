@@ -6,9 +6,9 @@ using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json
 {
-    public static class JSON
+    public static class JsonConvert
     {
-        static JSON()
+        static JsonConvert()
         {
             TypeWriterRegistry = new TypeWriterRegistry();
             TypeBuilderRegistry = new TypeBuilderRegistry();

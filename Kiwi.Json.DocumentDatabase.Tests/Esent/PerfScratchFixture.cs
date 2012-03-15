@@ -41,7 +41,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests.Esent
                 const int batchSize = 1000;
                 foreach (var o in objects)
                 {
-                    session.Put("object #" + n, JSON.ToJson(o));
+                    session.Put("object #" + n, JsonConvert.ToJson(o));
                     if ((n % batchSize) == (batchSize-1))
                     {
                         session.Pulse();

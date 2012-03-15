@@ -30,7 +30,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void DictionariesDontNeedDefaultConstructorIfInitialized()
         {
-            var d = JSON.Read(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
+            var d = JsonConvert.Read(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
             Assert.That(new []{"A"}, Is.EqualTo(d.Keys.ToArray()));
             Assert.That(new[] { 1 }, Is.EqualTo(d.Values.ToArray()));
         }
@@ -41,9 +41,9 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
             //var d = JSON.Read(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
 
             var json = @"{""Name"":""hello world""}";
-            Assert.Throws<InvalidClassForDeserializationException>(() => JSON.Read<A>(json));
+            Assert.Throws<InvalidClassForDeserializationException>(() => JsonConvert.Read<A>(json));
 
-            var a = JSON.Read(json, new A("this will be overwritten"));
+            var a = JsonConvert.Read(json, new A("this will be overwritten"));
             Assert.That(a, Is.Not.Null);
             Assert.That(a.Name, Is.EqualTo("hello world"));
         }
@@ -51,7 +51,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Test()
         {
-            var d = JSON.Read<Dictionary<string,object>>(@"{""A"":1}");
+            var d = JsonConvert.Read<Dictionary<string, object>>(@"{""A"":1}");
         }
     }
 
@@ -86,7 +86,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParseFullObject()
         {
-            var blog = JSON.Read<Blog>(SampleJsonText);
+            var blog = JsonConvert.Read<Blog>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
 
@@ -98,7 +98,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParsePartialObject1()
         {
-            var blog = JSON.Read<BlogContentOnly>(SampleJsonText);
+            var blog = JsonConvert.Read<BlogContentOnly>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
 
@@ -109,7 +109,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParsePartialObject2()
         {
-            var blog = JSON.Read<BlogTagsOnly>(SampleJsonText);
+            var blog = JsonConvert.Read<BlogTagsOnly>(SampleJsonText);
 
             blog.Should().Not.Be.Null();
             blog.Tags.Should().Have.SameSequenceAs(new[] { "test", "json" });
@@ -118,7 +118,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void ParseNull()
         {
-            JSON.Read<Blog>("null")
+            JsonConvert.Read<Blog>("null")
                 .Should().Be.Null();
         }
     }

@@ -48,7 +48,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT Definition FROM CollectionIndex CI INNER JOIN DocumentCollection C ON C.CollectionId = C.CollectionId WHERE CI.JsonPath = @jsonPath AND C.CollectionName = @collection")
                 .Param("collection", Collection.Name)
                 .Param("jsonPath", definition.JsonPath)
-                .Query(a => JSON.Read<IndexDefinition>(a.String(0)))
+                .Query(a => JsonConvert.Read<IndexDefinition>(a.String(0)))
                 .FirstOrDefault();
 
             if (existingIndex != null)
@@ -63,7 +63,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"INSERT INTO CollectionIndex (CollectionId, JsonPath, Definition) SELECT CollectionId, @jsonPath, @definition FROM DocumentCollection WHERE CollectionName = @collection; SELECT last_insert_rowid();")
                 .Param("collection", Collection.Name)
                 .Param("jsonPath", definition.JsonPath)
-                .Param("definition", JSON.Write(definition))
+                .Param("definition", JsonConvert.Write(definition))
                 .Query(a => a.Long(0)).First();
 
 
@@ -71,7 +71,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                                 DbSession.CreateSqlCommand(
                                     "SELECT DocumentId, Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
                                 .Param("collection", Collection.Name)
-                                .Query(a => new {DocumentId = a.Long(0), Document = JSON.Read(a.String(1))})
+                                .Query(a => new {DocumentId = a.Long(0), Document = JsonConvert.Read(a.String(1))})
                             select document;
 
 
@@ -85,7 +85,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     "INSERT INTO CollectionIndexValues (CollectionIndexId, DocumentId, Json) VALUES (@indexId, @documentId, @json)")
                     .Param("indexId", indexId)
                     .Param("documentId", indexValue.DocumentId)
-                    .Param("json", JSON.Write(indexValue.IndexValue))
+                    .Param("json", JsonConvert.Write(indexValue.IndexValue))
                     .Execute();
             }
         }
@@ -104,7 +104,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 .Query(a => new
                                 {
                                     IndexId = a.Long(0),
-                                    JsonPath = JSON.ParseJsonPath(a.String(1)),
+                                    JsonPath = JsonConvert.ParseJsonPath(a.String(1)),
                                 });
 
             var restrictions = (
@@ -127,7 +127,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 command = DbSession.CreateSqlCommand(sql);
                 for (var i = 0; i < restrictions.Length; ++i)
                 {
-                    command.Param("v" + i, JSON.Write(restrictions[i].IndexValue));
+                    command.Param("v" + i, JsonConvert.Write(restrictions[i].IndexValue));
                     command.Param("civid" + i, restrictions[i].IndexId);
                 }
             }
@@ -142,7 +142,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             var f = FilterStrategy.CreateFilter(filter);
             return
                 (from kv in
-                     command.Query(a => new KeyValuePair<string, IJsonValue>(a.String(0), JSON.Read(a.String(1))))
+                     command.Query(a => new KeyValuePair<string, IJsonValue>(a.String(0), JsonConvert.Read(a.String(1))))
                  where f.Matches(kv.Value)
                  select new KeyValuePair<string, T>(kv.Key, kv.Value.ToObject<T>())
                 ).ToList();
@@ -154,7 +154,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
                 .Param("collection", Collection.Name)
                 .Param("key", key)
-                .Query(a => JSON.Read<T>(a.String(0)))
+                .Query(a => JsonConvert.Read<T>(a.String(0)))
                 .FirstOrDefault();
         }
 
@@ -174,7 +174,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 DbSession.CreateSqlCommand(
                     @"UPDATE Document SET Json = @json WHERE DocumentId = @documentId")
                     .Param("documentId", documentId)
-                    .Param("json", JSON.Write(document))
+                    .Param("json", JsonConvert.Write(document))
                     .Execute();
             }
             else
@@ -183,7 +183,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                     @"INSERT INTO Document ([Key],Json, CollectionId) SELECT @key,@json,CollectionId FROM DocumentCollection WHERE CollectionName = @collection; SELECT last_insert_rowid();")
                     .Param("collection", Collection.Name)
                     .Param("key", key)
-                    .Param("json", JSON.Write(document))
+                    .Param("json", JsonConvert.Write(document))
                     .Query(a => a.Long(0))
                     .First();
             }
@@ -194,7 +194,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 .Query(a => new
                                 {
                                     IndexId = a.Long(0),
-                                    JsonPath = JSON.ParseJsonPath(a.String(1))
+                                    JsonPath = JsonConvert.ParseJsonPath(a.String(1))
                                 });
 
             if (oldDocumentId.HasValue)
@@ -216,7 +216,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                         "INSERT INTO CollectionIndexValue (CollectionIndexId, DocumentId, Json) VALUES(@indexId, @documentId, @json)")
                         .Param("indexId", index.IndexId)
                         .Param("documentId", documentId)
-                        .Param("json", JSON.Write(indexValue))
+                        .Param("json", JsonConvert.Write(indexValue))
                         .Execute();
                 }
             }

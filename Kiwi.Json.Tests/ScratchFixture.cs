@@ -21,7 +21,7 @@ namespace Kiwi.Json.Tests
 
             for(var i = 0; i < 100; ++i)
             {
-                JSON.Write(new {A = i}, writer);
+                JsonConvert.Write(new { A = i }, writer);
                 writer.StringBuilder.AppendLine();
             }
 
@@ -31,7 +31,7 @@ namespace Kiwi.Json.Tests
             {
 
                 Console.Out.WriteLine(
-                    JSON.Write(new {json = JSON.Read(reader)}));
+                    JsonConvert.Write(new { json = JsonConvert.Read(reader) }));
             }
 
         }

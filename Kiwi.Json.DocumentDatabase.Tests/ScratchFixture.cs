@@ -17,7 +17,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
 
             coll.EnsureIndex(new IndexDefinition()
             {
-                JsonPath = JSON.ParseJsonPath("$.B")
+                JsonPath = JsonConvert.ParseJsonPath("$.B")
             });
 
 
@@ -25,7 +25,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
             {
                 for (var i = 0; i < 100; ++i)
                 {
-                    session.Put(i.ToString(), JSON.ToJson(i));
+                    session.Put(i.ToString(), JsonConvert.ToJson(i));
                 }
                 session.Commit();
             }
@@ -51,9 +51,9 @@ namespace Kiwi.Json.DocumentDatabase.Tests
         [Test]
         public void GetQueryValues()
         {
-            var p = JSON.ParseJsonPath("$.B[*]");
+            var p = JsonConvert.ParseJsonPath("$.B[*]");
 
-            var j = JSON.ToJson(new {K = 1, B = new []{"two"}});
+            var j = JsonConvert.ToJson(new { K = 1, B = new[] { "two" } });
             var x = p.Evaluate(j).ToArray();
         }
 
@@ -72,7 +72,7 @@ namespace Kiwi.Json.DocumentDatabase.Tests
 
             coll.EnsureIndex(new IndexDefinition()
             {
-                JsonPath = JSON.ParseJsonPath("$.B")
+                JsonPath = JsonConvert.ParseJsonPath("$.B")
             });
 
             coll.Put("A", new { K = 1, B = "one" });
