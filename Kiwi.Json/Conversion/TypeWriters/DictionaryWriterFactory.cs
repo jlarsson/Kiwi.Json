@@ -8,7 +8,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class DictionaryWriterFactory: ITypeWriterFactory
     {
-        public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
+        public Func<ITypeWriter> CreateTypeWriter(Type type)
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
@@ -18,12 +18,12 @@ namespace Kiwi.Json.Conversion.TypeWriters
                         typeof(DictionaryWriter<>)
                         .MakeGenericType(@interface.GetGenericArguments()[1])
                         .GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[]{registry})
+                        Invoke(null, new object[]{})
                     select (Func<ITypeWriter>)factory
                    ).Concat(
                        from @interface in type.GetInterfaces()
                        where @interface == typeof(IDictionary)
-                       select DictionaryWriter.CreateTypeWriterFactory(registry)
+                       select DictionaryWriter.CreateTypeWriterFactory()
                 )
                 .FirstOrDefault();
         }

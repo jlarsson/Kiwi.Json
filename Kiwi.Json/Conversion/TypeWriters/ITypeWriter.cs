@@ -2,6 +2,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public interface ITypeWriter
     {
-        void Write(IJsonWriter writer, object value);
+        void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value);
     }
 }

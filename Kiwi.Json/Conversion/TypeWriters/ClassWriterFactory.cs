@@ -5,8 +5,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class ClassWriterFactory: ITypeWriterFactory
     {
-
-        public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
+        public Func<ITypeWriter> CreateTypeWriter(Type type)
         {
             if (type.IsClass)
             {
@@ -14,7 +13,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     (Func<ITypeWriter>)
                     typeof(ClassWriter<>).MakeGenericType(type).GetMethod("CreateTypeWriterFactory",
                                                                           BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[]{registry});
+                        Invoke(null, new object[]{});
             }
             return null;
         }

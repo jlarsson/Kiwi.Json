@@ -2,14 +2,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class SystemObjectWriter: ITypeWriter
     {
-        private readonly ITypeWriterRegistry _registry;
-
-        public SystemObjectWriter(ITypeWriterRegistry registry)
-        {
-            _registry = registry;
-        }
-
-        public void Write(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
         {
             if (value == null)
             {
@@ -17,7 +10,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
             }
             else if (value.GetType() != typeof(object))
             {
-                _registry.GetTypeWriterForValue(value).Write(writer, value);
+                registry.Write(writer, value);
             }
             else
             {

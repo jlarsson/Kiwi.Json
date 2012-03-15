@@ -80,6 +80,7 @@
     <Compile Include="Conversion\TypeWriters\StructWriterFactory.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriter.cs" />
     <Compile Include="Conversion\TypeWriters\SystemObjectWriterFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\TypeWriterRegistryExtensions.cs" />
     <Compile Include="JPath\Evaluators\AnyMemberEvaluator.cs" />
     <Compile Include="JPath\Evaluators\MatchAllRecursiveEvaluator.cs" />
     <Compile Include="JPath\Evaluators\MatchObjectRecursiveEvaluator.cs" />

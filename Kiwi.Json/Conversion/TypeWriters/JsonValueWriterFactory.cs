@@ -5,7 +5,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class JsonValueWriterFactory : ITypeWriterFactory
     {
-        public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
+        public Func<ITypeWriter> CreateTypeWriter(Type type)
         {
             if (typeof(IJsonValue).IsAssignableFrom(type))
             {

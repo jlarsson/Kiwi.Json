@@ -6,16 +6,9 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class DictionaryWriter<TValue> : ITypeWriter
     {
-        private ITypeWriterRegistry _registry;
-
-        private DictionaryWriter(ITypeWriterRegistry registry)
-        {
-            _registry = registry;
-        }
-
         #region ITypeWriter Members
 
-        public void Write(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
         {
             var dictionary = value as IDictionary<string, TValue>;
             if (dictionary == null)
@@ -34,8 +27,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     }
                     writer.WriteMember(kv.Key);
 
-                    var valueWriter = _registry.GetTypeWriterForValue(kv.Value);
-                    valueWriter.Write(writer, kv.Value);
+                    registry.Write(writer, kv.Value);
                 }
                 writer.WriteObjectEnd(index);
             }
@@ -43,24 +35,17 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
+        public static Func<ITypeWriter> CreateTypeWriterFactory()
         {
-            return () => new DictionaryWriter<TValue>(registry);
+            return () => new DictionaryWriter<TValue>();
         }
     }
 
     public class DictionaryWriter : ITypeWriter
     {
-        private ITypeWriterRegistry _registry;
-
-        private DictionaryWriter(ITypeWriterRegistry registry)
-        {
-            _registry = registry;
-        }
-
         #region ITypeWriter Members
 
-        public void Write(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
         {
             var dictionary = value as IDictionary;
             if (dictionary == null)
@@ -81,8 +66,8 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     writer.WriteMember(key == null ? "" : key.ToString());
 
                     var v = dictionary[key];
-                    var valueWriter = _registry.GetTypeWriterForValue(v);
-                    valueWriter.Write(writer, v);
+
+                    registry.Write(writer, v);
                 }
                 writer.WriteObjectEnd(index);
             }
@@ -90,9 +75,9 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
+        public static Func<ITypeWriter> CreateTypeWriterFactory()
         {
-            return () => new DictionaryWriter(registry);
+            return () => new DictionaryWriter();
         }
     }
 }

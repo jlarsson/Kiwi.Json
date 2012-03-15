@@ -9,17 +9,15 @@ namespace Kiwi.Json.Conversion.TypeWriters
     public class StructWriter<TStruct> : ITypeWriter where TStruct : struct
     {
         private readonly List<StructMember> _members;
-        private readonly ITypeWriterRegistry _registry;
 
-        private StructWriter(ITypeWriterRegistry registry, List<StructMember> members)
+        private StructWriter(List<StructMember> members)
         {
-            _registry = registry;
             _members = members;
         }
 
         #region ITypeWriter Members
 
-        public void Write(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
         {
             writer.WriteObjectStart();
 
@@ -33,15 +31,15 @@ namespace Kiwi.Json.Conversion.TypeWriters
                 writer.WriteMember(member.Name);
 
                 var memberValue = member.Getter.GetMemberValue(value);
-                var memberWriter = _registry.GetTypeWriterForValue(memberValue);
-                memberWriter.Write(writer, memberValue);
+
+                registry.Write(writer, memberValue);
             }
             writer.WriteObjectEnd(index);
         }
 
         #endregion
 
-        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
+        public static Func<ITypeWriter> CreateTypeWriterFactory()
         {
             var members =
                 from field in
@@ -53,7 +51,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                                Getter = new FieldGetter(field)
                            };
 
-            var writer = new StructWriter<TStruct>(registry, members.ToList());
+            var writer = new StructWriter<TStruct>(members.ToList());
 
             return () => writer;
         }

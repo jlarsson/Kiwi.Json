@@ -7,7 +7,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
+        public Func<ITypeWriter> CreateTypeWriter(Type type)
         {
             if (type.IsValueType && !type.IsPrimitive && !type.IsEnum)
             {
@@ -15,7 +15,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     (Func<ITypeWriter>)
                     typeof (StructWriter<>).MakeGenericType(type).GetMethod("CreateTypeWriterFactory",
                                                                             BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[] {registry});
+                        Invoke(null, new object[] {});
             }
             return null;
         }

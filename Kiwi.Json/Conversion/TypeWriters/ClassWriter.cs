@@ -8,7 +8,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class ClassWriter<T> : ITypeWriter where T : class
     {
-        private readonly ITypeWriterRegistry _registry;
         private readonly List<ClassMember> _members;
 
         protected class ClassMember
@@ -17,15 +16,14 @@ namespace Kiwi.Json.Conversion.TypeWriters
             public IMemberGetter Getter { get; set; }
         }
 
-        protected ClassWriter(ITypeWriterRegistry registry, List<ClassMember> members)
+        protected ClassWriter(List<ClassMember> members)
         {
-            _registry = registry;
             _members = members;
         }
 
         #region ITypeWriter Members
 
-        public void Write(IJsonWriter writer, object value)
+        public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
         {
             var instance = value as T;
             if (instance == null)
@@ -44,15 +42,15 @@ namespace Kiwi.Json.Conversion.TypeWriters
                 writer.WriteMember(member.Name);
 
                 var memberValue = member.Getter.GetMemberValue(instance);
-                var memberWriter = _registry.GetTypeWriterForValue(memberValue);
-                memberWriter.Write(writer, memberValue);
+
+                registry.Write(writer, memberValue);
             }
             writer.WriteObjectEnd(index);
         }
 
         #endregion
 
-        public static Func<ITypeWriter> CreateTypeWriterFactory(ITypeWriterRegistry registry)
+        public static Func<ITypeWriter> CreateTypeWriterFactory()
         {
             var members = (
                               from property in
@@ -79,7 +77,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                 );
 
 
-            return () => new ClassWriter<T>(registry, members.ToList());
+            return () => new ClassWriter<T>(members.ToList());
         }
     }
 }

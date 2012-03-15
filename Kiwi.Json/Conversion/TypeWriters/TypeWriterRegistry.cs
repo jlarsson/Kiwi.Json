@@ -42,7 +42,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         private ITypeWriter CreateTypeSerializerForType(Type type)
         {
-            var creator = _factories.Select(f => f.CreateTypeWriter(type, this)).FirstOrDefault(f => f != null);
+            var creator = _factories.Select(f => f.CreateTypeWriter(type)).FirstOrDefault(f => f != null);
             return creator == null ? null : creator();
         }
 
@@ -52,7 +52,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
         {
             #region ITypeWriter Members
 
-            public void Write(IJsonWriter writer, object value)
+            public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
             {
                 writer.WriteNull();
             }

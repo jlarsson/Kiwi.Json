@@ -48,7 +48,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type, ITypeWriterRegistry registry)
+        public Func<ITypeWriter> CreateTypeWriter(Type type)
         {
             Func<ITypeWriter> factory;
             return BuiltinSerializers.TryGetValue(type, out factory) ? factory : null;
@@ -93,7 +93,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
             #region ITypeWriter Members
 
-            public void Write(IJsonWriter writer, object value)
+            public void Write(IJsonWriter writer, ITypeWriterRegistry registry, object value)
             {
                 if (value == null)
                 {
