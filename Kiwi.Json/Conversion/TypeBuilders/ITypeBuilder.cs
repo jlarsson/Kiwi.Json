@@ -4,14 +4,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public interface ITypeBuilder
     {
-        IObjectBuilder CreateObjectBuilder();
-        IArrayBuilder CreateArrayBuilder();
+        IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry);
+        IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry);
 
-        object CreateString(string value);
-        object CreateNumber(long value);
-        object CreateNumber(double value);
-        object CreateBool(bool value);
-        object CreateDateTime(DateTime value, object sourceValue);
-        object CreateNull();
+        object CreateString(ITypeBuilderRegistry registry, string value);
+        object CreateNumber(ITypeBuilderRegistry registry, long value);
+        object CreateNumber(ITypeBuilderRegistry registry, double value);
+        object CreateBool(ITypeBuilderRegistry registry, bool value);
+        object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue);
+        object CreateNull(ITypeBuilderRegistry registry);
     }
 }

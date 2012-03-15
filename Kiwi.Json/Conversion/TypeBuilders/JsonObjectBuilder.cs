@@ -6,7 +6,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region IObjectBuilder Members
 
-        public object CreateNewObject(object instanceState)
+        public object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             if (instanceState is IJsonObject)
             {
@@ -26,7 +26,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public ITypeBuilder GetMemberBuilder(string memberName)
+        public ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             return this;
         }

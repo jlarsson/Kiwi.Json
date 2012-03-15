@@ -119,65 +119,65 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             public Func<DateTime, object> DateTime { private get; set; }
             public Func<object> Null { private get; set; }
 
-            public override object CreateNull()
+            public override object CreateNull(ITypeBuilderRegistry registry)
             {
                 if (Null != null)
                 {
                     return Null();
                 }
-                return base.CreateNull();
+                return base.CreateNull(registry);
             }
 
-            public override object CreateString(string value)
+            public override object CreateString(ITypeBuilderRegistry registry, string value)
             {
                 if (String != null)
                 {
                     return String(value);
                 }
-                return base.CreateString(value);
+                return base.CreateString(registry, value);
             }
 
-            public override object CreateNumber(long value)
+            public override object CreateNumber(ITypeBuilderRegistry registry, long value)
             {
                 if (Long != null)
                 {
                     return Long(value);
                 }
-                return base.CreateNumber(value);
+                return base.CreateNumber(registry, value);
             }
 
-            public override object CreateNumber(double value)
+            public override object CreateNumber(ITypeBuilderRegistry registry, double value)
             {
                 if (Double != null)
                 {
                     return Double(value);
                 }
-                return base.CreateNumber(value);
+                return base.CreateNumber(registry, value);
             }
 
-            public override object CreateBool(bool value)
+            public override object CreateBool(ITypeBuilderRegistry registry, bool value)
             {
                 if (Bool != null)
                 {
                     return Bool(value);
                 }
 
-                return base.CreateBool(value);
+                return base.CreateBool(registry, value);
             }
 
-            public override object CreateDateTime(DateTime value, object sourceValue)
+            public override object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
             {
                 if (DateTime != null)
                 {
                     return DateTime(value);
                 }
-                return base.CreateDateTime(value, sourceValue);
+                return base.CreateDateTime(registry, value, sourceValue);
             }
         }
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
-            var factory = default(Func<ITypeBuilder>);
+            Func<ITypeBuilder> factory;
             return BuiltinTypeBuilders.TryGetValue(type, out factory) ? factory : null;
         }
     }

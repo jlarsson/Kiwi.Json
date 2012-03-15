@@ -6,12 +6,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region IArrayBuilder Members
 
-        public object CreateNewArray(object instanceState)
+        public object CreateNewArray(ITypeBuilderRegistry registry, object instanceState)
         {
             return new JsonArray();
         }
 
-        public ITypeBuilder GetElementBuilder()
+        public ITypeBuilder GetElementBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }

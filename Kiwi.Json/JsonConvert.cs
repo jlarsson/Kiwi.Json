@@ -26,12 +26,14 @@ namespace Kiwi.Json
 
         public static T ToObject<T>(this IJsonValue value)
         {
-            return (T) value.Visit(new ConvertJsonToCustom(TypeBuilderRegistry.GetTypeBuilder<T>()));
+            var registry = TypeBuilderRegistry;
+            return (T) value.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder<T>()));
         }
         
         public static IJsonValue MergeWith(this IJsonValue value, IJsonValue mergeWith)
         {
-            mergeWith.Visit(new ConvertJsonToCustom(TypeBuilderRegistry.GetTypeBuilder(value.GetType())){InstanceState = value});
+            var registry = TypeBuilderRegistry;
+            mergeWith.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder(value.GetType())){InstanceState = value});
             return value;
         }
 
@@ -53,7 +55,7 @@ namespace Kiwi.Json
 
         public static T Read<T>(IJsonReader reader, T initializedInstance)
         {
-            return (T)reader.Parse(TypeBuilderRegistry.GetTypeBuilder<T>(), initializedInstance);
+            return TypeBuilderRegistry.Read<T>(reader, initializedInstance);
         }
 
         public static T Read<T>(string json)
@@ -63,7 +65,7 @@ namespace Kiwi.Json
 
         public static T Read<T>(string json, T initializedInstance)
         {
-            return (T)new JsonStringReader(json).Parse(TypeBuilderRegistry.GetTypeBuilder<T>(), initializedInstance);
+            return TypeBuilderRegistry.Read<T>(new JsonStringReader(json), initializedInstance);
         }
 
         public static string Write(object obj)

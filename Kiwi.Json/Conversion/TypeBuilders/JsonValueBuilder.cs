@@ -7,37 +7,37 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObjectBuilder()
+        public IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return new JsonObjectBuilder();
         }
 
-        public IArrayBuilder CreateArrayBuilder()
+        public IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
             return new JsonArrayBuilder();
         }
 
-        public object CreateString(string value)
+        public object CreateString(ITypeBuilderRegistry registry, string value)
         {
             return new JsonString(value);
         }
 
-        public object CreateNumber(long value)
+        public object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
             return new JsonInteger(value);
         }
 
-        public object CreateNumber(double value)
+        public object CreateNumber(ITypeBuilderRegistry registry, double value)
         {
             return new JsonDouble(value);
         }
 
-        public object CreateBool(bool value)
+        public object CreateBool(ITypeBuilderRegistry registry, bool value)
         {
             return new JsonBool(value);
         }
 
-        public object CreateDateTime(DateTime value, object sourceValue)
+        public object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
         {
             if (sourceValue is string)
             {
@@ -46,7 +46,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return new JsonDate(value);
         }
 
-        public object CreateNull()
+        public object CreateNull(ITypeBuilderRegistry registry)
         {
             return new JsonNull();
         }

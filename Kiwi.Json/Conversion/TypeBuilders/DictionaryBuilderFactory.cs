@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class DictionaryBuilderFactory: ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
             // Check which IDictionary<string,T> is implemented
             var kvTypes = (from @interface in new[] {type}.Concat(type.GetInterfaces())
@@ -38,16 +37,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 return null;
             }
 
-            //if (constructor == null)
-            //{
-            //    return () => new ClassWithoutDefaultConstructorBuilder(type);
-            //}
-
             return
                 (Func<ITypeBuilder>)
                 typeof(DictionaryBuilder<,>).MakeGenericType(concreteClass, kvTypes.ValueType).GetMethod("CreateTypeBuilderFactory",
                                                                                                  BindingFlags.Static | BindingFlags.Public).
-                    Invoke(null, new object[]{registry});
+                    Invoke(null, new object[]{});
         }
     }
 }

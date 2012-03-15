@@ -7,7 +7,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     public class UntypedListBuilderFactory: ITypeBuilderFactory
     {
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
             // Check if ICollection or IEnumerable is supported by type
             var interfaceType = typeof (IList).IsAssignableFrom(type) ? typeof (IList) : typeof(IEnumerable).IsAssignableFrom(type) ? typeof(IEnumerable) : null;
@@ -35,7 +35,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return
                 (Func<ITypeBuilder>)
                 typeof(UntypedListBuilder<>).MakeGenericType(listType).GetMethod(
-                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] { registry });
+                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[] {});
         }
     }
 }

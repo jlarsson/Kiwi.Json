@@ -4,23 +4,23 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class EnumBuilder<TEnum> : AbstractTypeBuilder where TEnum : struct
     {
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
         {
             var builder = new EnumBuilder<TEnum>();
             return () => builder;
         }
 
-        public override object CreateString(string value)
+        public override object CreateString(ITypeBuilderRegistry registry, string value)
         {
             TEnum @enum;
             if (Enum.TryParse(value, false, out @enum))
             {
                 return @enum;
             }
-            return base.CreateString(value);
+            return base.CreateString(registry, value);
         }
 
-        public override object CreateNumber(long value)
+        public override object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
             var @enum = Enum.ToObject(typeof (TEnum), value);
             return (TEnum) @enum;

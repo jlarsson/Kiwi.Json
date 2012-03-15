@@ -8,12 +8,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
-        public object CreateNewArray(object instanceState)
+        public object CreateNewArray(ITypeBuilderRegistry registry, object instanceState)
         {
             return null;
         }
 
-        public ITypeBuilder GetElementBuilder()
+        public ITypeBuilder GetElementBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }
@@ -31,7 +31,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public object CreateNewObject(object instanceState)
+        public object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             return null;
         }
@@ -41,7 +41,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public ITypeBuilder GetMemberBuilder(string memberName)
+        public ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             return this;
         }
@@ -59,42 +59,42 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObjectBuilder()
+        public IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }
 
-        public IArrayBuilder CreateArrayBuilder()
+        public IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }
 
-        public object CreateString(string value)
+        public object CreateString(ITypeBuilderRegistry registry, string value)
         {
             return null;
         }
 
-        public object CreateNumber(long value)
+        public object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
             return null;
         }
 
-        public object CreateNumber(double value)
+        public object CreateNumber(ITypeBuilderRegistry registry, double value)
         {
             return null;
         }
 
-        public object CreateBool(bool value)
+        public object CreateBool(ITypeBuilderRegistry registry, bool value)
         {
             return null;
         }
 
-        public object CreateDateTime(DateTime value, object sourceValue)
+        public object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
         {
             return null;
         }
 
-        public object CreateNull()
+        public object CreateNull(ITypeBuilderRegistry registry)
         {
             return null;
         }

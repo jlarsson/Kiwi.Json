@@ -5,10 +5,12 @@ namespace Kiwi.Json.Conversion
 {
     public class ConvertJsonToCustom : IJsonValueVisitor<object>
     {
+        private readonly ITypeBuilderRegistry _registry;
         private readonly ITypeBuilder _typeBuilder;
 
-        public ConvertJsonToCustom(ITypeBuilder typeBuilder)
+        public ConvertJsonToCustom(ITypeBuilderRegistry registry, ITypeBuilder typeBuilder)
         {
+            _registry = registry;
             _typeBuilder = typeBuilder;
         }
 
@@ -18,49 +20,49 @@ namespace Kiwi.Json.Conversion
 
         public object VisitArray(IJsonArray value)
         {
-            var arrayBuilder = _typeBuilder.CreateArrayBuilder();
-            var array = arrayBuilder.CreateNewArray(InstanceState);
+            var arrayBuilder = _typeBuilder.CreateArrayBuilder(_registry);
+            var array = arrayBuilder.CreateNewArray(_registry, InstanceState);
             foreach (var element in value)
             {
-                arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(arrayBuilder.GetElementBuilder())));
+                arrayBuilder.AddElement(array, element.Visit(new ConvertJsonToCustom(_registry, arrayBuilder.GetElementBuilder(_registry))));
             }
             return arrayBuilder.GetArray(array);
         }
 
         public object VisitBool(IJsonBool value)
         {
-            return _typeBuilder.CreateBool(value.Value);
+            return _typeBuilder.CreateBool(_registry, value.Value);
         }
 
         public object VisitDate(IJsonDate value)
         {
-            return _typeBuilder.CreateDateTime(value.Value, null);
+            return _typeBuilder.CreateDateTime(_registry, value.Value, null);
         }
 
         public object VisitDouble(IJsonDouble value)
         {
-            return _typeBuilder.CreateNumber(value.Value);
+            return _typeBuilder.CreateNumber(_registry, value.Value);
         }
 
         public object VisitInteger(IJsonInteger value)
         {
-            return _typeBuilder.CreateNumber(value.Value);
+            return _typeBuilder.CreateNumber(_registry, value.Value);
         }
 
         public object VisitNull(IJsonNull value)
         {
-            return _typeBuilder.CreateNull();
+            return _typeBuilder.CreateNull(_registry);
         }
 
         public object VisitObject(IJsonObject value)
         {
-            var objectBuilder = _typeBuilder.CreateObjectBuilder();
-            var @object = objectBuilder.CreateNewObject(InstanceState);
+            var objectBuilder = _typeBuilder.CreateObjectBuilder(_registry);
+            var @object = objectBuilder.CreateNewObject(_registry, InstanceState);
             foreach (var kv in value)
             {
                 var memberState = objectBuilder.GetMemberState(kv.Key, @object);
                 objectBuilder.SetMember(kv.Key, @object,
-                                        kv.Value.Visit(new ConvertJsonToCustom(objectBuilder.GetMemberBuilder(kv.Key))
+                                        kv.Value.Visit(new ConvertJsonToCustom(_registry, objectBuilder.GetMemberBuilder(_registry, kv.Key))
                                                            {InstanceState = memberState}));
             }
             return objectBuilder.GetObject(@object);
@@ -68,7 +70,7 @@ namespace Kiwi.Json.Conversion
 
         public object VisitString(IJsonString value)
         {
-            return _typeBuilder.CreateString(value.Value);
+            return _typeBuilder.CreateString(_registry, value.Value);
         }
 
         #endregion

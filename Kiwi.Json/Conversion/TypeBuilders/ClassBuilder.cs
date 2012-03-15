@@ -8,10 +8,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass: class // where TClass : new()
     {
-        private readonly Lazy<Dictionary<string, ClassMember>> _memberSetters;
+        private readonly Dictionary<string, ClassMember> _memberSetters;
         private readonly IClassActivator _activator;
 
-        private ClassBuilder(Lazy<Dictionary<string, ClassMember>> memberSetters, IClassActivator activator)
+        private ClassBuilder(Dictionary<string, ClassMember> memberSetters, IClassActivator activator)
         {
             _memberSetters = memberSetters;
             _activator = activator;
@@ -19,17 +19,17 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public override IObjectBuilder CreateObjectBuilder()
+        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }
 
-        public override object CreateNull()
+        public override object CreateNull(ITypeBuilderRegistry registry)
         {
             return null;
         }
 
-        public override object CreateNewObject(object instanceState)
+        public override object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             if (instanceState is TClass)
             {
@@ -41,19 +41,19 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override object GetMemberState(string memberName, object @object)
         {
             ClassMember member;
-            if (_memberSetters.Value.TryGetValue(memberName, out member))
+            if (_memberSetters.TryGetValue(memberName, out member))
             {
                 return member.Getter.GetMemberValue(@object);
             }
             return null;
         }
 
-        public override ITypeBuilder GetMemberBuilder(string memberName)
+        public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             ClassMember member;
-            if (_memberSetters.Value.TryGetValue(memberName, out member))
+            if (_memberSetters.TryGetValue(memberName, out member))
             {
-                return member.MemberBuilder;
+                return registry.GetTypeBuilder(member.Type);
             }
             return NothingBuilder.Instance;
         }
@@ -61,7 +61,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override void SetMember(string memberName, object @object, object value)
         {
             ClassMember member;
-            if (_memberSetters.Value.TryGetValue(memberName, out member))
+            if (_memberSetters.TryGetValue(memberName, out member))
             {
                 member.Setter.SetValue(@object, value);
             }
@@ -74,9 +74,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
         {
-            var memberSetters = new Lazy<Dictionary<string, ClassMember>>(() => (from property in
+            var memberSetters = (from property in
                                      typeof (TClass).GetProperties(
                                          BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.Public |
                                          BindingFlags.Instance)
@@ -85,9 +85,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                                  select new ClassMember
                                             {
                                                 Name = property.Name,
+                                                Type = property.PropertyType,
                                                 Getter = new PropertyGetter(property),
                                                 Setter = new PropertySetter(property),
-                                                MemberBuilder = registry.GetTypeBuilder(property.PropertyType)
                                             })
                 .Union(
                     from field in
@@ -96,11 +96,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                     select new ClassMember
                                {
                                    Name = field.Name,
+                                   Type = field.FieldType,
                                    Getter = new FieldGetter(field),
                                    Setter = new FieldSetter(field),
-                                   MemberBuilder = registry.GetTypeBuilder(field.FieldType)
                                })
-                .ToDictionary(m => m.Name, m => m));
+                .ToDictionary(m => m.Name, m => m);
 
             var classBuilder = new ClassBuilder<TClass>(memberSetters, ClassActivator.Create(typeof(TClass)));
             return () => classBuilder;
@@ -111,9 +111,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private class ClassMember
         {
             public string Name { get; set; }
+            public Type Type { get; set; }
             public IMemberGetter Getter { get; set; }
             public IMemberSetter Setter { get; set; }
-            public ITypeBuilder MemberBuilder { get; set; }
         }
 
         #endregion

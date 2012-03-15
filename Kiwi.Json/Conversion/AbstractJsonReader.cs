@@ -25,7 +25,7 @@ namespace Kiwi.Json.Conversion
             return Peek() == char.MinValue;
         }
 
-        public object Parse(ITypeBuilder builder, object instanceState)
+        public object Parse(ITypeBuilderRegistry registry, ITypeBuilder builder, object instanceState)
         {
             SkipWhitespace();
 
@@ -33,21 +33,21 @@ namespace Kiwi.Json.Conversion
             switch (c)
             {
                 case '{':
-                    return ParseObject(builder, instanceState);
+                    return ParseObject(registry, builder, instanceState);
                 case '[':
-                    return ParserArray(builder, instanceState);
+                    return ParserArray(registry, builder, instanceState);
                 case '\"':
-                    return ParseString(builder);
+                    return ParseString(registry, builder);
                 case 't':
-                    return ParseTrue(builder);
+                    return ParseTrue(registry, builder);
                 case 'f':
-                    return ParseFalse(builder);
+                    return ParseFalse(registry, builder);
                 case 'n':
-                    return ParseNull(builder);
+                    return ParseNull(registry, builder);
                 default:
                     if (char.IsDigit((char) c) || (c == '-'))
                     {
-                        return ParseNumber(builder);
+                        return ParseNumber(registry, builder);
                     }
                     break;
             }
@@ -69,7 +69,7 @@ namespace Kiwi.Json.Conversion
          * zero = %x30                ; 0
          */
 
-        private object ParseNumber(ITypeBuilder builder)
+        private object ParseNumber(ITypeBuilderRegistry registry, ITypeBuilder builder)
         {
             var startLine = Line;
             var startColumn = Column;
@@ -96,7 +96,7 @@ namespace Kiwi.Json.Conversion
                 {
                     throw CreateExpectedNumberException(startLine, startColumn);
                 }
-                return builder.CreateNumber(intValue);
+                return builder.CreateNumber(registry, intValue);
             }
 
             sb.Append(Next());
@@ -139,25 +139,25 @@ namespace Kiwi.Json.Conversion
             {
                 throw CreateExpectedNumberException(startLine, startColumn);
             }
-            return builder.CreateNumber(doubleValue);
+            return builder.CreateNumber(registry, doubleValue);
         }
 
-        protected object ParseFalse(ITypeBuilder builder)
+        protected object ParseFalse(ITypeBuilderRegistry registry, ITypeBuilder builder)
         {
             Match("false");
-            return builder.CreateBool(false);
+            return builder.CreateBool(registry, false);
         }
 
-        protected object ParseTrue(ITypeBuilder builder)
+        protected object ParseTrue(ITypeBuilderRegistry registry, ITypeBuilder builder)
         {
             Match("true");
-            return builder.CreateBool(true);
+            return builder.CreateBool(registry, true);
         }
 
-        protected object ParseNull(ITypeBuilder builder)
+        protected object ParseNull(ITypeBuilderRegistry registry, ITypeBuilder builder)
         {
             Match("null");
-            return builder.CreateNull();
+            return builder.CreateNull(registry);
         }
 
         protected string ParseString()
@@ -256,24 +256,24 @@ namespace Kiwi.Json.Conversion
             throw CreateException("Bad Hex character at ({0},{1})", Line, Column);
         }
 
-        protected object ParseString(ITypeBuilder builder)
+        protected object ParseString(ITypeBuilderRegistry registry, ITypeBuilder builder)
         {
             var s = ParseString();
 
             var dt = JsonFormats.TryParseDateTime(s);
-            return dt.HasValue ? builder.CreateDateTime(dt.Value, s) : builder.CreateString(s);
+            return dt.HasValue ? builder.CreateDateTime(registry, dt.Value, s) : builder.CreateString(registry, s);
         }
 
-        protected object ParserArray(ITypeBuilder builder, object instanceState)
+        protected object ParserArray(ITypeBuilderRegistry registry, ITypeBuilder builder, object instanceState)
         {
             Match('[');
             SkipWhitespace();
-            var arrayBuilder = builder.CreateArrayBuilder();
-            var array = arrayBuilder.CreateNewArray(instanceState);
+            var arrayBuilder = builder.CreateArrayBuilder(registry);
+            var array = arrayBuilder.CreateNewArray(registry, instanceState);
 
             while (Peek() != ']')
             {
-                arrayBuilder.AddElement(array, Parse(arrayBuilder.GetElementBuilder(), null));
+                arrayBuilder.AddElement(array, Parse(registry, arrayBuilder.GetElementBuilder(registry), null));
                 SkipWhitespace();
 
                 if (!TryMatch(','))
@@ -287,13 +287,13 @@ namespace Kiwi.Json.Conversion
             return arrayBuilder.GetArray(array);
         }
 
-        protected object ParseObject(ITypeBuilder builder, object instanceState)
+        protected object ParseObject(ITypeBuilderRegistry registry, ITypeBuilder builder, object instanceState)
         {
             Match('{');
             SkipWhitespace();
 
-            var objectBuilder = builder.CreateObjectBuilder();
-            var @object = objectBuilder.CreateNewObject(instanceState);
+            var objectBuilder = builder.CreateObjectBuilder(registry);
+            var @object = objectBuilder.CreateNewObject(registry, instanceState);
 
             while (Peek() != '}')
             {
@@ -303,7 +303,7 @@ namespace Kiwi.Json.Conversion
 
                 var memberState = objectBuilder.GetMemberState(memberName, @object);
                 objectBuilder.SetMember(memberName, @object,
-                                        Parse(objectBuilder.GetMemberBuilder(memberName), memberState));
+                                        Parse(registry, objectBuilder.GetMemberBuilder(registry, memberName), memberState));
 
                 SkipWhitespace();
 

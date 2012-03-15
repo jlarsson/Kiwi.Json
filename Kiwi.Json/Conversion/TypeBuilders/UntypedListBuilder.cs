@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
+using System.Collections;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class CollectionBuilder<TCollection, TElem> : AbstractTypeBuilder, IArrayBuilder where TCollection : class, ICollection<TElem>, new()
+    public class UntypedListBuilder<TCollection>: AbstractTypeBuilder, IArrayBuilder where TCollection: class, IList, new ()
     {
         public override IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
@@ -21,7 +21,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             if (instanceState is TCollection)
             {
-                (instanceState as TCollection).Clear();
                 return instanceState;
             }
             return new TCollection();
@@ -29,12 +28,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override ITypeBuilder GetElementBuilder(ITypeBuilderRegistry registry)
         {
-            return registry.GetTypeBuilder<TElem>();
+            return registry.GetTypeBuilder<object>();
         }
 
         public override void AddElement(object array, object element)
         {
-            ((TCollection)array).Add((TElem) element);
+            ((TCollection)array).Add(element);
         }
 
         public override object GetArray(object array)
@@ -46,7 +45,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public static Func<ITypeBuilder> CreateTypeBuilderFactory()
         {
-            var builder = new CollectionBuilder<TCollection, TElem>();
+            var builder = new UntypedListBuilder<TCollection>();
 
             return () => builder;
         }

@@ -7,23 +7,21 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder, IObjectBuilder
         where TDictionary : class, IDictionary<string, TValue>//, new()
     {
-        private readonly ITypeBuilder _memberBuilder;
         private readonly IClassActivator _activator;
 
-        public DictionaryBuilder(ITypeBuilder memberBuilder, IClassActivator activator)
+        public DictionaryBuilder(IClassActivator activator)
         {
-            _memberBuilder = memberBuilder;
             _activator = activator;
         }
 
         #region IObjectBuilder Members
 
-        public override IObjectBuilder CreateObjectBuilder()
+        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return this;
         }
 
-        public override object CreateNewObject(object instanceState)
+        public override object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             if (instanceState is TDictionary)
             {
@@ -46,9 +44,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public override ITypeBuilder GetMemberBuilder(string memberName)
+        public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
-            return _memberBuilder;
+            return registry.GetTypeBuilder<TValue>();
         }
 
         public override void SetMember(string memberName, object @object, object value)
@@ -63,13 +61,13 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
         {
-            var builder = new DictionaryBuilder<TDictionary, TValue>(registry.GetTypeBuilder<TValue>(), ClassActivator.Create(typeof(TDictionary)));
+            var builder = new DictionaryBuilder<TDictionary, TValue>(ClassActivator.Create(typeof(TDictionary)));
             return () => builder;
         }
 
-        public override object CreateNull()
+        public override object CreateNull(ITypeBuilderRegistry registry)
         {
             return null;
         }

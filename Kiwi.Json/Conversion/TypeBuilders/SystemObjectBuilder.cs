@@ -11,48 +11,48 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public SystemObjectBuilder()
         {
-            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(this, new ClassActivator<Dictionary<string, object>>());
-            _arrayBuilder = new CollectionBuilder<List<object>, object>(this);
+            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>(new ClassActivator<Dictionary<string, object>>());
+            _arrayBuilder = new CollectionBuilder<List<object>, object>();
         }
 
         #region ITypeBuilder Members
 
-        public IObjectBuilder CreateObjectBuilder()
+        public IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             return _dictionaryBuilder;
         }
 
-        public IArrayBuilder CreateArrayBuilder()
+        public IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
             return _arrayBuilder;
         }
 
-        public object CreateString(string value)
+        public object CreateString(ITypeBuilderRegistry registry, string value)
         {
             return value;
         }
 
-        public object CreateNumber(long value)
+        public object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
             return (int)value;
         }
 
-        public object CreateNumber(double value)
+        public object CreateNumber(ITypeBuilderRegistry registry, double value)
         {
             return value;
         }
 
-        public object CreateBool(bool value)
+        public object CreateBool(ITypeBuilderRegistry registry, bool value)
         {
             return value;
         }
 
-        public object CreateDateTime(DateTime value, object sourceValue)
+        public object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
         {
             return value;
         }
 
-        public object CreateNull()
+        public object CreateNull(ITypeBuilderRegistry registry)
         {
             return null;
         }

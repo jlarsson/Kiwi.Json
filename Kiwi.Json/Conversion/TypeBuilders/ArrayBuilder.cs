@@ -5,14 +5,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class ArrayBuilder<TElem> : CollectionBuilder<List<TElem>, TElem>
     {
-        public ArrayBuilder(ITypeBuilder elementBuilder)
-            : base(elementBuilder)
+        public new static Func<ITypeBuilder> CreateTypeBuilderFactory()
         {
-        }
-
-        public new static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
-        {
-            var arrayBuilder = new ArrayBuilder<TElem>(registry.GetTypeBuilder<TElem>());
+            var arrayBuilder = new ArrayBuilder<TElem>();
             return () => arrayBuilder;
 
         }

@@ -7,22 +7,15 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region ITypeBuilderFactory Members
 
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
             if (type.IsClass)
             {
-                //var constructor = type.GetConstructor(Type.EmptyTypes);
-
-                //if (constructor == null)
-                //{
-                //    return () => new ClassWithoutDefaultConstructorBuilder(type);
-                //}
-
                 return
                     (Func<ITypeBuilder>)
                     typeof (ClassBuilder<>).MakeGenericType(type).GetMethod("CreateTypeBuilderFactory",
                                                                             BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[] {registry});
+                        Invoke(null, new object[] {});
             }
             return null;
         }

@@ -6,42 +6,42 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     {
         #region ITypeBuilder Members
 
-        public virtual IObjectBuilder CreateObjectBuilder()
+        public virtual IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
             throw CreateInvalidTypeException("object");
         }
 
-        public virtual IArrayBuilder CreateArrayBuilder()
+        public virtual IArrayBuilder CreateArrayBuilder(ITypeBuilderRegistry registry)
         {
             throw CreateInvalidTypeException("array");
         }
 
-        public virtual object CreateString(string value)
+        public virtual object CreateString(ITypeBuilderRegistry registry, string value)
         {
             throw CreateInvalidTypeException("string");
         }
 
-        public virtual object CreateNumber(long value)
+        public virtual object CreateNumber(ITypeBuilderRegistry registry, long value)
         {
             throw CreateInvalidTypeException("integer");
         }
 
-        public virtual object CreateNumber(double value)
+        public virtual object CreateNumber(ITypeBuilderRegistry registry, double value)
         {
             throw CreateInvalidTypeException("floating point number");
         }
 
-        public virtual object CreateBool(bool value)
+        public virtual object CreateBool(ITypeBuilderRegistry registry, bool value)
         {
             throw CreateInvalidTypeException("boolean");
         }
 
-        public virtual object CreateDateTime(DateTime value, object sourceValue)
+        public virtual object CreateDateTime(ITypeBuilderRegistry registry, DateTime value, object sourceValue)
         {
             throw CreateInvalidTypeException("date");
         }
 
-        public virtual object CreateNull()
+        public virtual object CreateNull(ITypeBuilderRegistry registry)
         {
             throw CreateInvalidTypeException("null");
         }
@@ -50,12 +50,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IArrayBuilder Members
 
-        public virtual object CreateNewArray(object instanceState)
+        public virtual object CreateNewArray(ITypeBuilderRegistry registry, object instanceState)
         {
             throw CreateInvalidCallException("new array");
         }
 
-        public virtual ITypeBuilder GetElementBuilder()
+        public virtual ITypeBuilder GetElementBuilder(ITypeBuilderRegistry registry)
         {
             throw CreateInvalidCallException("array element");
         }
@@ -74,7 +74,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public virtual object CreateNewObject(object instanceState)
+        public virtual object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             throw CreateInvalidCallException("new object");
         }
@@ -84,7 +84,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             throw CreateInvalidCallException("member state");
         }
 
-        public virtual ITypeBuilder GetMemberBuilder(string memberName)
+        public virtual ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             throw CreateInvalidCallException("object member");
         }

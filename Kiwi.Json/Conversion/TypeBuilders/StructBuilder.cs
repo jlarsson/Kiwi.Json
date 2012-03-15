@@ -17,12 +17,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region IObjectBuilder Members
 
-        public override IObjectBuilder CreateObjectBuilder()
-        {
-            return this;
-        }
-
-        public override object CreateNewObject(object instanceState)
+        public override object CreateNewObject(ITypeBuilderRegistry registry, object instanceState)
         {
             return new Dictionary<string, object>();
         }
@@ -32,12 +27,12 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
-        public override ITypeBuilder GetMemberBuilder(string memberName)
+        public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             StructMember member;
             if (_members.TryGetValue(memberName, out member))
             {
-                return member.MemberBuilder;
+                return registry.GetTypeBuilder(member.Type);
             }
             return NothingBuilder.Instance;
         }
@@ -46,7 +41,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             if (_members.ContainsKey(memberName))
             {
-                ((Dictionary<string, object>)@object).Add(memberName, value);
+                ((Dictionary<string, object>) @object).Add(memberName, value);
             }
         }
 
@@ -70,35 +65,23 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        public static Func<ITypeBuilder> CreateTypeBuilderFactory(ITypeBuilderRegistry registry)
+        public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
-            var members =
-                (
-                    from property in
-                        typeof(TStruct).GetProperties(BindingFlags.SetProperty | BindingFlags.Public |
-                                                       BindingFlags.Instance)
-                    where (property.GetGetMethod().GetParameters().Length == 0)
-                    select new StructMember
-                    {
-                        Name = property.Name,
-                        //Member = property
-                        //Member = typeof (TStruct).GetField(string.Format("<{0}>k__BackingField", property.Name),
-                        //                              BindingFlags.NonPublic | BindingFlags.Instance),
-                        Member = null,
-                        MemberBuilder = null
-                    })
-                    .Concat(
-                        from field in
-                            typeof(TStruct).GetFields(BindingFlags.SetField | BindingFlags.Public |
-                                                       BindingFlags.Instance)
-                        select new StructMember
-                        {
-                            Name = field.Name,
-                            Member = field,
-                            MemberBuilder = registry.GetTypeBuilder(field.FieldType)
-                        })
-                    .Where(m => m.Member != null)
-                    .ToDictionary(m => m.Name, m => m);
+            return this;
+        }
+
+        public static Func<ITypeBuilder> CreateTypeBuilderFactory()
+        {
+            var members = (from field in
+                               typeof (TStruct).GetFields(BindingFlags.SetField | BindingFlags.Public |
+                                                          BindingFlags.Instance)
+                           select new StructMember
+                                      {
+                                          Name = field.Name,
+                                          Type = field.FieldType,
+                                          Member = field
+                                      })
+                .ToDictionary(m => m.Name, m => m);
 
             var structBuilder = new StructBuilder<TStruct>(members);
 
@@ -110,8 +93,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private class StructMember
         {
             public string Name { get; set; }
+            public Type Type { get; set; }
             public MemberInfo Member { get; set; }
-            public ITypeBuilder MemberBuilder { get; set; }
         }
 
         #endregion

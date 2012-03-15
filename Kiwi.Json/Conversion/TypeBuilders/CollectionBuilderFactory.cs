@@ -7,7 +7,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class CollectionBuilderFactory: ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
             // Check which ICollection<T> is implemented
             var interfaceType = (from @interface in new[] { type }.Concat(type.GetInterfaces())
@@ -53,7 +53,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return
                 (Func<ITypeBuilder>)
                 typeof(CollectionBuilder<,>).MakeGenericType(listType, interfaceType.GetGenericArguments()[0]).GetMethod(
-                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[]{registry});
+                    "CreateTypeBuilderFactory", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[]{});
         }
     }
 }

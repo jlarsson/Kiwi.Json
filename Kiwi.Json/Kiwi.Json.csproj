@@ -66,6 +66,7 @@
     <Compile Include="Conversion\TypeBuilders\StructBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\SystemObjectBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\UntypedListBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\UntypedListBuilderFactory.cs" />
     <Compile Include="Conversion\TypeWriters\BuiltinTypeWriterFactory.cs" />
     <Compile Include="Conversion\TypeWriters\ClassWriterFactory.cs" />

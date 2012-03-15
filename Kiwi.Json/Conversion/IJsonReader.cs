@@ -5,6 +5,6 @@ namespace Kiwi.Json.Conversion
     public interface IJsonReader
     {
         bool EndOfInput();
-        object Parse(ITypeBuilder builder, object instanceState);
+        object Parse(ITypeBuilderRegistry registry, ITypeBuilder builder, object instanceState);
     }
 }

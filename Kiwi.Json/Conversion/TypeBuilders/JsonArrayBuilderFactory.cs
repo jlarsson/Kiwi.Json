@@ -5,7 +5,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 {
     public class JsonArrayBuilderFactory : ITypeBuilderFactory
     {
-        public Func<ITypeBuilder> CreateTypeBuilder(Type type, ITypeBuilderRegistry registry)
+        public Func<ITypeBuilder> CreateTypeBuilder(Type type)
         {
             if (typeof(IJsonArray).IsAssignableFrom(type))
             {
