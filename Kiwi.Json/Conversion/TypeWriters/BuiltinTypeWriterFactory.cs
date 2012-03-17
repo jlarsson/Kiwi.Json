@@ -7,7 +7,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class BuiltinTypeWriterFactory : ITypeWriterFactory
     {
-        private static readonly Dictionary<Type, Func<ITypeWriter>> BuiltinSerializers =
+        private static readonly Dictionary<Type, ITypeWriter> BuiltinSerializers =
             new[]
                 {
                     CreateSimpleWriter<bool>((w, v) => w.WriteBool(v)),
@@ -46,25 +46,25 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
-            Func<ITypeWriter> factory;
-            return BuiltinSerializers.TryGetValue(type, out factory) ? factory : null;
+            ITypeWriter writer;
+            return BuiltinSerializers.TryGetValue(type, out writer) ? writer : null;
         }
 
         #endregion
 
-        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleWriter<T>(
+        private static Tuple<Type, ITypeWriter> CreateSimpleWriter<T>(
             Action<IJsonWriter, T> action)
         {
-            var writer = new SimpleWriter<T>(action) as ITypeWriter;
-            return Tuple.Create(typeof (T), (Func<ITypeWriter>) (() => writer));
+            ITypeWriter writer = new SimpleWriter<T>(action);
+            return Tuple.Create(typeof (T), writer);
         }
 
-        private static Tuple<Type, Func<ITypeWriter>> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action)
+        private static Tuple<Type, ITypeWriter> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action)
             where T : struct
         {
-            var writer = new SimpleWriter<T?>(
+            ITypeWriter writer = new SimpleWriter<T?>(
                 (w, v) =>
                     {
                         if (v.HasValue)
@@ -76,7 +76,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                             w.WriteNull();
                         }
                     });
-            return Tuple.Create(typeof (T?), (Func<ITypeWriter>) (() => writer));
+            return Tuple.Create(typeof (T?), writer);
         }
 
         #region Nested type: SimpleWriter

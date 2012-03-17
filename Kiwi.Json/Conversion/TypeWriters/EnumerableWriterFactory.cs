@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
@@ -10,22 +9,34 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IEnumerable<>)
-                    let factory = typeof (EnumerableWriter<>).MakeGenericType(@interface.GetGenericArguments()[0])
-                        .GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[] {})
-                    select (Func<ITypeWriter>) factory
+                    select ((ITypeWriterFactory)
+                            typeof (EnumerableWriterFactory<>).MakeGenericType(@interface.GetGenericArguments()[0])
+                                .GetConstructor(Type.EmptyTypes)
+                                .Invoke(new object[0])).CreateTypeWriter(type)
                    )
                 .Concat(
                     from @interface in type.GetInterfaces()
                     where @interface == typeof (IEnumerable)
-                    select EnumerableWriter.CreateTypeWriterFactory()
+                    select new EnumerableWriter()
                 )
                 .FirstOrDefault();
+        }
+
+        #endregion
+    }
+
+    public class EnumerableWriterFactory<T> : ITypeWriterFactory
+    {
+        #region ITypeWriterFactory Members
+
+        public ITypeWriter CreateTypeWriter(Type type)
+        {
+            return new EnumerableWriter<T>();
         }
 
         #endregion

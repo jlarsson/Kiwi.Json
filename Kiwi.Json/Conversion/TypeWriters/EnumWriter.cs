@@ -2,7 +2,7 @@ using System;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
-    public class EnumWriter<TEnum> : ITypeWriter
+    public class EnumWriter<TEnum> : ITypeWriter where TEnum : struct
     {
         #region ITypeWriter Members
 
@@ -12,10 +12,5 @@ namespace Kiwi.Json.Conversion.TypeWriters
         }
 
         #endregion
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new EnumWriter<TEnum>();
-        }
     }
 }

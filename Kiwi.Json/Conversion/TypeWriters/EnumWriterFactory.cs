@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
@@ -7,17 +6,30 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
             if (type.IsEnum)
             {
                 return
-                    (Func<ITypeWriter>)
-                    typeof (EnumWriter<>).MakeGenericType(type).GetMethod("CreateTypeWriterFactory",
-                                                                          BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[] {});
+                    ((ITypeWriterFactory)
+                     typeof (EnumWriterFactory<>)
+                         .MakeGenericType(type)
+                         .GetConstructor(Type.EmptyTypes)
+                         .Invoke(new object[0])).CreateTypeWriter(type);
             }
             return null;
+        }
+
+        #endregion
+    }
+
+    public class EnumWriterFactory<TEnum> : ITypeWriterFactory where TEnum : struct
+    {
+        #region ITypeWriterFactory Members
+
+        public ITypeWriter CreateTypeWriter(Type type)
+        {
+            return new EnumWriter<TEnum>();
         }
 
         #endregion

@@ -42,8 +42,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         private ITypeWriter CreateTypeSerializerForType(Type type)
         {
-            var creator = _factories.Select(f => f.CreateTypeWriter(type)).FirstOrDefault(f => f != null);
-            return creator == null ? null : creator();
+            return _factories.Select(f => f.CreateTypeWriter(type)).FirstOrDefault(f => f != null);
         }
 
         #region Nested type: NullWriter

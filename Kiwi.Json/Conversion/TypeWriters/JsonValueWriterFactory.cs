@@ -7,11 +7,11 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
             if (typeof (IJsonValue).IsAssignableFrom(type))
             {
-                return () => new JsonValueWriter();
+                return new JsonValueWriter();
             }
             return null;
         }

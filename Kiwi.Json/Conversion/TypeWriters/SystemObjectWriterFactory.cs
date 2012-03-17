@@ -6,9 +6,9 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
-            return type == typeof (object) ? (Func<ITypeWriter>) (() => new SystemObjectWriter()) : null;
+            return type == typeof (object) ? new SystemObjectWriter() : null;
         }
 
         #endregion

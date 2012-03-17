@@ -17,7 +17,7 @@ namespace Kiwi.Json.Conversion
         public int Line { get; private set; }
         public int Column { get; private set; }
 
-        #region IJsonReader Members
+        #region IJsonParser Members
 
         public bool EndOfInput()
         {

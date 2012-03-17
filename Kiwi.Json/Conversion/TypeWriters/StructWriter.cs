@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,12 +7,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 {
     public class StructWriter<TStruct> : ITypeWriter where TStruct : struct
     {
-        private readonly List<StructMember> _members;
-
-        private StructWriter(List<StructMember> members)
-        {
-            _members = members;
-        }
+        private static readonly List<StructMember> Members = DiscoverMembers().ToList();
 
         #region ITypeWriter Members
 
@@ -22,7 +16,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
             writer.WriteObjectStart();
 
             var index = 0;
-            foreach (var member in _members)
+            foreach (var member in Members)
             {
                 if (index++ > 0)
                 {
@@ -39,21 +33,16 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
+        private static IEnumerable<StructMember> DiscoverMembers()
         {
-            var members =
+            return
                 from field in
-                    typeof (TStruct).GetFields(BindingFlags.GetField | BindingFlags.Public |
-                                               BindingFlags.Instance)
+                    typeof (TStruct).GetFields(BindingFlags.GetField | BindingFlags.Public | BindingFlags.Instance)
                 select new StructMember
                            {
                                Name = field.Name,
                                Getter = new FieldGetter(field)
                            };
-
-            var writer = new StructWriter<TStruct>(members.ToList());
-
-            return () => writer;
         }
 
         #region Nested type: StructMember

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace Kiwi.Json.Conversion.TypeWriters
@@ -33,11 +32,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
         }
 
         #endregion
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new EnumerableWriter();
-        }
     }
 
     public class EnumerableWriter<T> : ITypeWriter
@@ -70,10 +64,5 @@ namespace Kiwi.Json.Conversion.TypeWriters
         }
 
         #endregion
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new EnumerableWriter<T>();
-        }
     }
 }

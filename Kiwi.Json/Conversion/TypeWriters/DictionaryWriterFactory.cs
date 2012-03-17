@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
@@ -10,24 +9,34 @@ namespace Kiwi.Json.Conversion.TypeWriters
     {
         #region ITypeWriterFactory Members
 
-        public Func<ITypeWriter> CreateTypeWriter(Type type)
+        public ITypeWriter CreateTypeWriter(Type type)
         {
             return (from @interface in type.GetInterfaces()
                     where @interface.IsGenericType
                           && @interface.GetGenericTypeDefinition() == typeof (IDictionary<,>)
                           && @interface.GetGenericArguments()[0] == typeof (string)
-                    let factory =
-                        typeof (DictionaryWriter<>)
-                        .MakeGenericType(@interface.GetGenericArguments()[1])
-                        .GetMethod("CreateTypeWriterFactory", BindingFlags.Static | BindingFlags.Public).
-                        Invoke(null, new object[] {})
-                    select (Func<ITypeWriter>) factory
+                    select ((ITypeWriterFactory)
+                            typeof (DictionaryWriterFactory<>).MakeGenericType(@interface.GetGenericArguments()[1])
+                                .GetConstructor(Type.EmptyTypes)
+                                .Invoke(new object[0])).CreateTypeWriter(type)
                    ).Concat(
                        from @interface in type.GetInterfaces()
                        where @interface == typeof (IDictionary)
-                       select DictionaryWriter.CreateTypeWriterFactory()
+                       select new DictionaryWriter()
                 )
                 .FirstOrDefault();
+        }
+
+        #endregion
+    }
+
+    public class DictionaryWriterFactory<TValue> : ITypeWriterFactory
+    {
+        #region ITypeWriterFactory Members
+
+        public ITypeWriter CreateTypeWriter(Type type)
+        {
+            return new DictionaryWriter<TValue>();
         }
 
         #endregion

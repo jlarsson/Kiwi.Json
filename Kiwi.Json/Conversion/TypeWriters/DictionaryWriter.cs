@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -34,11 +33,6 @@ namespace Kiwi.Json.Conversion.TypeWriters
         }
 
         #endregion
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new DictionaryWriter<TValue>();
-        }
     }
 
     public class DictionaryWriter : ITypeWriter
@@ -74,10 +68,5 @@ namespace Kiwi.Json.Conversion.TypeWriters
         }
 
         #endregion
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new DictionaryWriter();
-        }
     }
 }

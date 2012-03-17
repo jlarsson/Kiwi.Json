@@ -45,6 +45,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                 member.GetCustomAttributes(true).OfType<Attribute>().FirstOrDefault(
                     a => a.GetType().FullName == "System.Runtime.Serialization.DataMemberAttribute");
         }
+
         private static string GetMemberName(MemberInfo member, Attribute dataMemberAttribute)
         {
             var name = dataMemberAttribute == null
@@ -62,33 +63,28 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     a => a.GetType().FullName == "System.Runtime.Serialization.DataContractAttribute")).Any();
 
             return (from property in typeof (TClass).GetProperties(BindingFlags.GetProperty |
-                                                                    BindingFlags.Public |
-                                                                    BindingFlags.Instance)
+                                                                   BindingFlags.Public |
+                                                                   BindingFlags.Instance)
                     where (property.GetGetMethod().GetParameters().Length == 0)
                     let dm = classUsesDataContract ? GetDataMemberAttribute(property) : null
                     where classUsesDataContract == (dm != null)
                     select new ClassMember
-                                {
-                                    Name = GetMemberName(property, dm),
-                                    Getter = new PropertyGetter(property),
-                                }
-                    ).Union(
-                        from field in typeof (TClass).GetFields(BindingFlags.GetField |
-                                                                BindingFlags.Public |
-                                                                BindingFlags.Instance)
-                        let dm = classUsesDataContract ? GetDataMemberAttribute(field) : null
-                        where classUsesDataContract == (dm != null)
-                        select new ClassMember
-                                    {
-                                        Name = GetMemberName(field, dm),
-                                        Getter = new FieldGetter(field),
-                                    }
+                               {
+                                   Name = GetMemberName(property, dm),
+                                   Getter = new PropertyGetter(property),
+                               }
+                   ).Union(
+                       from field in typeof (TClass).GetFields(BindingFlags.GetField |
+                                                               BindingFlags.Public |
+                                                               BindingFlags.Instance)
+                       let dm = classUsesDataContract ? GetDataMemberAttribute(field) : null
+                       where classUsesDataContract == (dm != null)
+                       select new ClassMember
+                                  {
+                                      Name = GetMemberName(field, dm),
+                                      Getter = new FieldGetter(field),
+                                  }
                 );
-        }
-
-        public static Func<ITypeWriter> CreateTypeWriterFactory()
-        {
-            return () => new ClassWriter<TClass>();
         }
 
         #region Nested type: ClassMember
