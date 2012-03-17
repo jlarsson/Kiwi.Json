@@ -74,7 +74,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                 }
             }
             return (from json in serializedValues
-                    select JsonConvert.Read<IJsonValue>(json))
+                    select JsonConvert.Parse<IJsonValue>(json))
                     .ToList();
         }
 
@@ -137,7 +137,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             return (from serializedValue in serializedValues
                     select
                         new KeyValuePair<string, IJsonValue>(serializedValue.Item1,
-                                                             JsonConvert.Read<IJsonValue>(serializedValue.Item2)))
+                                                             JsonConvert.Parse<IJsonValue>(serializedValue.Item2)))
                 .ToList();
         }
     }

@@ -9,7 +9,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Float()
         {
             Assert.That(
-                JsonConvert.Read<float>("123.45e-1"),
+                JsonConvert.Parse<float>("123.45e-1"),
                 Is.EqualTo(123.45e-1f)
                 );
         }

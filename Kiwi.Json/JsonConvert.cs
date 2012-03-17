@@ -38,35 +38,34 @@ namespace Kiwi.Json
             return value;
         }
 
-        public static IJsonValue Read(string json)
+        public static IJsonValue Parse(string json)
         {
-            return Read<IJsonValue>(json);
+            return Parse<IJsonValue>(json);
         }
 
-        public static IJsonValue Read(IJsonReader reader)
+        public static IJsonValue Parse(IJsonParser parser)
         {
-            return Read(reader, default(IJsonValue));
+            return Parse(parser, default(IJsonValue));
         }
 
-
-        public static T Read<T>(IJsonReader reader)
+        public static T Parse<T>(IJsonParser parser)
         {
-            return Read(reader, default(T));
+            return Parse(parser, default(T));
         }
 
-        public static T Read<T>(IJsonReader reader, T initializedInstance)
+        public static T Parse<T>(IJsonParser parser, T initializedInstance)
         {
-            return TypeBuilderRegistry.Read<T>(reader, initializedInstance);
+            return TypeBuilderRegistry.Read<T>(parser, initializedInstance);
         }
 
-        public static T Read<T>(string json)
+        public static T Parse<T>(string json)
         {
-            return Read(json, default(T));
+            return Parse(json, default(T));
         }
 
-        public static T Read<T>(string json, T initializedInstance)
+        public static T Parse<T>(string json, T initializedInstance)
         {
-            return TypeBuilderRegistry.Read<T>(new JsonStringReader(json), initializedInstance);
+            return TypeBuilderRegistry.Read<T>(new JsonStringParser(json), initializedInstance);
         }
 
         public static string Write(object obj)

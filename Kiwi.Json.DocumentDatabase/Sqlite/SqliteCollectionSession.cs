@@ -48,7 +48,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT Definition FROM CollectionIndex CI INNER JOIN DocumentCollection C ON C.CollectionId = C.CollectionId WHERE CI.JsonPath = @jsonPath AND C.CollectionName = @collection")
                 .Param("collection", Collection.Name)
                 .Param("jsonPath", definition.JsonPath)
-                .Query(a => JsonConvert.Read<IndexDefinition>(a.String(0)))
+                .Query(a => JsonConvert.Parse<IndexDefinition>(a.String(0)))
                 .FirstOrDefault();
 
             if (existingIndex != null)
@@ -71,7 +71,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                                 DbSession.CreateSqlCommand(
                                     "SELECT DocumentId, Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE C.CollectionName = @collection")
                                 .Param("collection", Collection.Name)
-                                .Query(a => new {DocumentId = a.Long(0), Document = JsonConvert.Read(a.String(1))})
+                                .Query(a => new {DocumentId = a.Long(0), Document = JsonConvert.Parse(a.String(1))})
                             select document;
 
 
@@ -142,7 +142,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
             var f = FilterStrategy.CreateFilter(filter);
             return
                 (from kv in
-                     command.Query(a => new KeyValuePair<string, IJsonValue>(a.String(0), JsonConvert.Read(a.String(1))))
+                     command.Query(a => new KeyValuePair<string, IJsonValue>(a.String(0), JsonConvert.Parse(a.String(1))))
                  where f.Matches(kv.Value)
                  select new KeyValuePair<string, T>(kv.Key, kv.Value.ToObject<T>())
                 ).ToList();
@@ -154,7 +154,7 @@ namespace Kiwi.Json.DocumentDatabase.Sqlite
                 @"SELECT D.Json FROM Document D INNER JOIN DocumentCollection C ON D.CollectionId = C.CollectionId WHERE D.[Key] = @key AND C.CollectionName = @collection")
                 .Param("collection", Collection.Name)
                 .Param("key", key)
-                .Query(a => JsonConvert.Read<T>(a.String(0)))
+                .Query(a => JsonConvert.Parse<T>(a.String(0)))
                 .FirstOrDefault();
         }
 

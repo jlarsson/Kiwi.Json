@@ -10,11 +10,11 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void String()
         {
-            JsonConvert.Read(@"""hello Json""")
+            JsonConvert.Parse(@"""hello Json""")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo("hello Json");
 
-            JsonConvert.Read(@"""\r\n\t\f\""\u1234""")
+            JsonConvert.Parse(@"""\r\n\t\f\""\u1234""")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo("\r\n\t\f\"\x1234");
         }

@@ -106,7 +106,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                             indexValueTable.CreateCursor("PK_IndexValue_IndexId_DocumentId")
                                 .DeleteEq(indexValueTable.CreateKey().Int64(indexId).Int64(documentRecord.DocumentId));
 
-                            var documentValue = JsonConvert.Read<IJsonValue>(documentRecord.DocumentJson);
+                            var documentValue = JsonConvert.Parse<IJsonValue>(documentRecord.DocumentJson);
                             var indexValues = from documentMember in definition.JsonPath.Evaluate(documentValue)
                                               from filterValue in _jsonFilterStrategy.GetFilterValues(documentMember)
                                               select JsonConvert.Write(filterValue).ToLowerInvariant();
@@ -162,7 +162,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     .ScanEq(Mappings.DocumentRecordMapper, documenTable.CreateKey().String(key.ToLowerInvariant()))
                     .FirstOrDefault();
 
-                return document == null ? default(T) : JsonConvert.Read<T>(document.DocumentJson);
+                return document == null ? default(T) : JsonConvert.Parse<T>(document.DocumentJson);
             }
         }
 
@@ -268,7 +268,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
             {
                 return new List<KeyValuePair<string, T>>(
                     from documentRecord in documentTable.CreateCursor(null).Scan(Mappings.DocumentRecordMapper)
-                    let document = JsonConvert.Read(documentRecord.DocumentJson)
+                    let document = JsonConvert.Parse(documentRecord.DocumentJson)
                     where filter.Matches(document)
                     select new KeyValuePair<string, T>(documentRecord.DocumentKey, document.ToObject<T>()));
             }
@@ -293,7 +293,7 @@ namespace Kiwi.Json.DocumentDatabase.Esent
                     }
                     else
                     {
-                        var document = JsonConvert.Read(documentRecord.DocumentJson);
+                        var document = JsonConvert.Parse(documentRecord.DocumentJson);
                         if (filter.Matches(document))
                         {
                             found.Add(new KeyValuePair<string, T>(documentRecord.DocumentKey,

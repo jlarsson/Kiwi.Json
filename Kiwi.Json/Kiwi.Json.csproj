@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
-    <Compile Include="Conversion\IJsonReader.cs" />
+    <Compile Include="Conversion\IJsonParser.cs" />
     <Compile Include="Conversion\Reflection\ClassActivator.cs" />
     <Compile Include="Conversion\Reflection\ConstructorInfoClassActivator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
@@ -106,7 +106,7 @@
     <Compile Include="JsonException.cs" />
     <Compile Include="InvalidClassForDeserializationException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Conversion\AbstractJsonReader.cs" />
+    <Compile Include="Conversion\AbstractJsonParser.cs" />
     <Compile Include="Conversion\TypeBuilders\IArrayBuilder.cs" />
     <Compile Include="Conversion\IJsonWriter.cs" />
     <Compile Include="Conversion\TypeBuilders\IObjectBuilder.cs" />
@@ -114,10 +114,10 @@
     <Compile Include="Untyped\NullJsonValueVisitor.cs" />
     <Compile Include="Util\AbstractTextMatcher.cs" />
     <Compile Include="Util\JsonCharacters.cs" />
-    <Compile Include="Conversion\JsonTextReader.cs" />
+    <Compile Include="Conversion\JsonTextParser.cs" />
     <Compile Include="Util\JsonFormats.cs" />
     <Compile Include="Conversion\JsonSerializationException.cs" />
-    <Compile Include="Conversion\JsonStringReader.cs" />
+    <Compile Include="Conversion\JsonStringParser.cs" />
     <Compile Include="Conversion\JsonStringWriter.cs" />
     <Compile Include="Conversion\TypeWriters\ClassWriter.cs" />
     <Compile Include="Conversion\TypeWriters\DictionaryWriter.cs" />

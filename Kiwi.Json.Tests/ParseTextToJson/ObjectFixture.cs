@@ -10,7 +10,7 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Object()
         {
-            var parsed = JsonConvert.Read(@"{""a"":1,""b"":2,""c"":""C"",""d"":[1,null,3]}");
+            var parsed = JsonConvert.Parse(@"{""a"":1,""b"":2,""c"":""C"",""d"":[1,null,3]}");
 
             parsed.Should().Be.InstanceOf<IJsonObject>();
 

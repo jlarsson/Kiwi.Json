@@ -20,7 +20,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Test()
         {
-            var a = JsonConvert.Read<A>(@"{""L"":[4,5,6]}");
+            var a = JsonConvert.Parse<A>(@"{""L"":[4,5,6]}");
 
             a.Should().Not.Be.Null();
 

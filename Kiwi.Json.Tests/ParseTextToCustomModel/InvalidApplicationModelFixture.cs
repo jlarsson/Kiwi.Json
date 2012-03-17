@@ -7,20 +7,20 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void NullsAreAlwaysValid()
         {
-            Assert.That(JsonConvert.Read<ClassWithNoDefaultConstructor>("null"), Is.Null);
+            Assert.That(JsonConvert.Parse<ClassWithNoDefaultConstructor>("null"), Is.Null);
         }
 
         [Test]
         public void DeserializedClassesMustHaveDefaultConstructor()
         {
-            Assert.Throws<InvalidClassForDeserializationException>(() => JsonConvert.Read<ClassWithNoDefaultConstructor>("{}"));
+            Assert.Throws<InvalidClassForDeserializationException>(() => JsonConvert.Parse<ClassWithNoDefaultConstructor>("{}"));
         }
 
         [Test]
         public void DeserializedClassesMustHavePublicDefaultConstructor()
         {
             Assert.Throws<InvalidClassForDeserializationException>(
-                () => JsonConvert.Read<ClassWithProtectedDefaultConstructor>("{}"));
+                () => JsonConvert.Parse<ClassWithProtectedDefaultConstructor>("{}"));
         }
 
         #region Nested type: ClassWithNoDefaultConstructor

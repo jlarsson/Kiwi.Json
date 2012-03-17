@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using NUnit.Framework;
 
@@ -10,6 +11,18 @@ namespace Kiwi.Json.PerformanceTests
     {
         private void RunTest(ITypeSwitch<object> typeSwitch)
         {
+            var dt = new DataTable();
+            dt.Columns.Add("A");
+            dt.Columns.Add("B");
+
+
+            dt.Rows.Add(1, 2);
+            dt.Rows.Add("x","y");
+
+            Console.Out.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(dt));
+
+
+
             var values = new object[]
                              {
                                  (byte) 1,

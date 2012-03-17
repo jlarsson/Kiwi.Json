@@ -13,7 +13,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void AbstractEnumerable()
         {
-            var list = JsonConvert.Read<IEnumerable<int>>(@"[1,2,3]");
+            var list = JsonConvert.Parse<IEnumerable<int>>(@"[1,2,3]");
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
@@ -21,7 +21,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void AbstractList()
         {
-            var list = JsonConvert.Read<IList<int>>(@"[1,2,3]");
+            var list = JsonConvert.Parse<IList<int>>(@"[1,2,3]");
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
@@ -29,7 +29,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Array()
         {
-            var array = JsonConvert.Read<int[]>(@"[1,2,3]");
+            var array = JsonConvert.Parse<int[]>(@"[1,2,3]");
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(array));
         }
@@ -37,7 +37,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void List()
         {
-            var list = JsonConvert.Read<List<int>>(@"[1,2,3]");
+            var list = JsonConvert.Parse<List<int>>(@"[1,2,3]");
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }
@@ -45,7 +45,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void Null()
         {
-            var array = JsonConvert.Read<int[]>(@"null");
+            var array = JsonConvert.Parse<int[]>(@"null");
 
             Assert.That(array, Is.Null);
         }
@@ -53,7 +53,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void SubclassedList()
         {
-            var list = JsonConvert.Read<SublassedList<int>>(@"[1,2,3]");
+            var list = JsonConvert.Parse<SublassedList<int>>(@"[1,2,3]");
 
             Assert.That(new[] {1, 2, 3}, Is.EqualTo(list));
         }

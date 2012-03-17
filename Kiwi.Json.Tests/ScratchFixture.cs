@@ -25,13 +25,13 @@ namespace Kiwi.Json.Tests
                 writer.StringBuilder.AppendLine();
             }
 
-            var reader = new JsonStringReader(writer.ToString());
+            var reader = new JsonStringParser(writer.ToString());
 
             while (!reader.EndOfInput())
             {
 
                 Console.Out.WriteLine(
-                    JsonConvert.Write(new { json = JsonConvert.Read(reader) }));
+                    JsonConvert.Write(new { json = JsonConvert.Parse(reader) }));
             }
 
         }

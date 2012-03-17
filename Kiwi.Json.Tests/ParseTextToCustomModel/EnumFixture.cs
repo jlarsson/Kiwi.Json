@@ -15,11 +15,11 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void ByName()
         {
             Assert.That(
-                JsonConvert.Read<TestEnum>(@"""First"""),
+                JsonConvert.Parse<TestEnum>(@"""First"""),
                 Is.EqualTo(TestEnum.First));
 
             Assert.That(
-                JsonConvert.Read<TestEnum>(@"""Second"""),
+                JsonConvert.Parse<TestEnum>(@"""Second"""),
                 Is.EqualTo(TestEnum.Second));
         }
 
@@ -27,11 +27,11 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void ByValue()
         {
             Assert.That(
-                JsonConvert.Read<TestEnum>(@"11"),
+                JsonConvert.Parse<TestEnum>(@"11"),
                 Is.EqualTo(TestEnum.First));
 
             Assert.That(
-                JsonConvert.Read<TestEnum>(@"12"),
+                JsonConvert.Parse<TestEnum>(@"12"),
                 Is.EqualTo(TestEnum.Second));
         }
 

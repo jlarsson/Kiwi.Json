@@ -10,15 +10,15 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void Integer()
         {
-            JsonConvert.Read("0")
+            JsonConvert.Parse("0")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(0);
 
-            JsonConvert.Read("123")
+            JsonConvert.Parse("123")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(123);
 
-            JsonConvert.Read("-123")
+            JsonConvert.Parse("-123")
                 .Should().Be.InstanceOf<IJsonInteger>()
                 .And.Value.Value.Should().Be.EqualTo(-123);
         }

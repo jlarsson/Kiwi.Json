@@ -17,7 +17,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
 
             //bool b = x == typeof (Dictionary<,>);
 
-            var d = JsonConvert.Read<Dictionary<string, int>>(@"{""a"":1,""b"":2}");
+            var d = JsonConvert.Parse<Dictionary<string, int>>(@"{""a"":1,""b"":2}");
 
             d.Should().Have.Count.EqualTo(2);
 

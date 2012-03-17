@@ -10,12 +10,12 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Guid()
         {
             Assert.That(
-                JsonConvert.Read<Guid?>(@"""24e1112a-b4c9-4b69-8a64-24bc4672e9fe"""),
+                JsonConvert.Parse<Guid?>(@"""24e1112a-b4c9-4b69-8a64-24bc4672e9fe"""),
                 Is.EqualTo(new Guid("24e1112a-b4c9-4b69-8a64-24bc4672e9fe"))
                 );
 
             Assert.That(
-                JsonConvert.Read<Guid?>(@"""{24e1112a-b4c9-4b69-8a64-24bc4672e9fe}"""),
+                JsonConvert.Parse<Guid?>(@"""{24e1112a-b4c9-4b69-8a64-24bc4672e9fe}"""),
                 Is.EqualTo(new Guid("24e1112a-b4c9-4b69-8a64-24bc4672e9fe"))
                 );
         }
@@ -24,7 +24,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         public void Null()
         {
             Assert.That(
-                JsonConvert.Read<Guid?>("null").HasValue,
+                JsonConvert.Parse<Guid?>("null").HasValue,
                 Is.False
                 );
         }

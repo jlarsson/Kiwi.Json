@@ -12,11 +12,11 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         public void DateStringIsParsedToDualdateAndString()
         {
             // test as date
-            JsonConvert.Read(@"""2012-03-13T22:13:24""")
+            JsonConvert.Parse(@"""2012-03-13T22:13:24""")
                 .Should().Be.InstanceOf<IJsonDate>()
                 .And.Value.Value.Should().Be.EqualTo(new DateTime(2012, 03, 13, 22, 13, 24));
 
-            JsonConvert.Read(@"""2012-03-13T22:13:24""")
+            JsonConvert.Parse(@"""2012-03-13T22:13:24""")
                 .Should().Be.InstanceOf<IJsonString>()
                 .And.Value.Value.Should().Be.EqualTo(@"2012-03-13T22:13:24");
         }
@@ -28,7 +28,7 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void DateInSortableFormat()
         {
-            JsonConvert.Read(@"""2012-03-13T22:13:24""")
+            JsonConvert.Parse(@"""2012-03-13T22:13:24""")
                 .Should().Be.InstanceOf<IJsonDate>()
                 .And.Value.Value.Should().Be.EqualTo(new DateTime(2012,03,13,22,13,24));
         }
@@ -36,7 +36,7 @@ namespace Kiwi.Json.Tests.ParseTextToJson
         [Test]
         public void DateInUniversalSortableFormat()
         {
-            JsonConvert.Read(@"""2012-03-13 22:13:24Z""")
+            JsonConvert.Parse(@"""2012-03-13 22:13:24Z""")
                 .Should().Be.InstanceOf<IJsonDate>()
                 .And.Value.Value.Should().Be.EqualTo(new DateTime(2012, 03, 13, 22, 13, 24));
         }

@@ -9,40 +9,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
     public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : class // where TClass : new()
     {
 // ReSharper disable StaticFieldInGenericType
-        private static readonly Dictionary<string, ClassMember> MemberSetters = (from property in
-                                                                                     typeof (TClass).GetProperties(
-                                                                                         BindingFlags.GetProperty |
-                                                                                         BindingFlags.SetProperty |
-                                                                                         BindingFlags.Public |
-                                                                                         BindingFlags.Instance)
-                                                                                 where
-                                                                                     (property.GetGetMethod().
-                                                                                          GetParameters().Length == 0)
-                                                                                 select new ClassMember
-                                                                                            {
-                                                                                                Name = property.Name,
-                                                                                                Type =
-                                                                                                    property.
-                                                                                                    PropertyType,
-                                                                                                Getter =
-                                                                                                    new PropertyGetter(
-                                                                                                    property),
-                                                                                                Setter =
-                                                                                                    new PropertySetter(
-                                                                                                    property),
-                                                                                            })
-            .Union(
-                from field in
-                    typeof (TClass).GetFields(BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Public |
-                                              BindingFlags.Instance)
-                select new ClassMember
-                           {
-                               Name = field.Name,
-                               Type = field.FieldType,
-                               Getter = new FieldGetter(field),
-                               Setter = new FieldSetter(field),
-                           })
-            .ToDictionary(m => m.Name, m => m);
+        private static readonly Dictionary<string, ClassMember> Members = DiscoverMembers();
 
 
         private static readonly IClassActivator Activator = ClassActivator.Create(typeof (TClass));
@@ -62,7 +29,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override object GetMemberState(string memberName, object @object)
         {
             ClassMember member;
-            if (MemberSetters.TryGetValue(memberName, out member))
+            if (Members.TryGetValue(memberName, out member))
             {
                 return member.Getter.GetMemberValue(@object);
             }
@@ -72,7 +39,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override ITypeBuilder GetMemberBuilder(ITypeBuilderRegistry registry, string memberName)
         {
             ClassMember member;
-            if (MemberSetters.TryGetValue(memberName, out member))
+            if (Members.TryGetValue(memberName, out member))
             {
                 return registry.GetTypeBuilder(member.Type);
             }
@@ -82,7 +49,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override void SetMember(string memberName, object @object, object value)
         {
             ClassMember member;
-            if (MemberSetters.TryGetValue(memberName, out member))
+            if (Members.TryGetValue(memberName, out member))
             {
                 member.Setter.SetValue(@object, value);
             }
@@ -94,6 +61,60 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         }
 
         #endregion
+
+        private static Attribute GetDataMemberAttribute(MemberInfo member)
+        {
+            return
+                member.GetCustomAttributes(true).OfType<Attribute>().FirstOrDefault(
+                    a => a.GetType().FullName == "System.Runtime.Serialization.DataMemberAttribute");
+        }
+        private static string GetMemberName(MemberInfo member, Attribute dataMemberAttribute)
+        {
+            var name = dataMemberAttribute == null
+                           ? null
+                           : (string)
+                             dataMemberAttribute.GetType().GetProperty("Name").GetValue(dataMemberAttribute,
+                                                                                        new object[0]);
+            return name ?? member.Name;
+        }
+
+        private static Dictionary<string, ClassMember> DiscoverMembers()
+        {
+            var classUsesDataContract =
+                (typeof (TClass).GetCustomAttributes(true).OfType<Attribute>().Where(
+                    a => a.GetType().FullName == "System.Runtime.Serialization.DataContractAttribute")).Any();
+
+            return (from property in typeof(TClass).GetProperties(
+                            BindingFlags.GetProperty |
+                            BindingFlags.SetProperty |
+                            BindingFlags.Public |
+                            BindingFlags.Instance)
+                    where (property.GetGetMethod().GetParameters().Length == 0)
+
+                    let dm = classUsesDataContract ? GetDataMemberAttribute(property) : null
+                    where classUsesDataContract == (dm != null)
+                    select new ClassMember
+                    {
+                        Name = GetMemberName(property, dm),
+                        Type = property.PropertyType,
+                        Getter = new PropertyGetter(property),
+                        Setter = new PropertySetter(property),
+                    })
+                .Union(
+                    from field in typeof(TClass).GetFields(
+                        BindingFlags.GetField | BindingFlags.SetField | BindingFlags.Public |
+                        BindingFlags.Instance)
+                    let dm = classUsesDataContract ? GetDataMemberAttribute(field) : null
+                    where classUsesDataContract == (dm != null)
+                    select new ClassMember
+                    {
+                        Name = GetMemberName(field, dm),
+                        Type = field.FieldType,
+                        Getter = new FieldGetter(field),
+                        Setter = new FieldSetter(field),
+                    })
+                .ToDictionary(m => m.Name, m => m);
+        }
 
         public override IObjectBuilder CreateObjectBuilder(ITypeBuilderRegistry registry)
         {
