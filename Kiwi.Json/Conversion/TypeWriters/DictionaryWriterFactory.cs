@@ -22,7 +22,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                    ).Concat(
                        from @interface in type.GetInterfaces()
                        where @interface == typeof (IDictionary)
-                       select new DictionaryWriter()
+                       select new DictionaryWriter() as ITypeWriter
                 )
                 .FirstOrDefault();
         }

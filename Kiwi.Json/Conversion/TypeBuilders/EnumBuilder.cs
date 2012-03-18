@@ -12,12 +12,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public override object CreateString(ITypeBuilderRegistry registry, string value)
         {
-            TEnum @enum;
-            if (Enum.TryParse(value, false, out @enum))
-            {
-                return @enum;
-            }
-            return base.CreateString(registry, value);
+            return Enum.Parse(typeof (TEnum), value);
+            // The code below reuires .Net 4
+            //
+            //if (Enum.TryParse(value, false, out @enum))
+            //{
+            //    return @enum;
+            //}
+            //return base.CreateString(registry, value);
         }
 
         public override object CreateNumber(ITypeBuilderRegistry registry, long value)

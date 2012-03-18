@@ -80,7 +80,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                         @string: s => s.FirstOrDefault()
                         )
                 }
-                .ToDictionary(t => t.Item1, t => t.Item2);
+                .ToDictionary(t => t.Type, t => t.Builder);
 
         #region ITypeBuilderFactory Members
 
@@ -92,7 +92,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #endregion
 
-        private static Tuple<Type, ITypeBuilder> CreateBuilder<T>(
+        private static BuilderInfo CreateBuilder<T>(
             Func<string, object> @string = null,
             Func<long, object> @long = null,
             Func<double, object> @double = null,
@@ -100,17 +100,30 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             Func<DateTime, object> @dateTime = null,
             Func<object> @null = null)
         {
-            var builder = new SimpleTypeBuilder
-                              {
-                                  String = @string,
-                                  Long = @long,
-                                  Double = @double,
-                                  Bool = @bool,
-                                  DateTime = @dateTime,
-                                  Null = @null
-                              };
-            return Tuple.Create<Type, ITypeBuilder>(typeof (T), builder);
+            return new BuilderInfo
+                       {
+                           Type = typeof (T),
+                           Builder = new SimpleTypeBuilder
+                                         {
+                                             String = @string,
+                                             Long = @long,
+                                             Double = @double,
+                                             Bool = @bool,
+                                             DateTime = @dateTime,
+                                             Null = @null
+                                         }
+                       };
         }
+
+        #region Nested type: BuilderInfo
+
+        private class BuilderInfo
+        {
+            public Type Type { get; set; }
+            public ITypeBuilder Builder { get; set; }
+        }
+
+        #endregion
 
         #region Nested type: SimpleTypeBuilder
 

@@ -42,7 +42,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
                     CreateSimpleNullableWriter<Guid>((w, v) => w.WriteString(v.ToString("n"))),
                     CreateSimpleNullableWriter<char>((w, v) => w.WriteString(v.ToString(CultureInfo.CurrentCulture)))
                 }
-                .ToDictionary(t => t.Item1, t => t.Item2);
+                .ToDictionary(t => t.Type, t => t.Writer);
 
         #region ITypeWriterFactory Members
 
@@ -54,29 +54,35 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         #endregion
 
-        private static Tuple<Type, ITypeWriter> CreateSimpleWriter<T>(
+        private static WriterInfo CreateSimpleWriter<T>(
             Action<IJsonWriter, T> action)
         {
-            ITypeWriter writer = new SimpleWriter<T>(action);
-            return Tuple.Create(typeof (T), writer);
+            return new WriterInfo
+                       {
+                           Type = typeof (T),
+                           Writer = new SimpleWriter<T>(action)
+                       };
         }
 
-        private static Tuple<Type, ITypeWriter> CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action)
+        private static WriterInfo CreateSimpleNullableWriter<T>(Action<IJsonWriter, T> action)
             where T : struct
         {
-            ITypeWriter writer = new SimpleWriter<T?>(
-                (w, v) =>
-                    {
-                        if (v.HasValue)
-                        {
-                            action(w, v.Value);
-                        }
-                        else
-                        {
-                            w.WriteNull();
-                        }
-                    });
-            return Tuple.Create(typeof (T?), writer);
+            return new WriterInfo
+                       {
+                           Type = typeof (T?),
+                           Writer = new SimpleWriter<T?>(
+                               (w, v) =>
+                                   {
+                                       if (v.HasValue)
+                                       {
+                                           action(w, v.Value);
+                                       }
+                                       else
+                                       {
+                                           w.WriteNull();
+                                       }
+                                   })
+                       };
         }
 
         #region Nested type: SimpleWriter
@@ -105,6 +111,16 @@ namespace Kiwi.Json.Conversion.TypeWriters
             }
 
             #endregion
+        }
+
+        #endregion
+
+        #region Nested type: WriterInfo
+
+        private class WriterInfo
+        {
+            public Type Type { get; set; }
+            public ITypeWriter Writer { get; set; }
         }
 
         #endregion
