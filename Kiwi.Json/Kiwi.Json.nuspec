@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <licenseUrl>https://github.com/jlarsson/Kiwi.Json</licenseUrl>
+    <projectUrl>https://github.com/jlarsson/Kiwi.Json</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>$copyright$</copyright>
+    <tags>Json Fast</tags>
+  </metadata>
+  <files>
+    <file src="$libdir$\net40\Kiwi.Json.dll" target="lib\net40" />
+  </files>
+</package>

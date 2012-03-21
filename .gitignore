@@ -1,6 +1,7 @@
 packages/
 bin/
 obj/
+*.dll
 *.user
 *.suo
 *.pdb
