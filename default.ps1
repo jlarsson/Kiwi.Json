@@ -4,7 +4,7 @@ properties {
 	$nuget_tool = join-path $base_dir ".nuget\nuget.exe"
 
 	$pack_version = (git describe --tags --abbrev=0).Replace("v", "")
-	$pack_commit = (git log --oneline -1).Split(' ')[0]
+	#$pack_commit = (git log --oneline -1).Split(' ')[0]
 	$pack_author = "Joakim Larsson"
 	$pack_copyright = "Copyright © Joakim Larsson 2012"
 
@@ -69,7 +69,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProductAttribute(""$($project.id) $version"")]
 [assembly: AssemblyCopyrightAttribute(""$pack_copyright"")]
 [assembly: AssemblyVersionAttribute(""$pack_version"")]
-[assembly: AssemblyInformationalVersionAttribute(""$pack_version / $pack_commit"")]
+[assembly: AssemblyInformationalVersionAttribute(""$pack_version"")]
 [assembly: AssemblyFileVersionAttribute(""$pack_version"")]
 [assembly: AssemblyDelaySignAttribute(false)]
 "
