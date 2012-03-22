@@ -4,8 +4,10 @@ using Kiwi.Json.Util;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
-    public class TypeWriterRegistry : ITypeWriterRegistry
+    public class TypeWriterRegistry : ICustomizableTypeWriterRegistry
     {
+        private readonly ThreadSafeList<IJsonConverter> _customConverters = new ThreadSafeList<IJsonConverter>();
+
         private readonly ITypeWriterFactory[] _factories = new ITypeWriterFactory[]
                                                                {
                                                                    new BuiltinTypeWriterFactory(),
@@ -22,7 +24,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         private readonly IRegistry<Type, ITypeWriter> _serializers = new ThreadsafeRegistry<Type, ITypeWriter>();
 
-        #region ITypeWriterRegistry Members
+        #region ICustomizableTypeWriterRegistry Members
 
         public ITypeWriter GetTypeWriterForValue(object value)
         {
@@ -38,11 +40,17 @@ namespace Kiwi.Json.Conversion.TypeWriters
             return _serializers.Lookup(type, CreateTypeSerializerForType);
         }
 
+        public void RegisterConverters(IJsonConverter[] converters)
+        {
+            _customConverters.Add(converters);
+        }
+
         #endregion
 
         private ITypeWriter CreateTypeSerializerForType(Type type)
         {
-            return _factories.Select(f => f.CreateTypeWriter(type)).FirstOrDefault(f => f != null);
+            return _customConverters.Select(c => c.CreateTypeWriter(type)).FirstOrDefault(w => w != null)
+                   ?? _factories.Select(f => f.CreateTypeWriter(type)).FirstOrDefault(w => w != null);
         }
 
         #region Nested type: NullWriter

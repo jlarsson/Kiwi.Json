@@ -40,7 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversion\ConstructJsonValue.cs" />
+    <Compile Include="Conversion\IJsonConverter.cs" />
     <Compile Include="Conversion\IJsonParser.cs" />
+    <Compile Include="Conversion\JsonProxyConverter.cs" />
     <Compile Include="Conversion\Reflection\ClassActivator.cs" />
     <Compile Include="Conversion\Reflection\ConstructorInfoClassActivator.cs" />
     <Compile Include="Conversion\Reflection\FieldGetter.cs" />
@@ -55,12 +57,19 @@
     <Compile Include="Conversion\TypeBuilders\ArrayBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\BuiltinTypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\ClassBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\ConvertingArrayBuilder.cs" />
+    <Compile Include="Conversion\TypeBuilders\ConvertingObjectBuilder.cs" />
+    <Compile Include="Conversion\TypeBuilders\ConvertingTypeBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\DictionaryBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\DictionaryBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\DictionaryWithWrongKeyTypeBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\EnumBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeBuilders\ICustomizableTypeBuilderRegistry.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
+    <Compile Include="Conversion\TypeWriters\ICustomizableTypeWriterRegistry.cs" />
+    <Compile Include="CustomTypeBuilderRegistry.cs" />
+    <Compile Include="CustomTypeWriterRegistry.cs" />
     <Compile Include="Untyped\JsonDateAndString.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilderFactory.cs" />
@@ -160,6 +169,7 @@
     <Compile Include="Untyped\JsonValueKind.cs" />
     <Compile Include="Util\IRegistry.cs" />
     <Compile Include="Util\StringMatcher.cs" />
+    <Compile Include="Util\ThreadSafeList.cs" />
     <Compile Include="Util\ThreadsafeRegistry.cs" />
   </ItemGroup>
   <ItemGroup>

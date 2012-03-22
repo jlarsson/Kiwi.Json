@@ -48,9 +48,12 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Conversion\CustomConversionFixture.cs" />
     <Compile Include="JPath\GetJsonPathsFixture.cs" />
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ClassDontNeedDefaultConstructorIfInitializedFixture.cs" />

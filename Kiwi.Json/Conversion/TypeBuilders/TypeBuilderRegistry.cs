@@ -4,8 +4,10 @@ using Kiwi.Json.Util;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class TypeBuilderRegistry : ITypeBuilderRegistry
+    public class TypeBuilderRegistry : ICustomizableTypeBuilderRegistry
     {
+        private readonly ThreadSafeList<IJsonConverter> _customConverters = new ThreadSafeList<IJsonConverter>();
+
         private readonly ITypeBuilderFactory[] _factories = new ITypeBuilderFactory[]
                                                                 {
                                                                     new BuiltinTypeBuilderFactory(),
@@ -26,7 +28,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private readonly IRegistry<Type, ITypeBuilder> _typeBuilders =
             new ThreadsafeRegistry<Type, ITypeBuilder>();
 
-        #region ITypeBuilderRegistry Members
+        #region ICustomizableTypeBuilderRegistry Members
 
         public ITypeBuilder GetTypeBuilder<T>()
         {
@@ -38,11 +40,17 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return _typeBuilders.Lookup(type, CreateTypeBuilder);
         }
 
+        public void RegisterConverters(IJsonConverter[] converters)
+        {
+            _customConverters.Add(converters);
+        }
+
         #endregion
 
         private ITypeBuilder CreateTypeBuilder(Type type)
         {
-            return _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null);
+            return _customConverters.Select(c => c.CreateTypeBuilder(type)).FirstOrDefault(w => w != null)
+                   ?? _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null);
         }
     }
 }

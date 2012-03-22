@@ -14,8 +14,32 @@ namespace Kiwi.Json
             TypeBuilderRegistry = new TypeBuilderRegistry();
         }
 
-        public static ITypeWriterRegistry TypeWriterRegistry { get; set; }
-        public static ITypeBuilderRegistry TypeBuilderRegistry { get; set; }
+        public static ICustomizableTypeWriterRegistry TypeWriterRegistry { get; set; }
+        public static ICustomizableTypeBuilderRegistry TypeBuilderRegistry { get; set; }
+
+        public static void RegisterCustomConverters(params IJsonConverter[] customConverters)
+        {
+            TypeWriterRegistry.RegisterConverters(customConverters);
+            TypeBuilderRegistry.RegisterConverters(customConverters);
+        }
+
+        public static IJsonValue ToJson(object obj, params IJsonConverter[] customConverters)
+        {
+            var registry = CreateTypeWriterRegistry(customConverters);
+            var writer = new ConstructJsonValue();
+            registry.Write(writer, obj);
+            return writer.GetValue();
+        }
+
+        private static ITypeWriterRegistry CreateTypeWriterRegistry(IJsonConverter[] customConverters)
+        {
+            return new CustomTypeWriterRegistry(TypeWriterRegistry, customConverters);
+        }
+
+        private static ITypeBuilderRegistry CreateTypeBuilderRegistry(IJsonConverter[] customConverters)
+        {
+            return new CustomTypeBuilderRegistry(TypeBuilderRegistry, customConverters);
+        }
 
         public static IJsonValue ToJson(object obj)
         {
@@ -53,6 +77,25 @@ namespace Kiwi.Json
             return Parse(parser, default(T));
         }
 
+        public static T Parse<T>(string json, params IJsonConverter[] customConverters)
+        {
+            return Parse(new JsonStringParser(json), default(T), customConverters);
+        }
+
+        public static T Parse<T>(string json, T initializedInstance, params IJsonConverter[] customConverters)
+        {
+            return Parse(new JsonStringParser(json), initializedInstance, customConverters);
+        }
+        public static T Parse<T>(IJsonParser parser, T initializedInstance, params IJsonConverter[] customConverters)
+        {
+            return Parse(parser, initializedInstance, CreateTypeBuilderRegistry(customConverters));
+        }
+
+        public static T Parse<T>(IJsonParser parser, T initializedInstance, ITypeBuilderRegistry registry)
+        {
+            return registry.Read<T>(parser, initializedInstance);
+        }
+
         public static T Parse<T>(IJsonParser parser, T initializedInstance)
         {
             return TypeBuilderRegistry.Read<T>(parser, initializedInstance);
@@ -60,10 +103,10 @@ namespace Kiwi.Json
 
         public static T Parse<T>(string json)
         {
-            return Parse(json, default(T));
+            return Parse(default(T), json);
         }
 
-        public static T Parse<T>(string json, T initializedInstance)
+        public static T Parse<T>(T initializedInstance, string json)
         {
             return TypeBuilderRegistry.Read<T>(new JsonStringParser(json), initializedInstance);
         }
@@ -71,15 +114,25 @@ namespace Kiwi.Json
         public static string Write(object obj)
         {
             var writer = new JsonStringWriter();
-            Write(obj, writer);
+            Write(obj, writer, TypeWriterRegistry);
+            return writer.ToString();
+        }
+        public static string Write(object obj, params IJsonConverter[] customConverters)
+        {
+            var writer = new JsonStringWriter();
+            Write(obj, writer, CreateTypeWriterRegistry(customConverters));
             return writer.ToString();
         }
 
         public static void Write(object obj, IJsonWriter writer)
         {
-            TypeWriterRegistry.Write(writer, obj);
+            Write(obj, writer, TypeWriterRegistry);
         }
 
+        public static void Write(object obj, IJsonWriter writer, ITypeWriterRegistry registry)
+        {
+            registry.Write(writer, obj);
+        }
 
         public static IJsonPath ParseJsonPath(string jsonPath)
         {

@@ -6,6 +6,8 @@ namespace Kiwi.Json.Util
 {
     public class ThreadsafeRegistry<TKey, TValue> : IRegistry<TKey, TValue> where TKey : class
     {
+        private readonly object _sync = new object();
+
         private Dictionary<TKey, TValue> _dict;
 
         public ThreadsafeRegistry()
@@ -28,9 +30,21 @@ namespace Kiwi.Json.Util
             {
                 return value;
             }
-            value = creator(key);
-            Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) {{key, value}});
-            return value;
+
+            lock(_sync)
+            {
+                if (d.TryGetValue(key, out value))
+                {
+                    return value;
+                }
+                value = creator(key);
+                Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) { { key, value } });
+                return value;
+            }
+
+            //value = creator(key);
+            //Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) {{key, value}});
+            //return value;
         }
 
         #endregion
