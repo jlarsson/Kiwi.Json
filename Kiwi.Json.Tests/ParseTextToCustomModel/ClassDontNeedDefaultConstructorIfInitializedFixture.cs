@@ -28,7 +28,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
         [Test]
         public void DictionariesDontNeedDefaultConstructorIfInitialized()
         {
-            var d = JsonConvert.Parse(new CustomDictionary(StringComparer.OrdinalIgnoreCase), @"{""A"":1}");
+            var d = JsonConvert.Parse(@"{""A"":1}", new CustomDictionary(StringComparer.OrdinalIgnoreCase));
             Assert.That(new []{"A"}, Is.EqualTo(d.Keys.ToArray()));
             Assert.That(new[] { 1 }, Is.EqualTo(d.Values.ToArray()));
         }
@@ -41,7 +41,7 @@ namespace Kiwi.Json.Tests.ParseTextToCustomModel
             var json = @"{""Name"":""hello world""}";
             Assert.Throws<InvalidClassForDeserializationException>(() => JsonConvert.Parse<A>(json));
 
-            var a = JsonConvert.Parse(new A("this will be overwritten"), json);
+            var a = JsonConvert.Parse(json, new A("this will be overwritten"));
             Assert.That(a, Is.Not.Null);
             Assert.That(a.Name, Is.EqualTo("hello world"));
         }

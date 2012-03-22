@@ -47,13 +47,11 @@ namespace Kiwi.Json.PerformanceTests
             var json = JsonConvert.Write(JsonConvert.ToJson(_post));
 
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, json,
-                JsonConvert.Parse<Post>);
+            Run("Warming up Kiwi.Json", warmUpCount, json, s => JsonConvert.Parse<Post>(s));
             Run("Warming up Kiwi.Json", warmUpCount, json, Newtonsoft.Json.JsonConvert.DeserializeObject<Post>);
 
             const int runCount = 100000;
-            Run("Kiwi.Json -> Native", runCount, json,
-                JsonConvert.Parse<Post>);
+            Run("Kiwi.Json -> Native", runCount, json, s => JsonConvert.Parse<Post>(s));
             Run("Newtonsoft.Json -> Native", runCount, json, Newtonsoft.Json.JsonConvert.DeserializeObject<Post>);
         }
 
@@ -77,11 +75,11 @@ namespace Kiwi.Json.PerformanceTests
         public void ToJson()
         {
             const int warmUpCount = 1000;
-            Run("Warming up Kiwi.Json", warmUpCount, _post, JsonConvert.ToJson);
+            Run("Warming up Kiwi.Json", warmUpCount, _post, o => JsonConvert.ToJson(o));
             Run("Warming up Newtonsoft.Json", warmUpCount, _post, JObject.FromObject);
 
             const int runCount = 1000000;
-            Run("Native -> Json: Kiwi.Json", runCount, _post, JsonConvert.ToJson);
+            Run("Native -> Json: Kiwi.Json", runCount, _post, o => JsonConvert.ToJson(o));
             Run("Native -> Json: Newtonsoft.Json", runCount, _post, JObject.FromObject);
         }
 

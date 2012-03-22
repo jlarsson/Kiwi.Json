@@ -70,6 +70,8 @@
     <Compile Include="Conversion\TypeWriters\ICustomizableTypeWriterRegistry.cs" />
     <Compile Include="CustomTypeBuilderRegistry.cs" />
     <Compile Include="CustomTypeWriterRegistry.cs" />
+    <Compile Include="DefaultJsonConvert.cs" />
+    <Compile Include="IJsonConvert.cs" />
     <Compile Include="Untyped\JsonDateAndString.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonObjectBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonValueBuilderFactory.cs" />
