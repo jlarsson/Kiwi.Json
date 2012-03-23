@@ -28,7 +28,7 @@ namespace Kiwi.Json.Converters
             return null;
         }
 
-        protected ITypeWriter TryCreateProxyWriter<T>(Type type, Func<T, object> createProxy)
+        protected ITypeWriter TryCreateWriter<T>(Type type, Func<T, object> createProxy)
         {
             if (typeof (T).IsAssignableFrom(type))
             {

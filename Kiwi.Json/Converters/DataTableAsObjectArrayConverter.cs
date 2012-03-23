@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Kiwi.Json.Conversion;
 using Kiwi.Json.Conversion.TypeBuilders;
 using Kiwi.Json.Conversion.TypeWriters;
 using Kiwi.Json.Untyped;
@@ -67,7 +66,7 @@ namespace Kiwi.Json.Converters
 
         public override ITypeWriter CreateTypeWriter(Type type)
         {
-            return TryCreateProxyWriter<DataTable>(type, ConvertDataTableToJsonArray);
+            return TryCreateWriter<DataTable>(type, ConvertDataTableToJsonArray);
         }
     }
 }

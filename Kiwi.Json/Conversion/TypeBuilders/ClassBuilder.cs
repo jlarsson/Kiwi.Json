@@ -91,6 +91,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 BindingFlags.Public |
                 BindingFlags.Instance)
                     where (property.GetGetMethod().GetParameters().Length == 0)
+                    where property.CanRead && property.CanWrite
                     let dm = classUsesDataContract ? GetDataMemberAttribute(property) : null
                     where classUsesDataContract == (dm != null)
                     select new ClassMember

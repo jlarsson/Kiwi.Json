@@ -71,6 +71,7 @@
     <Compile Include="Conversion\TypeWriters\ICustomizableTypeWriterRegistry.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DataTableAsObjectArrayConverter.cs" />
+    <Compile Include="Converters\UriConverter.cs" />
     <Compile Include="CustomTypeBuilderRegistry.cs" />
     <Compile Include="CustomTypeWriterRegistry.cs" />
     <Compile Include="DefaultJsonConvert.cs" />

@@ -65,6 +65,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
             return (from property in typeof (TClass).GetProperties(BindingFlags.GetProperty |
                                                                    BindingFlags.Public |
                                                                    BindingFlags.Instance)
+                    where property.CanRead
                     where (property.GetGetMethod().GetParameters().Length == 0)
                     let dm = classUsesDataContract ? GetDataMemberAttribute(property) : null
                     where classUsesDataContract == (dm != null)

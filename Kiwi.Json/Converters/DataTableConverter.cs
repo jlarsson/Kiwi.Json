@@ -29,7 +29,7 @@ namespace Kiwi.Json.Converters
 
         public override ITypeWriter CreateTypeWriter(Type type)
         {
-            return TryCreateProxyWriter<DataTable>(type, dt => new DataTableProxy
+            return TryCreateWriter<DataTable>(type, dt => new DataTableProxy
             {
                 Columns =
                     dt.Columns.OfType<DataColumn>().Select(
