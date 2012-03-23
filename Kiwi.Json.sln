@@ -17,8 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kiwi.Fluesent.Tests", "Kiwi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8B2162F8-F79E-4BC0-80F8-2342ADBAF521}"
 	ProjectSection(SolutionItems) = preProject
-		build\default.ps1 = build\default.ps1
-		build\psake_ext.ps1 = build\psake_ext.ps1
+		default.ps1 = default.ps1
 	EndProjectSection
 EndProject
 Global
