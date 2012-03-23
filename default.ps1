@@ -49,7 +49,7 @@ task build -depends update-assembly-info {
 
 task pack -depends build {
 	$projects | foreach { `
-		& $nuget_tool pack $_.nuspec -p "id=$($_.id);version=$pack_version;title=$($_.title);author=$pack_.author;description=$($_.description);copyright=$pack_copyright;libdir=..\pack\lib"
+		& $nuget_tool pack $_.nuspec -p "id=$($_.id);version=$pack_version;title=$($_.title);author=$pack_author;description=$($_.description);copyright=$pack_copyright;libdir=..\pack\lib"
 	}
 }
 
