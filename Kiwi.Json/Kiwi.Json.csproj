@@ -69,6 +69,7 @@
     <Compile Include="Conversion\TypeBuilders\ITypeBuilderFactory.cs" />
     <Compile Include="Conversion\TypeBuilders\JsonArrayBuilderFactory.cs" />
     <Compile Include="Conversion\TypeWriters\ICustomizableTypeWriterRegistry.cs" />
+    <Compile Include="Converters\AspNetDateTimeConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DataTableAsObjectArrayConverter.cs" />
     <Compile Include="Converters\UriConverter.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Conversion\IJsonWriter.cs" />
     <Compile Include="Conversion\TypeBuilders\IObjectBuilder.cs" />
     <Compile Include="Conversion\TypeBuilders\ITypeBuilder.cs" />
+    <Compile Include="Untyped\JsonLiteralContent.cs" />
     <Compile Include="Untyped\NullJsonValueVisitor.cs" />
     <Compile Include="Util\AbstractTextMatcher.cs" />
     <Compile Include="Util\JsonCharacters.cs" />

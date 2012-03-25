@@ -11,6 +11,10 @@ namespace Kiwi.Json.Conversion
 
         #region IJsonWriter Members
 
+        public void WriteLiteralContent(string value)
+        {
+        }
+
         public void WriteString(string value)
         {
             _values.Push(new JsonString(value));

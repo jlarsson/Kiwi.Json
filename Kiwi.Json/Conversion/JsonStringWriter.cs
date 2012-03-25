@@ -22,6 +22,11 @@ namespace Kiwi.Json.Conversion
 
         #region IJsonWriter Members
 
+        public void WriteLiteralContent(string value)
+        {
+            StringBuilder.Append(value);
+        }
+
         public void WriteString(string value)
         {
             StringBuilder.Append('"');

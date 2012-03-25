@@ -4,6 +4,7 @@ namespace Kiwi.Json.Conversion
 {
     public interface IJsonWriter
     {
+        void WriteLiteralContent(string value);
         void WriteString(string value);
         void WriteInteger(long value);
         void WriteDouble(double value);

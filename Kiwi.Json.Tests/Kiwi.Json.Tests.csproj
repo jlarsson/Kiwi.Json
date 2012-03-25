@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Conversion\AspNetDateTimeConverterFixture.cs" />
     <Compile Include="Conversion\DataTableAsObjectArrayConverterFixture.cs" />
     <Compile Include="Conversion\DataTableConverterFixture.cs" />
     <Compile Include="Conversion\DataTableConverterFixtureBase.cs" />
