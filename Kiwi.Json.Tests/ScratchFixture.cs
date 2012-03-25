@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Kiwi.Json.Conversion;
 using NUnit.Framework;
 
@@ -16,15 +17,13 @@ namespace Kiwi.Json.Tests
         [Test]
         public void Test()
         {
-            var writer = new JsonStringWriter();
 
-
+            var writer =  new StringWriter();
             for(var i = 0; i < 100; ++i)
             {
-                JsonConvert.Write(new { A = i }, writer);
-                writer.StringBuilder.AppendLine();
+                writer.WriteLine(JsonConvert.Write(new { A = i }));
             }
-
+            var s = writer.ToString();
             var reader = new JsonStringParser(writer.ToString());
 
             while (!reader.EndOfInput())
