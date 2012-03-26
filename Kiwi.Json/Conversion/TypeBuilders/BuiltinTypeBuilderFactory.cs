@@ -19,9 +19,15 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                     CreateBuilder<ushort>(@long: l => (ushort) l),
                     CreateBuilder<uint>(@long: l => (uint) l),
                     CreateBuilder<ulong>(@long: l => (ulong) l),
-                    CreateBuilder<double>(@double: d => d),
-                    CreateBuilder<float>(@double: d => Convert.ToSingle(d)),
-                    CreateBuilder<decimal>(@double: d => Convert.ToDecimal(d)),
+                    CreateBuilder<double>(
+                        @long: l => Convert.ToDouble(l),
+                        @double: d => d),
+                    CreateBuilder<float>(
+                        @long: l => Convert.ToSingle(l),
+                        @double: d => Convert.ToSingle(d)),
+                    CreateBuilder<decimal>(
+                        @long: l => Convert.ToDecimal(l),
+                        @double: d => Convert.ToDecimal(d)),
                     CreateBuilder<DateTime>(@dateTime: d => d),
                     CreateBuilder<Guid>(@string: s => new Guid(s)),
                     CreateBuilder<string>(
@@ -62,12 +68,15 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                         @long: l => (ulong) l),
                     CreateBuilder<double?>(
                         @null: () => null,
+                        @long: l => Convert.ToDouble(l),
                         @double: d => d),
                     CreateBuilder<float?>(
                         @null: () => null,
+                        @long: l => Convert.ToSingle(l),
                         @double: d => Convert.ToSingle(d)),
                     CreateBuilder<decimal?>(
                         @null: () => null,
+                        @long: l => Convert.ToDecimal(l),
                         @double: d => Convert.ToDecimal(d)),
                     CreateBuilder<DateTime?>(
                         @null: () => null,

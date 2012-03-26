@@ -79,6 +79,16 @@ namespace Kiwi.Json.Tests.WriteJson
                 yield return Case<long?>(null, "null");
                 yield return Case<ulong?>(null, "null");
 
+                // Floating point numerics
+                yield return Case<double>(1.234e56, "1.234E+56");
+                yield return Case<float>(1.234e5f, "123400");
+
+                // Nullable floating point numerics
+                yield return Case<double?>(1.234e56, "1.234E+56");
+                yield return Case<double?>(null, "null");
+                yield return Case<float?>(1.234e5f, "123400");
+                yield return Case<float?>(null, "null");
+
                 // Guids
                 yield return Case(new Guid("625a814d5c88469d8402bfd698c3c66f"), "\"625a814d5c88469d8402bfd698c3c66f\"");
                 // Nullable guids
