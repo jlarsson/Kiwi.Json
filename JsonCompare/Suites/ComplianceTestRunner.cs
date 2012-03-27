@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using JsonCompare.Implementations;
 using JsonCompare.Utility;
@@ -9,35 +8,28 @@ namespace JsonCompare.Suites
     public class ComplianceTestRunner : IComplianceTestRunner
     {
         public object Run(
-            IEnumerable<IComplianceTestValuesProvider> valuesProviders,
-            IEnumerable<IJsonImplementation> implementations
+            IComplianceTestValuesProvider[] valuesProviders,
+            IJsonImplementation[] implementations
             )
         {
-            return from provider in valuesProviders
-                   select new
-                              {
-                                  name = provider.Name,
-                                  results = Run(provider.TestValues, implementations)
-                              };
-
-
-        }
-
-        private IEnumerable<object> Run(IEnumerable<IComplianceTestValue> values, IEnumerable<IJsonImplementation> implementations)
-        {
-            foreach (var value in values)
-            {
-                yield return new
-                                 {
-                                     name = TypeUtility.GetTypeName(value.Type),
-                                     results = Run(value, implementations)
-                                 };
-            }
-        }
-
-        private IEnumerable<object> Run(IComplianceTestValue value, IEnumerable<IJsonImplementation> implementations)
-        {
-            return from implementation in implementations select Run(value, implementation);
+            return new
+                       {
+                           implementations = from implementation in implementations select implementation.Name,
+                           cases = from valuesProvider in valuesProviders
+                                   let testValues = valuesProvider.TestValues
+                                   select new
+                                              {
+                                                  name = valuesProvider.Name,
+                                                  tests = from value in testValues
+                                                            select new
+                                                                       {
+                                                                           name = TypeUtility.GetTypeName(value.Type),
+                                                                           results =
+                                                                from implementation in implementations
+                                                                select Run(value, implementation)
+                                                                       }
+                                              }
+                       };
         }
 
         private object Run(IComplianceTestValue value, IJsonImplementation implementation)

@@ -1,3 +1,4 @@
+using System;
 using Kiwi.Json.Conversion;
 using Kiwi.Json.Conversion.TypeBuilders;
 using Kiwi.Json.Conversion.TypeWriters;
@@ -5,6 +6,19 @@ using Kiwi.Json.Untyped;
 
 namespace Kiwi.Json
 {
+    public static class JsonConvertExtensions
+    {
+        public static T ToObject<T>(this IJsonConvert convert, IJsonValue value, params IJsonConverter[] customConverters)
+        {
+            return (T) convert.ToObject(typeof (T), value, customConverters);
+        }
+
+        public static T Parse<T>(this IJsonConvert convert, IJsonParser parser, T initializedInstance, params IJsonConverter[] customConverters)
+        {
+            return (T)convert.Parse(typeof (T), parser, initializedInstance, customConverters);
+        }
+        
+    }
     public class DefaultJsonConvert : IJsonConvert
     {
         public DefaultJsonConvert()
@@ -46,15 +60,15 @@ namespace Kiwi.Json
             return writer.GetValue();
         }
 
-        public T ToObject<T>(IJsonValue value, params IJsonConverter[] customConverters)
+        public object ToObject(Type type, IJsonValue value, params IJsonConverter[] customConverters)
         {
             var registry = CreateTypeBuilderRegistry(customConverters);
-            return (T) value.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder<T>()));
+            return value.Visit(new ConvertJsonToCustom(registry, registry.GetTypeBuilder(type)));
         }
 
-        public T Parse<T>(IJsonParser parser, T initializedInstance, params IJsonConverter[] customConverters)
+        public object Parse(Type type, IJsonParser parser, object initializedInstance, params IJsonConverter[] customConverters)
         {
-            return CreateTypeBuilderRegistry(customConverters).Read<T>(parser, initializedInstance);
+            return CreateTypeBuilderRegistry(customConverters).Read(type, parser, initializedInstance);
         }
 
         public void Write(object obj, IJsonWriter writer, params IJsonConverter[] customConverters)

@@ -18,11 +18,6 @@ namespace Kiwi.Json
         }
 
 
-        public ITypeBuilder GetTypeBuilder<T>()
-        {
-            return GetTypeBuilder(typeof (T));
-        }
-
         public ITypeBuilder GetTypeBuilder(Type type)
         {
             return _registry.Lookup(type,

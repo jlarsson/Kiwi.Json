@@ -1,4 +1,5 @@
-﻿using Kiwi.Json.Conversion;
+﻿using System;
+using Kiwi.Json.Conversion;
 using Kiwi.Json.JPath;
 using Kiwi.Json.Untyped;
 
@@ -22,6 +23,11 @@ namespace Kiwi.Json
             return Default.ToJson(obj, customConverters);
         }
 
+        public static object ToObject(this IJsonValue value, Type type, params IJsonConverter[] customConverters)
+        {
+            return Default.ToObject(type, value, customConverters);
+        }
+
         public static T ToObject<T>(this IJsonValue value, params IJsonConverter[] customConverters)
         {
             return Default.ToObject<T>(value, customConverters);
@@ -37,19 +43,28 @@ namespace Kiwi.Json
             return Parse<IJsonValue>(json);
         }
 
+        public static IJsonValue Parse(IJsonParser parser)
+        {
+            return Parse(parser, default(IJsonValue));
+        }
+
         public static T Parse<T>(string json, params IJsonConverter[] customConverters)
         {
             return Parse(new JsonStringParser(json), default(T), customConverters);
+        }
+        public static object Parse(Type type, string json, params IJsonConverter[] customConverters)
+        {
+            return Parse(type, new JsonStringParser(json), null, customConverters);
+        }
+
+        public static object Parse(Type type, IJsonParser parser, object initializedInstance, params IJsonConverter[] customConverters)
+        {
+            return Default.Parse(type, parser, initializedInstance, customConverters);
         }
 
         public static T Parse<T>(string json, T initializedInstance, params IJsonConverter[] customConverters)
         {
             return Parse(new JsonStringParser(json), initializedInstance, customConverters);
-        }
-
-        public static IJsonValue Parse(IJsonParser parser)
-        {
-            return Parse(parser, default(IJsonValue));
         }
 
         public static T Parse<T>(IJsonParser parser, T initializedInstance, params IJsonConverter[] customConverters)

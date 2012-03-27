@@ -1,10 +1,53 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+﻿<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 	    <title>Json report</title>
-        <script type="text/javascript" src="report.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.1/underscore-min.js"></script>
+		<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+		<script type="text/javascript">
+		    google.load('visualization', '1', { packages: ['table'] });
+		    $(document).ready(
+				function () {
+				    var cases = report_data.cases;
+				    var implementations = report_data.implementations;
+				    _.chain(cases)
+					.map(function (c) {
+					    var dt = new google.visualization.DataTable();
+					    dt.addColumn('string', 'Name');
+					    var ci = {};
+					    _.each(implementations, function (n) { ci[n] = dt.addColumn('boolean', n); });
+
+					    _.chain(c.tests)
+						.map(function (t) {
+						    var rowData = [t.name];
+						    _.each(t.results, function (r) {
+						        rowData[ci[r.implementation]] = r.success;
+						    });
+						    dt.addRow(rowData);
+						});
+					    return {
+					        caption: c.name,
+					        dt: dt
+					    };
+					})
+					.each(function (data) {
+					    var div = $('<div/>');
+					    $('#report')
+						.append($('<h3/>').text(data.caption))
+						.append(div);
+					    var table = new google.visualization.Table(div[0]);
+					    table.draw(data.dt, { showRowNumber: true });
+					});
+				});
+		</script>
 	</head>
 	<body>
-	
+		<div id="report"></div>
 	</body>
+	
+	<script type="text/javascript">
+	    var report_data = { };
+	</script>
 </html>

@@ -30,11 +30,6 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         #region ICustomizableTypeBuilderRegistry Members
 
-        public ITypeBuilder GetTypeBuilder<T>()
-        {
-            return GetTypeBuilder(typeof (T));
-        }
-
         public ITypeBuilder GetTypeBuilder(Type type)
         {
             return _typeBuilders.Lookup(type, CreateTypeBuilder);
