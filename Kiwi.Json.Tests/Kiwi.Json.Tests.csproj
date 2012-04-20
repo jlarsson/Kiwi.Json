@@ -58,6 +58,7 @@
     <Compile Include="Conversion\DataTableConverterFixture.cs" />
     <Compile Include="Conversion\DataTableConverterFixtureBase.cs" />
     <Compile Include="Conversion\UriConverterFixture.cs" />
+    <Compile Include="Incidents\Class1.cs" />
     <Compile Include="JPath\GetJsonPathsFixture.cs" />
     <Compile Include="JPath\JsonPathFixture.cs" />
     <Compile Include="ParseTextToCustomModel\ClassDontNeedDefaultConstructorIfInitializedFixture.cs" />

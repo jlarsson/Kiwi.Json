@@ -8,6 +8,8 @@ namespace Kiwi.Json.Conversion
 {
     public abstract class AbstractJsonParser : IJsonParser
     {
+        public static char Eof = char.MaxValue;
+
         protected AbstractJsonParser()
         {
             Column = 1;
@@ -22,7 +24,7 @@ namespace Kiwi.Json.Conversion
         public bool EndOfInput()
         {
             SkipWhitespace();
-            return Peek() == char.MinValue;
+            return Peek() == -1;
         }
 
         public object Parse(ITypeBuilderRegistry registry, ITypeBuilder builder, object instanceState)
@@ -192,7 +194,7 @@ namespace Kiwi.Json.Conversion
             while (true)
             {
                 var c = Next();
-                if (c == char.MinValue)
+                if (c == Eof)
                 {
                     throw CreateBadStringException(startLine, startColumn);
                 }

@@ -5,6 +5,8 @@ namespace Kiwi.Json.Util
 {
     public abstract class AbstractTextMatcher
     {
+        public static char Eof = char.MaxValue;
+
         protected AbstractTextMatcher()
         {
             Line = 1;
@@ -78,7 +80,7 @@ namespace Kiwi.Json.Util
             while (true)
             {
                 var c = MatchAnyChar();
-                if (c == char.MinValue)
+                if (c == Eof)
                 {
                     throw CreateExpectedException("more string characters");
                 }
@@ -190,7 +192,7 @@ namespace Kiwi.Json.Util
         {
             var sb = new StringBuilder();
             var curr = PeekNextChar();
-            while ((curr != char.MinValue) && (curr != c))
+            while ((curr != -1) && (curr != c))
             {
                 sb.Append(MatchAnyChar());
                 curr = PeekNextChar();
