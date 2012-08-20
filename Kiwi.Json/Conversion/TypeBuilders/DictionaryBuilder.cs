@@ -3,12 +3,17 @@ using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder, IObjectBuilder
-        where TDictionary : class, IDictionary<string, TValue> //, new()
+    public class DictionaryBuilder<TDictionary, TValue> : AbstractTypeBuilder
+        where TDictionary : class, IDictionary<string, TValue>
     {
 // ReSharper disable StaticFieldInGenericType
-        private static readonly IClassActivator Activator = ClassActivator.Create(typeof (TDictionary));
+        private static readonly IClassActivator Activator;
 // ReSharper restore StaticFieldInGenericType
+
+        static DictionaryBuilder()
+        {
+            Activator = ClassActivator.Create(typeof(TDictionary));
+        }
 
         #region IObjectBuilder Members
 

@@ -6,14 +6,19 @@ using Kiwi.Json.Conversion.Reflection;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
 {
-    public class ClassBuilder<TClass> : AbstractTypeBuilder, IObjectBuilder where TClass : class // where TClass : new()
+    public class ClassBuilder<TClass> : AbstractTypeBuilder where TClass : class
     {
 // ReSharper disable StaticFieldInGenericType
-        private static readonly Dictionary<string, ClassMember> Members = DiscoverMembers();
+        private static readonly Dictionary<string, ClassMember> Members;
 
-
-        private static readonly IClassActivator Activator = ClassActivator.Create(typeof (TClass));
+        private static readonly IClassActivator Activator;
 // ReSharper restore StaticFieldInGenericType
+
+        static ClassBuilder()
+        {
+            Members = DiscoverMembers();
+            Activator = ClassActivator.Create(typeof(TClass));
+        }
 
         #region IObjectBuilder Members
 

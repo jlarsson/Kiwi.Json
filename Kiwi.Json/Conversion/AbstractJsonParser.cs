@@ -1,11 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using Kiwi.Json.Conversion.TypeBuilders;
-using Kiwi.Json.Util;
-
-namespace Kiwi.Json.Conversion
+﻿namespace Kiwi.Json.Conversion
 {
+    using System;
+    using System.Globalization;
+    using System.Text;
+    using TypeBuilders;
+    using Util;
+
     public abstract class AbstractJsonParser : IJsonParser
     {
         public static char Eof = char.MaxValue;

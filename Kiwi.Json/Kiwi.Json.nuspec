@@ -14,5 +14,6 @@
   </metadata>
   <files>
     <file src="$libdir$\net40\Kiwi.Json.dll" target="lib\net40" />
+	<file src="$libdir$\net40\Kiwi.Json.pdb" target="lib\net40" />
   </files>
 </package>
