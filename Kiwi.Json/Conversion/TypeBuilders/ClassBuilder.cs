@@ -91,12 +91,20 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                     a => a.GetType().FullName == "System.Runtime.Serialization.DataContractAttribute")).Any();
 
             return (from property in typeof (TClass).GetProperties(
-                BindingFlags.GetProperty |
-                BindingFlags.SetProperty |
-                BindingFlags.Public |
-                BindingFlags.Instance)
-                    where (property.GetGetMethod().GetParameters().Length == 0)
+                BindingFlags.GetProperty
+                | BindingFlags.SetProperty
+                | BindingFlags.Public
+                | BindingFlags.Instance)
                     where property.CanRead && property.CanWrite
+                    where (property.GetGetMethod().GetParameters().Length == 0)
+
+                    let getter = property.GetGetMethod()
+                    let setter = property.GetSetMethod(true)
+                    where getter != null
+                    where setter != null
+                    where getter.IsPublic
+                    where setter.IsPublic
+
                     let dm = classUsesDataContract ? GetDataMemberAttribute(property) : null
                     where classUsesDataContract == (dm != null)
                     select new ClassMember
