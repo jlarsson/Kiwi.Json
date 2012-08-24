@@ -15,7 +15,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             throw new InvalidClassForDeserializationException(
                 string.Format(
-                    "Cannot deserialilze json into dictionary of type {0}. Dictionary key type must be string.",
+                    "Cannot deserialize json into dictionary of type {0}. Dictionary key type must be string.",
                     _dictionaryType));
         }
 
