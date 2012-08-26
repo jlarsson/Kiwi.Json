@@ -10,7 +10,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public SystemObjectBuilder()
         {
-            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, object>();
+            _dictionaryBuilder = new DictionaryBuilder<Dictionary<string, object>, string, object>();
             _arrayBuilder = new CollectionBuilder<List<object>, object>();
         }
 

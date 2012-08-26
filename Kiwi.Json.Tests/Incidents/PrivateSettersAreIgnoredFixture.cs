@@ -7,13 +7,13 @@ namespace Kiwi.Json.Tests.Incidents
     {
         public class A
         {
-            public int P { get; set; }
+            public int P { get; private set; }
         }
         [Test]
         public void Test()
         {
             var a = JsonConvert.Parse<A>("{\"P\":1}");
-            Assert.That(0, Is.EqualTo(a.P));
+            Assert.That(0, Is.EqualTo(a.P),"Property P with private setter should be ignored");
         }
     }
 }

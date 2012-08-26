@@ -12,6 +12,7 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
         {
             public int Value { get; set; }
         }
+
         [Test]
         public void Dictionary()
         {
@@ -20,6 +21,19 @@ namespace Kiwi.Json.Tests.ConvertJsonToCustomModel
             parsed.Count.Should().Be.EqualTo(2);
 
             (from kv in parsed orderby kv.Key select kv.Key).Should().Have.SameSequenceAs("a", "b");
+
+            (from kv in parsed where kv.Value != null orderby kv.Key select kv.Value.Value).Should().Have.SameSequenceAs
+                (1, 2);
+        }
+
+        [Test]
+        public void DictionaryWithIntegerKeys()
+        {
+            var parsed = JsonConvert.Parse<IDictionary<int, A>>(@"{""1"":{""Value"":1},""2"":{""Value"":2}}");
+
+            parsed.Count.Should().Be.EqualTo(2);
+
+            (from kv in parsed orderby kv.Key select kv.Key).Should().Have.SameSequenceAs(1, 2);
 
             (from kv in parsed where kv.Value != null orderby kv.Key select kv.Value.Value).Should().Have.SameSequenceAs
                 (1, 2);
