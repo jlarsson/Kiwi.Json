@@ -10,7 +10,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public ITypeBuilder CreateTypeBuilder(Type type)
         {
-            // Check which IDictionary<string,T> is implemented
+            // Check which IDictionary<K,V> is implemented
             var kvTypes = (from @interface in new[] {type}.Concat(type.GetInterfaces())
                            where
                                @interface.IsGenericType
@@ -25,14 +25,9 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 return null;
             }
 
-            if (kvTypes.KeyType != typeof (string))
-            {
-                return new DictionaryWithWrongKeyTypeBuilder(kvTypes.KeyType);
-            }
-
             var concreteClass = type.IsClass
                                     ? type
-                                    : typeof (Dictionary<,>).MakeGenericType(typeof (string), kvTypes.ValueType);
+                                    : typeof(Dictionary<,>).MakeGenericType(kvTypes.KeyType, kvTypes.ValueType);
 
             if (!type.IsAssignableFrom(concreteClass))
             {
@@ -41,8 +36,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
             return
                 ((ITypeBuilderFactory)
-                 typeof (DictionaryBuilderFactory<,>)
-                     .MakeGenericType(concreteClass, kvTypes.ValueType)
+                 typeof (DictionaryBuilderFactory<,,>)
+                     .MakeGenericType(concreteClass, kvTypes.KeyType, kvTypes.ValueType)
                      .GetConstructor(Type.EmptyTypes)
                      .Invoke(new object[0])).CreateTypeBuilder(type);
         }
@@ -50,14 +45,14 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         #endregion
     }
 
-    public class DictionaryBuilderFactory<TDictionary, TValue> : ITypeBuilderFactory
-        where TDictionary : class, IDictionary<string, TValue>
+    public class DictionaryBuilderFactory<TDictionary, TKey, TValue> : ITypeBuilderFactory
+        where TDictionary : class, IDictionary<TKey, TValue>
     {
         #region ITypeBuilderFactory Members
 
         public ITypeBuilder CreateTypeBuilder(Type type)
         {
-            return new DictionaryBuilder<TDictionary, TValue>();
+            return new DictionaryBuilder<TDictionary, TKey, TValue>();
         }
 
         #endregion
