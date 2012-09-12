@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Kiwi.Json.Conversion.TypeWriters
 {
@@ -29,6 +30,10 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         public ITypeWriter CreateTypeWriter(Type type)
         {
+            if (typeof(TEnum).GetCustomAttributes(typeof(FlagsAttribute),true).Any())
+            {
+                return new EnumWithFlagsWriter<TEnum>();
+            }
             return new EnumWriter<TEnum>();
         }
 
