@@ -100,5 +100,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         {
             return null;
         }
+
+        protected override Type BuildType
+        {
+            get { return typeof(TDictionary); }
+        }
     }
 }

@@ -27,5 +27,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             var @enum = Enum.ToObject(typeof (TEnum), value);
             return (TEnum) @enum;
         }
+
+        protected override Type BuildType
+        {
+            get { return typeof(TEnum); }
+        }
     }
 }

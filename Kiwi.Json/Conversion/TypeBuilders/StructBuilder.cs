@@ -76,6 +76,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return this;
         }
 
+        protected override Type BuildType
+        {
+            get { return typeof(TStruct); }
+        }
+
         #region Nested type: StructMember
 
         private class StructMember

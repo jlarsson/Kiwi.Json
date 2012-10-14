@@ -73,6 +73,7 @@
     <Compile Include="Converters\AspNetDateTimeConverter.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DataTableAsObjectArrayConverter.cs" />
+    <Compile Include="Converters\InterningStringConverter.cs" />
     <Compile Include="Converters\UriConverter.cs" />
     <Compile Include="CustomTypeBuilderRegistry.cs" />
     <Compile Include="CustomTypeWriterRegistry.cs" />

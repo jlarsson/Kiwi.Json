@@ -112,7 +112,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return new BuilderInfo
                        {
                            Type = typeof (T),
-                           Builder = new SimpleTypeBuilder
+                           Builder = new SimpleTypeBuilder(typeof(T))
                                          {
                                              String = @string,
                                              Long = @long,
@@ -138,12 +138,18 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         private class SimpleTypeBuilder : AbstractTypeBuilder
         {
+            private readonly Type _buildType;
             public Func<string, object> String { private get; set; }
             public Func<long, object> Long { private get; set; }
             public Func<double, object> Double { private get; set; }
             public Func<bool, object> Bool { private get; set; }
             public Func<DateTime, object> DateTime { private get; set; }
             public Func<object> Null { private get; set; }
+
+            public SimpleTypeBuilder(Type buildType)
+            {
+                _buildType = buildType;
+            }
 
             public override object CreateNull(ITypeBuilderRegistry registry)
             {
@@ -153,6 +159,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
                 }
                 return base.CreateNull(registry);
             }
+
+            protected override Type BuildType { get { return _buildType; } }
 
             public override object CreateString(ITypeBuilderRegistry registry, string value)
             {

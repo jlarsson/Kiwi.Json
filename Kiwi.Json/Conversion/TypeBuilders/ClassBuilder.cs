@@ -140,6 +140,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
             return null;
         }
 
+        protected override Type BuildType
+        {
+            get { return typeof (TClass); }
+        }
+
         #region Nested type: ClassMember
 
         protected class ClassMember

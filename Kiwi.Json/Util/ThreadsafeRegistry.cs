@@ -41,10 +41,6 @@ namespace Kiwi.Json.Util
                 Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) { { key, value } });
                 return value;
             }
-
-            //value = creator(key);
-            //Interlocked.Exchange(ref _dict, new Dictionary<TKey, TValue>(_dict) {{key, value}});
-            //return value;
         }
 
         #endregion

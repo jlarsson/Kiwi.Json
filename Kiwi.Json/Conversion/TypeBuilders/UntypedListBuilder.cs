@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 
 namespace Kiwi.Json.Conversion.TypeBuilders
@@ -41,6 +42,11 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         public override object CreateNull(ITypeBuilderRegistry registry)
         {
             return null;
+        }
+
+        protected override Type BuildType
+        {
+            get { return typeof(TCollection); }
         }
     }
 }

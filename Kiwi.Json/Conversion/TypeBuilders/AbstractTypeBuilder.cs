@@ -108,7 +108,10 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         private Exception CreateInvalidTypeException(string type)
         {
-            throw new JsonSerializationException("Invalid occurence of " + type);
+            throw new JsonSerializationException(
+                string.Format("Invalid occurence of {0} while building {1}", type, BuildType));
         }
+
+        protected abstract Type BuildType { get; }
     }
 }
