@@ -58,6 +58,7 @@
     <Compile Include="Conversion\DataTableConverterFixture.cs" />
     <Compile Include="Conversion\DataTableConverterFixtureBase.cs" />
     <Compile Include="Conversion\UriConverterFixture.cs" />
+    <Compile Include="ConvertJsonToCustomModel\InternedStrings\InternedStringsFixture.cs" />
     <Compile Include="Incidents\EnumsWithFlagsFixture.cs" />
     <Compile Include="Incidents\JsonTextParserCanDetectEndOfStream.cs" />
     <Compile Include="Incidents\PrivateSettersAreIgnoredFixture.cs" />
