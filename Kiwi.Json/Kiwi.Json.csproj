@@ -44,6 +44,7 @@
     <Compile Include="Conversion\IJsonConverter.cs" />
     <Compile Include="Conversion\IJsonParser.cs" />
     <Compile Include="Conversion\TypeBuilders\TypeBuilderRegistryExtensions.cs" />
+    <Compile Include="Conversion\TypeWriters\EnumWithFlagsWriter.cs" />
     <Compile Include="Converters\AbstractJsonConverter.cs" />
     <Compile Include="Conversion\Reflection\ClassActivator.cs" />
     <Compile Include="Conversion\Reflection\ConstructorInfoClassActivator.cs" />
