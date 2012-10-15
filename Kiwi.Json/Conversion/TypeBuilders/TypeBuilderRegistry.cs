@@ -45,7 +45,8 @@ namespace Kiwi.Json.Conversion.TypeBuilders
         private ITypeBuilder CreateTypeBuilder(Type type)
         {
             return _customConverters.Select(c => c.CreateTypeBuilder(type)).FirstOrDefault(w => w != null)
-                   ?? _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null);
+                   ?? _factories.Select(f => f.CreateTypeBuilder(type)).FirstOrDefault(f => f != null)
+                   ?? NothingBuilder.Instance;
         }
     }
 }

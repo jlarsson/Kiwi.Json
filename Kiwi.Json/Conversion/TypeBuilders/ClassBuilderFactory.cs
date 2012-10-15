@@ -8,7 +8,7 @@ namespace Kiwi.Json.Conversion.TypeBuilders
 
         public ITypeBuilder CreateTypeBuilder(Type type)
         {
-            if (type.IsClass)
+            if (type.IsClass && !typeof(Delegate).IsAssignableFrom(type))
             {
                 return
                     ((ITypeBuilderFactory)

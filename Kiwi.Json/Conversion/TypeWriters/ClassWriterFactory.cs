@@ -8,7 +8,7 @@ namespace Kiwi.Json.Conversion.TypeWriters
 
         public ITypeWriter CreateTypeWriter(Type type)
         {
-            if (type.IsClass)
+            if ((type.IsClass) && !typeof(Delegate).IsAssignableFrom(type))
             {
                 return
                     ((ITypeWriterFactory)
